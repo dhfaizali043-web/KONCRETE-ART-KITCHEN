@@ -62,6 +62,14 @@ function init() {
     const btn = event.target.closest('button[data-remove]')
     if (btn) btn.closest('.admin-product').remove()
   })
+  els.products.addEventListener('input', (event) => {
+    const input = event.target.closest('[data-field="image"]')
+    if (input) setPreviewSrc(input.closest('.admin-product'), input.value.trim() ? resolveImage(input.value.trim()) : '')
+  })
+  els.products.addEventListener('change', (event) => {
+    const input = event.target.closest('[data-upload]')
+    if (input) handleUpload(input)
+  })
 
   loadRemote()
 }
@@ -139,15 +147,27 @@ function fillForm(data) {
 function addProduct(product) {
   const el = document.createElement('div')
   el.className = 'admin-product'
+  const imagePath = product.image || ''
   el.innerHTML = `
     <div class="admin-product-head">
       <strong>${escapeHtml(product.name || 'New product')}</strong>
       <button type="button" class="admin-remove" data-remove>Remove</button>
     </div>
+    <div class="admin-image">
+      <img class="admin-image-preview" alt="" src="${imagePath ? escapeAttr(resolveImage(imagePath)) : ''}" ${
+        imagePath ? '' : 'hidden'
+      } />
+      <div class="admin-image-fields">
+        <label>Image path or URL <input data-field="image" value="${escapeAttr(imagePath)}" /></label>
+        <label class="admin-upload">Upload image from device
+          <input type="file" accept="image/*" data-upload />
+        </label>
+        <span class="admin-upload-status" data-upload-status></span>
+      </div>
+    </div>
     <div class="admin-grid">
       <label>Name <input data-field="name" value="${escapeAttr(product.name)}" /></label>
       <label>Price <input data-field="price" type="number" min="0" value="${escapeAttr(product.price ?? 0)}" /></label>
-      <label>Image path or URL <input data-field="image" value="${escapeAttr(product.image)}" /></label>
       <label>ID (optional) <input data-field="id" value="${escapeAttr(product.id)}" placeholder="auto from name" /></label>
       <label class="admin-wide">Description <textarea data-field="description" rows="2">${escapeHtml(product.description)}</textarea></label>
       <label class="admin-check"><input data-field="available" type="checkbox" ${
@@ -155,6 +175,106 @@ function addProduct(product) {
       } /> Available</label>
     </div>`
   els.products.appendChild(el)
+}
+
+function resolveImage(src) {
+  const value = String(src || '')
+  if (!value) return ''
+  if (/^(https?:|data:|blob:)/i.test(value)) return value
+  return './' + value.replace(/^\.?\//, '')
+}
+
+function setPreviewSrc(card, src) {
+  const img = card.querySelector('.admin-image-preview')
+  if (!img) return
+  if (src) {
+    img.src = src
+    img.hidden = false
+  } else {
+    img.removeAttribute('src')
+    img.hidden = true
+  }
+}
+
+function setUploadStatus(statusEl, message, kind) {
+  if (!statusEl) return
+  statusEl.textContent = message
+  statusEl.className = 'admin-upload-status' + (kind ? ' is-' + kind : '')
+}
+
+async function handleUpload(input) {
+  const card = input.closest('.admin-product')
+  const status = card.querySelector('[data-upload-status]')
+  const imageField = card.querySelector('[data-field="image"]')
+  const file = input.files && input.files[0]
+  if (!file) return
+
+  setPreviewSrc(card, URL.createObjectURL(file))
+  setUploadStatus(status, 'Uploading...', '')
+
+  try {
+    const path = await uploadImage(file)
+    imageField.value = path
+    setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
+  } catch (error) {
+    setUploadStatus(status, error.message, 'error')
+  } finally {
+    input.value = ''
+  }
+}
+
+async function uploadImage(file) {
+  const config = getConfig()
+  if (!config.token) {
+    throw new Error('Add your GitHub token in section 1 to upload images.')
+  }
+
+  const prepared = await prepareImage(file)
+  const base = slugify(String(file.name).replace(/\.[^.]+$/, '')) || 'product'
+  const filename = `${base}-${Date.now()}.${prepared.ext}`
+  const repoPath = `public/brand/products/${filename}`
+  const buffer = await prepared.blob.arrayBuffer()
+
+  const res = await fetch(apiUrl({ repo: config.repo, branch: config.branch, path: repoPath }, false), {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${config.token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: `content: upload product image ${filename}`,
+      content: encodeBase64Binary(buffer),
+      branch: config.branch
+    })
+  })
+  if (!res.ok) throw new Error(await ghError(res))
+  return `brand/products/${filename}`
+}
+
+async function prepareImage(file) {
+  const allowed = ['jpg', 'jpeg', 'png', 'webp', 'avif']
+  const ext = (String(file.name).split('.').pop() || '').toLowerCase()
+  if (!file.type.startsWith('image/') && !allowed.includes(ext)) {
+    throw new Error('Please choose a JPG, PNG, WEBP or AVIF image.')
+  }
+  const limit = 2 * 1024 * 1024
+  if (file.size <= limit) {
+    return { blob: file, ext: allowed.includes(ext) ? ext : 'jpg' }
+  }
+
+  const bitmap = await createImageBitmap(file)
+  const max = 1600
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height))
+  const width = Math.max(1, Math.round(bitmap.width * scale))
+  const height = Math.max(1, Math.round(bitmap.height * scale))
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height)
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85))
+  if (!blob) throw new Error('Could not process this image. Try a smaller file.')
+  return { blob, ext: 'jpg' }
 }
 
 function collect() {
@@ -287,6 +407,16 @@ function encodeBase64(str) {
   const bytes = new TextEncoder().encode(str)
   let binary = ''
   bytes.forEach((b) => (binary += String.fromCharCode(b)))
+  return btoa(binary)
+}
+
+function encodeBase64Binary(buffer) {
+  const bytes = new Uint8Array(buffer)
+  let binary = ''
+  const chunk = 0x8000
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+  }
   return btoa(binary)
 }
 
