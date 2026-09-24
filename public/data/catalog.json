@@ -1,0 +1,50 @@
+{
+  "store": {
+    "whatsapp": "910000000000",
+    "currencySymbol": "₹",
+    "currencyCode": "INR",
+    "note": "Placeholder data. Update products, prices and WhatsApp number from the Admin page."
+  },
+  "products": [
+    {
+      "id": "wave-round-name-plate",
+      "name": "Wave Round Name Plate",
+      "description": "Circular name plate with a wave relief and a warm back-lit halo. Customised with your name.",
+      "price": 6999,
+      "image": "brand/nameplates/plate-04.png",
+      "available": true
+    },
+    {
+      "id": "drape-round-name-plate",
+      "name": "Drape Round Name Plate",
+      "description": "Circular name plate with a draped relief and a warm back-lit halo. Customised with your name.",
+      "price": 7999,
+      "image": "brand/nameplates/plate-05.png",
+      "available": true
+    },
+    {
+      "id": "wall-name-plate-01",
+      "name": "Wall Name Plate I",
+      "description": "Custom wall name plate, developed and finished in-house.",
+      "price": 5999,
+      "image": "brand/nameplates/plate-01.png",
+      "available": true
+    },
+    {
+      "id": "wall-name-plate-02",
+      "name": "Wall Name Plate II",
+      "description": "Custom wall name plate, developed and finished in-house.",
+      "price": 5999,
+      "image": "brand/nameplates/plate-02.png",
+      "available": true
+    },
+    {
+      "id": "wall-name-plate-03",
+      "name": "Wall Name Plate III",
+      "description": "Custom wall name plate, developed and finished in-house.",
+      "price": 5999,
+      "image": "brand/nameplates/plate-03.png",
+      "available": true
+    }
+  ]
+}

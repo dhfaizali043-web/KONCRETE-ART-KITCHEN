@@ -1,7 +1,19 @@
 import { defineConfig } from 'vite'
+import { fileURLToPath, URL } from 'node:url'
+
+const entry = (path) => fileURLToPath(new URL(path, import.meta.url))
 
 export default defineConfig({
   base: './',
+  build: {
+    rollupOptions: {
+      input: {
+        main: entry('./index.html'),
+        shop: entry('./shop.html'),
+        admin: entry('./admin.html')
+      }
+    }
+  },
   server: {
     host: true,
     port: 5173,

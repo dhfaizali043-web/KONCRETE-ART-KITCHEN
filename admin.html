@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Koncrete Art Kitchen</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#161412" />
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="admin-header">
+      <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
+        <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
+      </a>
+      <p><a href="./shop.html">View shop</a></p>
+    </header>
+
+    <main class="admin-wrap">
+      <h1>Admin</h1>
+      <p class="admin-intro">
+        Edit your store settings and products, then publish. Changes are committed to
+        the GitHub repository and the live site updates automatically in about a minute.
+      </p>
+
+      <section class="admin-card">
+        <h2>1. Connect GitHub</h2>
+        <p class="admin-help">
+          Create a fine-grained personal access token on GitHub with
+          <strong>Contents: Read and write</strong> access to this repository, then paste it
+          here. It is stored only in this browser (localStorage) and is never sent anywhere
+          except github.com.
+        </p>
+        <div class="admin-grid">
+          <label>
+            GitHub token
+            <input type="password" id="token" placeholder="github_pat_..." autocomplete="off" />
+          </label>
+          <label>
+            Repository
+            <input type="text" id="repo" placeholder="owner/repo" />
+          </label>
+          <label>
+            Branch
+            <input type="text" id="branch" placeholder="main" />
+          </label>
+          <label>
+            File path
+            <input type="text" id="path" placeholder="public/data/catalog.json" />
+          </label>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-ghost" id="loadBtn">Load current data</button>
+          <button class="btn btn-ghost" id="forgetBtn">Forget token</button>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2>2. Store settings</h2>
+        <div class="admin-grid">
+          <label>
+            WhatsApp number (country code, no +)
+            <input type="text" id="whatsapp" placeholder="91XXXXXXXXXX" />
+          </label>
+          <label>
+            Currency symbol
+            <input type="text" id="currencySymbol" placeholder="₹" />
+          </label>
+          <label>
+            Currency code
+            <input type="text" id="currencyCode" placeholder="INR" />
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2>3. Products</h2>
+        <div id="products"></div>
+        <button class="btn btn-ghost" id="addBtn">+ Add product</button>
+      </section>
+
+      <div class="admin-publish">
+        <button class="btn btn-solid" id="saveBtn">Save &amp; publish</button>
+        <p class="admin-status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <script type="module" src="./src/admin.js"></script>
+  </body>
+</html>
