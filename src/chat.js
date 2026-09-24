@@ -60,12 +60,14 @@ function hasContact() {
   return Boolean(number) && number !== '910000000000'
 }
 
+const ROBOT_ICON = `<svg class="chat-robot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4.6"/><circle cx="12" cy="3.4" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="13.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="15" cy="13.6" r="1.15" fill="currentColor" stroke="none"/><path d="M9.4 16.6h5.2"/></svg>`
+
 function buildWidget() {
   const launcher = document.createElement('button')
   launcher.className = 'chat-launcher'
   launcher.type = 'button'
   launcher.setAttribute('aria-label', 'Open chat assistant')
-  launcher.innerHTML = '<span class="chat-dot" aria-hidden="true"></span>Chat'
+  launcher.innerHTML = `${ROBOT_ICON}<span>Chat</span>`
 
   panelEl = document.createElement('section')
   panelEl.className = 'chat-panel'
@@ -73,9 +75,10 @@ function buildWidget() {
   panelEl.hidden = true
   panelEl.innerHTML = `
     <header class="chat-head">
-      <div>
+      <span class="chat-avatar" aria-hidden="true">${ROBOT_ICON}</span>
+      <div class="chat-head-info">
         <strong id="chatName">Studio Assistant</strong>
-        <span>Usually replies instantly</span>
+        <span class="chat-status"><i class="chat-online" aria-hidden="true"></i><b id="chatStatus">Online</b></span>
       </div>
       <button type="button" class="chat-close" aria-label="Close chat">Close</button>
     </header>
@@ -139,9 +142,12 @@ function scrollLog() {
 }
 
 function addBubble(role, html) {
+  const isBot = role.includes('bot')
   const el = document.createElement('div')
   el.className = `chat-msg ${role}`
-  el.innerHTML = html
+  el.innerHTML = isBot
+    ? `<span class="chat-msg-avatar" aria-hidden="true">${ROBOT_ICON}</span><div class="chat-msg-body">${html}</div>`
+    : html
   logEl.appendChild(el)
   scrollLog()
   return el
@@ -463,8 +469,8 @@ async function init() {
   apiUrl = String((catalog.store.chat && catalog.store.chat.apiUrl) || '')
     .trim()
     .replace(/\/+$/, '')
-  const header = panelEl ? panelEl.querySelector('.chat-head span') : null
-  if (header) header.textContent = apiUrl ? 'AI assistant' : 'Usually replies instantly'
+  const statusEl = document.getElementById('chatStatus')
+  if (statusEl) statusEl.textContent = apiUrl ? 'AI online' : 'Assistant online'
 }
 
 init()
