@@ -61,6 +61,23 @@ https://kak-ai-proxy.YOUR-SUBDOMAIN.workers.dev
 Open that URL in a browser to check the health endpoint. It should return
 `{"ok":true,...}`.
 
+### Alternative: deploy from GitHub (no local setup)
+
+If you do not want to install anything on your computer, you can deploy from
+GitHub instead:
+
+1. Create a Cloudflare API token (My Profile, API Tokens, "Edit Cloudflare
+   Workers" template) and note your Account ID.
+2. In your GitHub repository open Settings, Secrets and variables, Actions, and
+   add these repository secrets:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+   - `USER_LLM_API_KEY` (your Gemini, OpenAI or DeepSeek key)
+3. Open the Actions tab, choose "Deploy AI worker (Cloudflare)", and press
+   "Run workflow".
+
+The Worker URL is shown in the workflow log when it finishes.
+
 ## 6. Connect the website
 
 Open the website Admin page, go to section 4 (Chat assistant), and paste the
