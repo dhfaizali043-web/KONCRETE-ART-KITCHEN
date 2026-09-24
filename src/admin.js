@@ -309,7 +309,7 @@ function collect() {
         }
       },
       chat: {
-        name: els.chatName.value.trim() || 'Studio Assistant',
+        name: els.chatName.value.trim() || 'Studio Genie',
         apiUrl: els.chatApiUrl.value.trim(),
         greeting: els.chatGreeting.value.trim(),
         quickReplies: lines(els.chatQuick.value),

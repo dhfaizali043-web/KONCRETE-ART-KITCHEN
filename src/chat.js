@@ -60,24 +60,26 @@ function hasContact() {
   return Boolean(number) && number !== '910000000000'
 }
 
-const ROBOT_ICON = `<svg class="chat-robot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4.6"/><circle cx="12" cy="3.4" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="13.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="15" cy="13.6" r="1.15" fill="currentColor" stroke="none"/><path d="M9.4 16.6h5.2"/></svg>`
+const LAMP_ICON = `<svg class="chat-lamp" viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 15c0-3.3 2.7-6 6-6h13c3.3 0 6 2.7 6 6v1c0 6.6-5.4 12-12 12h-1C13.4 28 8 22.6 8 16v-1z"/><path d="M27 11c4.6-.8 8.7-3.4 11.8-7"/><path d="M8 12c-3.2 0-5.5 2-5.5 4.6S4.8 21.2 8 21.2"/><path d="M17.5 9c0-3.4 2.3-6 5.2-6"/><circle cx="23" cy="3.4" r="1.6" fill="currentColor" stroke="none"/></svg>`
+
+const GENIE_ICON = `<svg class="chat-genie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9c0-3.7 3.1-6.6 7-6.6S19 5.3 19 9"/><path d="M7.3 10.6c0-2.6 2.1-4.8 4.7-4.8s4.7 2.2 4.7 4.8v2.1a4.7 4.7 0 0 1-9.4 0z"/><path d="M10.2 12.3h.01M13.8 12.3h.01"/><path d="M10.6 15c.5.7 2.3.7 2.8 0"/></svg>`
 
 function buildWidget() {
   const launcher = document.createElement('button')
   launcher.className = 'chat-launcher'
   launcher.type = 'button'
-  launcher.setAttribute('aria-label', 'Open chat assistant')
-  launcher.innerHTML = `${ROBOT_ICON}<span>Chat</span>`
+  launcher.setAttribute('aria-label', 'Open AI assistant')
+  launcher.innerHTML = `<span class="chat-lamp-glow" aria-hidden="true"></span>${LAMP_ICON}`
 
   panelEl = document.createElement('section')
   panelEl.className = 'chat-panel'
-  panelEl.setAttribute('aria-label', 'Chat assistant')
+  panelEl.setAttribute('aria-label', 'AI assistant')
   panelEl.hidden = true
   panelEl.innerHTML = `
     <header class="chat-head">
-      <span class="chat-avatar" aria-hidden="true">${ROBOT_ICON}</span>
+      <span class="chat-avatar" aria-hidden="true">${GENIE_ICON}</span>
       <div class="chat-head-info">
-        <strong id="chatName">Studio Assistant</strong>
+        <strong id="chatName">Studio Genie</strong>
         <span class="chat-status"><i class="chat-online" aria-hidden="true"></i><b id="chatStatus">Online</b></span>
       </div>
       <button type="button" class="chat-close" aria-label="Close chat">Close</button>
@@ -146,7 +148,7 @@ function addBubble(role, html) {
   const el = document.createElement('div')
   el.className = `chat-msg ${role}`
   el.innerHTML = isBot
-    ? `<span class="chat-msg-avatar" aria-hidden="true">${ROBOT_ICON}</span><div class="chat-msg-body">${html}</div>`
+    ? `<span class="chat-msg-avatar" aria-hidden="true">${GENIE_ICON}</span><div class="chat-msg-body">${html}</div>`
     : html
   logEl.appendChild(el)
   scrollLog()

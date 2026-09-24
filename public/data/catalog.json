@@ -16,9 +16,9 @@
       "razorpayLink": ""
     },
     "chat": {
-      "name": "Studio Assistant",
+      "name": "Studio Genie",
       "apiUrl": "",
-      "greeting": "Namaste! Koncrete Art Kitchen me aapka swagat hai. Main aapki kaise madad kar sakta hoon?",
+      "greeting": "Namaste! Main Koncrete Art Kitchen ka Studio Genie hoon. Products, price, order ya payment — jo poochhna ho, poochhiye.",
       "quickReplies": ["Products", "Price", "How to order", "Payment options", "Delivery"],
       "knowledge": [
         {

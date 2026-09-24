@@ -1422,35 +1422,54 @@ h2 {
   right: 1.4rem;
   bottom: 1.4rem;
   z-index: 90;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--ink);
-  color: var(--paper);
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #2a2622, var(--ink) 70%);
+  color: var(--halo);
   border: 1px solid var(--halo);
-  font: inherit;
-  font-size: 0.76rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 0.7rem 1rem;
+  border-radius: 50%;
+  padding: 0;
   cursor: pointer;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32), 0 0 0 0 rgba(232, 196, 138, 0.5);
+  animation: lamp-glow 3s infinite;
 }
 
 .chat-launcher:hover {
-  background: var(--char);
+  background: radial-gradient(circle at 50% 40%, #322c26, var(--char) 70%);
 }
 
-.chat-robot {
-  width: 18px;
-  height: 18px;
+@keyframes lamp-glow {
+  0% {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32), 0 0 0 0 rgba(232, 196, 138, 0.45);
+  }
+  60% {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32), 0 0 0 12px rgba(232, 196, 138, 0);
+  }
+  100% {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32), 0 0 0 0 rgba(232, 196, 138, 0);
+  }
+}
+
+.chat-lamp {
+  width: 34px;
+  height: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.chat-genie {
+  width: 22px;
+  height: 22px;
   flex: none;
-  color: var(--halo);
 }
 
-.chat-launcher .chat-robot {
-  width: 20px;
-  height: 20px;
+.chat-lamp-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .chat-panel {
@@ -1466,13 +1485,14 @@ h2 {
   border: 1px solid var(--line);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transform-origin: bottom right;
+  transform: scale(0.4) translate(30px, 30px);
+  transition: opacity 0.26s ease, transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .chat-panel.open {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1) translate(0, 0);
 }
 
 .chat-head {
@@ -1497,7 +1517,7 @@ h2 {
   color: var(--halo);
 }
 
-.chat-avatar .chat-robot {
+.chat-avatar .chat-genie {
   width: 24px;
   height: 24px;
 }
@@ -1601,9 +1621,9 @@ h2 {
   color: var(--rust);
 }
 
-.chat-msg-avatar .chat-robot {
-  width: 16px;
-  height: 16px;
+.chat-msg-avatar .chat-genie {
+  width: 15px;
+  height: 15px;
   color: var(--rust);
 }
 
