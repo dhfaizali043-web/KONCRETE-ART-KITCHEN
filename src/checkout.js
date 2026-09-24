@@ -72,6 +72,65 @@ async function init() {
   renderSummary()
   renderPayments()
   bindEvents()
+  setupAccount()
+}
+
+async function setupAccount() {
+  const auth = await authApi()
+  const hint = document.getElementById('accountHint')
+  if (!auth) return
+  try {
+    await auth.ready
+  } catch {
+    return
+  }
+  if (!auth.enabled) return
+  const user = auth.currentUser()
+  if (user) {
+    if (hint) {
+      hint.hidden = false
+      hint.textContent = `Signed in as ${user.email}. This order will be saved to your account.`
+    }
+    try {
+      const profile = await auth.getProfile()
+      if (profile) fillProfile(profile)
+    } catch {
+      /* profile optional */
+    }
+  } else if (hint) {
+    hint.hidden = false
+    hint.innerHTML = 'Want to track your orders? <a href="#" id="accountLoginLink">Login</a> or create an account (optional).'
+    const link = document.getElementById('accountLoginLink')
+    link?.addEventListener('click', (event) => {
+      event.preventDefault()
+      auth.open()
+    })
+  }
+}
+
+function authApi() {
+  return new Promise((resolve) => {
+    if (window.KAKAuth) return resolve(window.KAKAuth)
+    let tries = 0
+    const timer = setInterval(() => {
+      tries += 1
+      if (window.KAKAuth || tries > 60) {
+        clearInterval(timer)
+        resolve(window.KAKAuth || null)
+      }
+    }, 50)
+  })
+}
+
+function fillProfile(profile) {
+  setIfEmpty('custName', profile.name)
+  setIfEmpty('custPhone', profile.phone)
+  setIfEmpty('custAddress', profile.address)
+}
+
+function setIfEmpty(id, value) {
+  const el = document.getElementById(id)
+  if (el && !el.value && value) el.value = value
 }
 
 function renderEmpty() {
@@ -239,6 +298,31 @@ function confirmOrder() {
     return
   }
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
+  saveOrderToAccount({ name, phone, address, note })
+}
+
+function saveOrderToAccount({ name, phone, address, note }) {
+  const auth = window.KAKAuth
+  if (!auth || !auth.enabled || !auth.currentUser()) return
+  const order = {
+    items: cart.map((item) => {
+      const p = findProduct(item.id)
+      return {
+        id: item.id,
+        name: p ? p.name : item.id,
+        qty: item.qty,
+        price: p ? Number(p.price) : 0
+      }
+    }),
+    total: money(total()),
+    method: methodLabel(),
+    name,
+    phone,
+    address,
+    note
+  }
+  auth.saveOrder(order).catch(() => {})
+  auth.saveProfile({ name, phone, address }).catch(() => {})
 }
 
 function showToast(message) {

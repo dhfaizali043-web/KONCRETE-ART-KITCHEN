@@ -33,6 +33,13 @@ const els = {
   chatGreeting: $('chatGreeting'),
   chatQuick: $('chatQuick'),
   chatKnowledge: $('chatKnowledge'),
+  authEnabled: $('authEnabled'),
+  fbApiKey: $('fbApiKey'),
+  fbAuthDomain: $('fbAuthDomain'),
+  fbProjectId: $('fbProjectId'),
+  fbStorageBucket: $('fbStorageBucket'),
+  fbSenderId: $('fbSenderId'),
+  fbAppId: $('fbAppId'),
   products: $('products'),
   status: $('status'),
   loadBtn: $('loadBtn'),
@@ -140,6 +147,15 @@ function fillForm(data) {
   els.chatKnowledge.value = (chat.knowledge || [])
     .map((entry) => `${entry.q || entry.question || ''} | ${entry.a || entry.answer || ''}`)
     .join('\n')
+  const auth = store.auth || {}
+  const fb = auth.config || {}
+  els.authEnabled.checked = auth.enabled === true
+  els.fbApiKey.value = fb.apiKey || ''
+  els.fbAuthDomain.value = fb.authDomain || ''
+  els.fbProjectId.value = fb.projectId || ''
+  els.fbStorageBucket.value = fb.storageBucket || ''
+  els.fbSenderId.value = fb.messagingSenderId || ''
+  els.fbAppId.value = fb.appId || ''
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
 }
@@ -319,6 +335,17 @@ function collect() {
             return { q: (q || '').trim(), a: rest.join('|').trim() }
           })
           .filter((entry) => entry.q && entry.a)
+      },
+      auth: {
+        enabled: els.authEnabled.checked,
+        config: {
+          apiKey: els.fbApiKey.value.trim(),
+          authDomain: els.fbAuthDomain.value.trim(),
+          projectId: els.fbProjectId.value.trim(),
+          storageBucket: els.fbStorageBucket.value.trim(),
+          messagingSenderId: els.fbSenderId.value.trim(),
+          appId: els.fbAppId.value.trim()
+        }
       }
     },
     products

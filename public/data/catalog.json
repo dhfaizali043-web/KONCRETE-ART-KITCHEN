@@ -46,6 +46,17 @@
           "a": "Ji haan, production shuru hone se pehle order free me cancel ho sakta hai. Ek baar production shuru hone ke baad, khaas kar personalised pieces, cancel karna mushkil ho jata hai. Jaldi WhatsApp par bata dein."
         }
       ]
+    },
+    "auth": {
+      "enabled": false,
+      "config": {
+        "apiKey": "",
+        "authDomain": "",
+        "projectId": "",
+        "storageBucket": "",
+        "messagingSenderId": "",
+        "appId": ""
+      }
     }
   },
   "products": [

@@ -163,6 +163,68 @@
         <button class="btn btn-ghost" id="addBtn">+ Add product</button>
       </section>
 
+      <section class="admin-card">
+        <h2>6. Customer accounts (login)</h2>
+        <p class="admin-help">
+          Turn on customer login and order history. This uses <strong>Firebase</strong>
+          (Google) — it has a free plan. Create a project at
+          <strong>console.firebase.google.com</strong>, add a <em>Web</em> app, and paste its
+          config values below. Then enable the sign-in methods you want
+          (Email/Password and/or Google) under <em>Authentication</em>, and create a
+          Firestore database under <em>Firestore Database</em>. Login is optional for
+          customers — guests can still checkout without an account.
+        </p>
+        <p class="admin-help">
+          These config values are <strong>public by design</strong> (they only identify your
+          project). Customer data is protected by Firestore security rules — paste these
+          under Firestore &rarr; Rules:
+        </p>
+        <pre class="admin-code">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == uid;
+    }
+    match /orders/{orderId} {
+      allow create: if request.auth != null
+        &amp;&amp; request.resource.data.uid == request.auth.uid;
+      allow read: if request.auth != null
+        &amp;&amp; resource.data.uid == request.auth.uid;
+    }
+  }
+}</pre>
+        <div class="admin-grid">
+          <label class="admin-check">
+            <input type="checkbox" id="authEnabled" />
+            Enable customer login &amp; order history
+          </label>
+          <label>
+            apiKey
+            <input type="text" id="fbApiKey" placeholder="AIza..." autocomplete="off" />
+          </label>
+          <label>
+            authDomain
+            <input type="text" id="fbAuthDomain" placeholder="your-project.firebaseapp.com" />
+          </label>
+          <label>
+            projectId
+            <input type="text" id="fbProjectId" placeholder="your-project" />
+          </label>
+          <label>
+            storageBucket
+            <input type="text" id="fbStorageBucket" placeholder="your-project.appspot.com" />
+          </label>
+          <label>
+            messagingSenderId
+            <input type="text" id="fbSenderId" placeholder="000000000000" />
+          </label>
+          <label>
+            appId
+            <input type="text" id="fbAppId" placeholder="1:000000000000:web:..." />
+          </label>
+        </div>
+      </section>
+
       <div class="admin-publish">
         <button class="btn btn-solid" id="saveBtn">Save &amp; publish</button>
         <p class="admin-status" id="status" role="status" aria-live="polite"></p>
