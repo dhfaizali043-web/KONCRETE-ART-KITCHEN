@@ -14,6 +14,29 @@
         "bankName": ""
       },
       "razorpayLink": ""
+    },
+    "chat": {
+      "name": "Studio Assistant",
+      "greeting": "Namaste! Koncrete Art Kitchen me aapka swagat hai. Main aapki kaise madad kar sakta hoon?",
+      "quickReplies": ["Products", "Price", "How to order", "Payment options", "Delivery"],
+      "knowledge": [
+        {
+          "q": "Do you do custom designs?",
+          "a": "Ji haan. Aap apna naam, size, theme ya layout WhatsApp par bhej dein. Hum design develop karke aapko preview dikhate hain, phir banate hain."
+        },
+        {
+          "q": "How long does it take to make and deliver?",
+          "a": "Har piece in-house banta hai, isliye thoda time lagta hai. Exact time aur shipping charges aapke pincode ke hisaab se WhatsApp par bata dete hain."
+        },
+        {
+          "q": "Do you ship across India?",
+          "a": "Ji haan, hum pan-India courier karte hain. Shipping charges location ke hisaab se hote hain."
+        },
+        {
+          "q": "Do you have a physical store?",
+          "a": "Hum ek design studio hain aur online orders lete hain. Aap WhatsApp par baat kar sakte hain ya website se order kar sakte hain."
+        }
+      ]
     }
   },
   "products": [

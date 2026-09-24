@@ -28,6 +28,10 @@ const els = {
   bankBankName: $('bankBankName'),
   bankAccount: $('bankAccount'),
   bankIfsc: $('bankIfsc'),
+  chatName: $('chatName'),
+  chatGreeting: $('chatGreeting'),
+  chatQuick: $('chatQuick'),
+  chatKnowledge: $('chatKnowledge'),
   products: $('products'),
   status: $('status'),
   loadBtn: $('loadBtn'),
@@ -119,6 +123,13 @@ function fillForm(data) {
   els.bankBankName.value = bank.bankName || ''
   els.bankAccount.value = bank.accountNumber || ''
   els.bankIfsc.value = bank.ifsc || ''
+  const chat = store.chat || {}
+  els.chatName.value = chat.name || ''
+  els.chatGreeting.value = chat.greeting || ''
+  els.chatQuick.value = (chat.quickReplies || []).join('\n')
+  els.chatKnowledge.value = (chat.knowledge || [])
+    .map((entry) => `${entry.q || entry.question || ''} | ${entry.a || entry.answer || ''}`)
+    .join('\n')
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
 }
@@ -174,6 +185,17 @@ function collect() {
           accountNumber: els.bankAccount.value.trim(),
           ifsc: els.bankIfsc.value.trim()
         }
+      },
+      chat: {
+        name: els.chatName.value.trim() || 'Studio Assistant',
+        greeting: els.chatGreeting.value.trim(),
+        quickReplies: lines(els.chatQuick.value),
+        knowledge: lines(els.chatKnowledge.value)
+          .map((line) => {
+            const [q, ...rest] = line.split('|')
+            return { q: (q || '').trim(), a: rest.join('|').trim() }
+          })
+          .filter((entry) => entry.q && entry.a)
       }
     },
     products
@@ -242,6 +264,13 @@ async function ghError(res) {
   } catch {
     return `HTTP ${res.status}`
   }
+}
+
+function lines(value) {
+  return String(value || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
 }
 
 function slugify(value) {

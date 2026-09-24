@@ -121,7 +121,34 @@
       </section>
 
       <section class="admin-card">
-        <h2>4. Products</h2>
+        <h2>4. Chat assistant</h2>
+        <p class="admin-help">
+          The chat bubble shown on the website answers customer questions using your
+          products, prices, payment details and the knowledge base below. One entry per
+          line in the format <strong>Question | Answer</strong>.
+        </p>
+        <div class="admin-grid">
+          <label>
+            Assistant name
+            <input type="text" id="chatName" placeholder="Studio Assistant" />
+          </label>
+          <label class="admin-wide">
+            Greeting message
+            <input type="text" id="chatGreeting" placeholder="Namaste! Kaise madad kar sakta hoon?" />
+          </label>
+          <label class="admin-wide">
+            Quick replies (one per line)
+            <textarea id="chatQuick" rows="3" placeholder="Products&#10;Price&#10;How to order"></textarea>
+          </label>
+          <label class="admin-wide">
+            Knowledge base (Question | Answer, one per line)
+            <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Ji haan, hum pan-India courier karte hain."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2>5. Products</h2>
         <div id="products"></div>
         <button class="btn btn-ghost" id="addBtn">+ Add product</button>
       </section>
