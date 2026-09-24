@@ -3,7 +3,18 @@
     "whatsapp": "910000000000",
     "currencySymbol": "₹",
     "currencyCode": "INR",
-    "note": "Placeholder data. Update products, prices and WhatsApp number from the Admin page."
+    "note": "Placeholder data. Update products, prices, WhatsApp and payment details from the Admin page.",
+    "payments": {
+      "upiId": "yourname@upi",
+      "upiName": "Koncrete Art Kitchen",
+      "bank": {
+        "accountName": "",
+        "accountNumber": "",
+        "ifsc": "",
+        "bankName": ""
+      },
+      "razorpayLink": ""
+    }
   },
   "products": [
     {

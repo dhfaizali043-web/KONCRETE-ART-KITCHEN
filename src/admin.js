@@ -21,6 +21,13 @@ const els = {
   whatsapp: $('whatsapp'),
   currencySymbol: $('currencySymbol'),
   currencyCode: $('currencyCode'),
+  payUpiId: $('payUpiId'),
+  payUpiName: $('payUpiName'),
+  payRazorpay: $('payRazorpay'),
+  bankName: $('bankName'),
+  bankBankName: $('bankBankName'),
+  bankAccount: $('bankAccount'),
+  bankIfsc: $('bankIfsc'),
   products: $('products'),
   status: $('status'),
   loadBtn: $('loadBtn'),
@@ -103,6 +110,15 @@ function fillForm(data) {
   els.whatsapp.value = store.whatsapp || ''
   els.currencySymbol.value = store.currencySymbol || '₹'
   els.currencyCode.value = store.currencyCode || 'INR'
+  const pay = store.payments || {}
+  const bank = pay.bank || {}
+  els.payUpiId.value = pay.upiId || ''
+  els.payUpiName.value = pay.upiName || ''
+  els.payRazorpay.value = pay.razorpayLink || ''
+  els.bankName.value = bank.accountName || ''
+  els.bankBankName.value = bank.bankName || ''
+  els.bankAccount.value = bank.accountNumber || ''
+  els.bankIfsc.value = bank.ifsc || ''
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
 }
@@ -147,7 +163,18 @@ function collect() {
     store: {
       whatsapp: els.whatsapp.value.trim(),
       currencySymbol: els.currencySymbol.value.trim() || '₹',
-      currencyCode: els.currencyCode.value.trim() || 'INR'
+      currencyCode: els.currencyCode.value.trim() || 'INR',
+      payments: {
+        upiId: els.payUpiId.value.trim(),
+        upiName: els.payUpiName.value.trim(),
+        razorpayLink: els.payRazorpay.value.trim(),
+        bank: {
+          accountName: els.bankName.value.trim(),
+          bankName: els.bankBankName.value.trim(),
+          accountNumber: els.bankAccount.value.trim(),
+          ifsc: els.bankIfsc.value.trim()
+        }
+      }
     },
     products
   }

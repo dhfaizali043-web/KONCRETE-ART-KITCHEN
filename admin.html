@@ -83,7 +83,45 @@
       </section>
 
       <section class="admin-card">
-        <h2>3. Products</h2>
+        <h2>3. Payments</h2>
+        <p class="admin-help">
+          These details are shown to customers at checkout. Fill in whichever methods you
+          accept; leave the rest blank to hide them.
+        </p>
+        <div class="admin-grid">
+          <label>
+            UPI ID
+            <input type="text" id="payUpiId" placeholder="yourname@upi" />
+          </label>
+          <label>
+            UPI payee name
+            <input type="text" id="payUpiName" placeholder="Koncrete Art Kitchen" />
+          </label>
+          <label class="admin-wide">
+            Razorpay payment link (for card / netbanking)
+            <input type="url" id="payRazorpay" placeholder="https://rzp.io/l/..." />
+          </label>
+          <label>
+            Bank account name
+            <input type="text" id="bankName" placeholder="Account holder name" />
+          </label>
+          <label>
+            Bank name
+            <input type="text" id="bankBankName" placeholder="Bank name" />
+          </label>
+          <label>
+            Account number
+            <input type="text" id="bankAccount" placeholder="Account number" />
+          </label>
+          <label>
+            IFSC code
+            <input type="text" id="bankIfsc" placeholder="IFSC0001234" />
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2>4. Products</h2>
         <div id="products"></div>
         <button class="btn btn-ghost" id="addBtn">+ Add product</button>
       </section>

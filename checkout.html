@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout — Koncrete Art Kitchen</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#161412" />
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-header" id="header">
+      <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
+        <img src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      </a>
+      <nav class="nav" id="nav" aria-label="Primary">
+        <a href="./shop.html">Shop</a>
+        <a href="./index.html#commission">Commission</a>
+        <a href="./index.html#atelier">Atelier</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main class="checkout-wrap">
+      <div class="section-index">Checkout</div>
+      <h1>Complete your order</h1>
+
+      <div class="checkout-grid">
+        <section class="checkout-main">
+          <div class="checkout-card">
+            <h2>1. Your details</h2>
+            <div class="admin-grid">
+              <label>Name <input type="text" id="custName" placeholder="Full name" /></label>
+              <label>Phone <input type="tel" id="custPhone" placeholder="Phone number" /></label>
+              <label class="admin-wide">Delivery address
+                <textarea id="custAddress" rows="2" placeholder="House, street, city, PIN"></textarea>
+              </label>
+              <label class="admin-wide">Note (optional)
+                <input type="text" id="custNote" placeholder="Anything we should know" />
+              </label>
+            </div>
+          </div>
+
+          <div class="checkout-card">
+            <h2>2. Payment method</h2>
+            <div class="pay-tabs" id="payTabs">
+              <button class="pay-tab active" data-pay="upi">UPI</button>
+              <button class="pay-tab" data-pay="bank">Bank transfer</button>
+              <button class="pay-tab" data-pay="card">Card / Netbanking</button>
+            </div>
+
+            <div class="pay-panel" data-panel="upi">
+              <p class="admin-help">
+                Pay to the UPI ID below using GPay, PhonePe, Paytm, BHIM or any UPI app,
+                then confirm your order on WhatsApp.
+              </p>
+              <div class="upi-box">
+                <div class="upi-info">
+                  <span>UPI ID</span>
+                  <strong id="upiId">—</strong>
+                  <button class="btn btn-ghost" id="copyUpi" type="button">Copy UPI ID</button>
+                  <a class="btn btn-solid" id="upiPayBtn" href="#">Open UPI app</a>
+                </div>
+                <div class="upi-qr">
+                  <img id="upiQr" alt="UPI payment QR code" />
+                  <span>Scan to pay <b id="upiAmount">₹0</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pay-panel" data-panel="bank" hidden>
+              <p class="admin-help">Transfer the total to the account below, then confirm on WhatsApp.</p>
+              <dl class="bank-dl" id="bankDetails"></dl>
+            </div>
+
+            <div class="pay-panel" data-panel="card" hidden>
+              <p class="admin-help">
+                Pay securely by credit card, debit card, or netbanking through Razorpay.
+              </p>
+              <a class="btn btn-solid" id="razorpayBtn" href="#" target="_blank" rel="noopener">
+                Pay by card / netbanking
+              </a>
+              <p class="pay-muted" id="cardHint"></p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="checkout-summary">
+          <h2>Order summary</h2>
+          <ul class="summary-items" id="summaryItems"></ul>
+          <div class="summary-total">
+            <span>Total</span>
+            <strong id="summaryTotal">₹0</strong>
+          </div>
+          <button class="btn btn-solid" id="confirmBtn">Confirm order on WhatsApp</button>
+          <p class="pay-muted">
+            Your order and chosen payment method are sent to us on WhatsApp for confirmation.
+          </p>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      <div class="footer-row">
+        <p>Koncrete Art Kitchen · Est. 2024</p>
+        <p>Design-led studio · Made in-house</p>
+        <p><a href="./shop.html">Shop</a> · <a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/checkout.js"></script>
+  </body>
+</html>

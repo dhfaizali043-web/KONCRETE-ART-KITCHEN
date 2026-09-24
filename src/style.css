@@ -1183,3 +1183,237 @@ h2 {
   }
 }
 
+/* ---------- Checkout ---------- */
+.checkout-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3rem 2.4rem 5rem;
+}
+
+.checkout-wrap h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 2rem;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.checkout-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.checkout-card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.pay-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.pay-tab {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+.pay-tab.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.pay-panel .btn {
+  margin-top: 0.6rem;
+}
+
+.upi-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.4rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.upi-info {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: start;
+}
+
+.upi-info > span {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.upi-info strong {
+  font-family: Cinzel, serif;
+  font-size: 1.15rem;
+}
+
+.upi-qr {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.upi-qr img {
+  width: 180px;
+  height: 180px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 0.5rem;
+}
+
+.upi-qr span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.bank-dl {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+}
+
+.bank-dl > div {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.8rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.bank-dl > div:last-child {
+  border-bottom: 0;
+}
+
+.bank-dl dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.bank-dl dd {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.pay-muted {
+  color: var(--stone);
+  font-size: 0.85rem;
+}
+
+.checkout-summary {
+  border: 1px solid var(--line);
+  background: var(--char);
+  color: var(--paper);
+  padding: 1.5rem;
+  position: sticky;
+  top: 1.4rem;
+}
+
+.checkout-summary h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.summary-items {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.summary-line {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(241, 235, 224, 0.14);
+}
+
+.summary-line img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+
+.summary-line strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.summary-line span {
+  font-size: 0.8rem;
+  color: rgba(241, 235, 224, 0.65);
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgba(241, 235, 224, 0.2);
+  margin-bottom: 1rem;
+}
+
+.summary-total strong {
+  font-family: Cinzel, serif;
+  font-size: 1.5rem;
+}
+
+.checkout-summary .btn {
+  width: 100%;
+}
+
+.checkout-summary .pay-muted {
+  color: rgba(241, 235, 224, 0.6);
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 900px) {
+  .checkout-wrap {
+    padding: 2rem 1.4rem 4rem;
+  }
+
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-summary {
+    position: static;
+  }
+
+  .upi-box {
+    grid-template-columns: 1fr;
+  }
+
+  .bank-dl > div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+

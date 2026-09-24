@@ -10,7 +10,6 @@ const overlay = document.getElementById('cartOverlay')
 const cartItemsEl = document.getElementById('cartItems')
 const cartTotalEl = document.getElementById('cartTotal')
 const cartCountEl = document.getElementById('cartCount')
-const checkoutBtn = document.getElementById('checkoutBtn')
 const openCartBtn = document.getElementById('openCart')
 const closeCartBtn = document.getElementById('closeCart')
 const cartEmptyEl = document.getElementById('cartEmpty')
@@ -171,35 +170,6 @@ function closeCart() {
   overlay?.classList.remove('show')
 }
 
-function checkout() {
-  if (!cart.length) return
-  const number = String(catalog.store.whatsapp || '').replace(/[^\d]/g, '')
-  const lines = cart.map((item) => {
-    const p = findProduct(item.id)
-    const name = p ? p.name : item.id
-    const price = p ? Number(p.price) : 0
-    return `• ${name} × ${item.qty}${price > 0 ? ' — ' + money(price * item.qty) : ''}`
-  })
-  const total = cart.reduce((sum, item) => {
-    const p = findProduct(item.id)
-    return sum + (p ? Number(p.price) * item.qty : 0)
-  }, 0)
-  const text = [
-    'New order — Koncrete Art Kitchen',
-    '',
-    ...lines,
-    '',
-    `Total: ${money(total)}`,
-    '',
-    'Please confirm availability and delivery.'
-  ].join('\n')
-  if (!number || number === '910000000000') {
-    showToast('Set your WhatsApp number in Admin first')
-    return
-  }
-  window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
-}
-
 function showToast(message) {
   if (!toastEl) return
   toastEl.textContent = message
@@ -237,7 +207,6 @@ function bindEvents() {
   openCartBtn?.addEventListener('click', openCart)
   closeCartBtn?.addEventListener('click', closeCart)
   overlay?.addEventListener('click', closeCart)
-  checkoutBtn?.addEventListener('click', checkout)
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeCart()
   })

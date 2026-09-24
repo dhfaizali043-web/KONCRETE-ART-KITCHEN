@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         main: entry('./index.html'),
         shop: entry('./shop.html'),
+        checkout: entry('./checkout.html'),
         admin: entry('./admin.html')
       }
     }
