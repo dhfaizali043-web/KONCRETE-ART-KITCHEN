@@ -4,6 +4,9 @@ const CATALOG_URL = './data/catalog.json'
 let catalog = { store: {}, products: [] }
 let opened = false
 let greeted = false
+let apiUrl = ''
+let history = []
+let busy = false
 
 const STOP = new Set([
   'a', 'an', 'the', 'is', 'are', 'am', 'do', 'does', 'did', 'you', 'your', 'we', 'i',
@@ -175,7 +178,79 @@ function botSay(text, options = {}) {
 function handleUser(text) {
   addBubble('user', escapeHtml(text))
   setQuickReplies([])
-  setTimeout(() => respond(text), 180)
+  if (apiUrl) {
+    askAi(text)
+  } else {
+    setTimeout(() => respond(text), 180)
+  }
+}
+
+function setBusy(value) {
+  busy = value
+  if (inputEl) inputEl.disabled = value
+  const send = panelEl ? panelEl.querySelector('.chat-input button') : null
+  if (send) send.disabled = value
+}
+
+function systemPrompt() {
+  const store = catalog.store || {}
+  const chat = store.chat || {}
+  const pay = store.payments || {}
+  const products = catalog.products || []
+
+  const productLines = products.map(
+    (p) => `- ${p.name}: ${Number(p.price) > 0 ? money(p.price) : 'price on request'}`
+  )
+
+  const methods = []
+  if (pay.upiId && pay.upiId !== 'yourname@upi') methods.push('UPI')
+  if (pay.razorpayLink) methods.push('card and netbanking via Razorpay')
+  if (pay.bank && (pay.bank.accountNumber || pay.bank.ifsc)) methods.push('bank transfer')
+
+  return [
+    'You are the customer support assistant for Koncrete Art Kitchen, a design-led studio (Est. 2024) that makes custom LED-backlit name plates.',
+    'Reply in the same language the customer uses (Hindi, Roman Hindi/Urdu, or English). Keep replies short, warm and helpful (2 to 4 sentences).',
+    'Never invent prices, delivery times, warranties, discounts, or product materials. If you are unsure, ask the customer to contact the studio on WhatsApp.',
+    'Do not mention product materials or technical specifications.',
+    'To order: choose a product on the shop page, add to cart, open checkout, choose a payment method, then confirm the order on WhatsApp.',
+    'Shop page: ./shop.html. Checkout page: ./checkout.html.',
+    chat.greeting ? 'Brand greeting style: ' + chat.greeting : '',
+    products.length ? 'Products and prices:\n' + productLines.join('\n') : '',
+    methods.length
+      ? 'Accepted payment methods: ' + methods.join(', ') + '. Direct customers to the checkout page for details.'
+      : 'Do not state payment methods; direct customers to the checkout page.'
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+async function askAi(text) {
+  if (busy) return
+  setBusy(true)
+  history.push({ role: 'user', content: text })
+  const typing = addBubble('bot typing', '<span></span><span></span><span></span>')
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 25000)
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt(), messages: history.slice(-12) }),
+      signal: controller.signal
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !data.reply) throw new Error(data.error || `HTTP ${res.status}`)
+    typing.remove()
+    history.push({ role: 'assistant', content: data.reply })
+    addBubble('bot', escapeHtml(data.reply).replace(/\n/g, '<br />'))
+    scrollLog()
+  } catch {
+    typing.remove()
+    respond(text)
+  } finally {
+    clearTimeout(timer)
+    setBusy(false)
+  }
 }
 
 function respond(text) {
@@ -384,6 +459,11 @@ async function init() {
   if (nameEl && catalog.store.chat && catalog.store.chat.name) {
     nameEl.textContent = catalog.store.chat.name
   }
+  apiUrl = String((catalog.store.chat && catalog.store.chat.apiUrl) || '')
+    .trim()
+    .replace(/\/+$/, '')
+  const header = panelEl ? panelEl.querySelector('.chat-head span') : null
+  if (header) header.textContent = apiUrl ? 'AI assistant' : 'Usually replies instantly'
 }
 
 init()

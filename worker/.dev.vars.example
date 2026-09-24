@@ -1,0 +1,9 @@
+# Local development only. Copy this file to `.dev.vars` and fill in your own key.
+# Never commit `.dev.vars`.
+
+USER_LLM_PROVIDER=gemini
+USER_LLM_MODEL=gemini-2.0-flash
+USER_LLM_API_KEY=your-api-key-here
+
+# Optional: override the API base URL (OpenAI-compatible providers only)
+# USER_LLM_BASE_URL=https://api.deepseek.com/v1

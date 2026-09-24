@@ -1,0 +1,8 @@
+name = "kak-ai-proxy"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+vars = { ALLOWED_ORIGIN = "https://dhfaizali043-web.github.io", USER_LLM_PROVIDER = "gemini", USER_LLM_MODEL = "gemini-2.0-flash" }
+
+# Secrets (do NOT put these in this file). Set them with:
+#   wrangler secret put USER_LLM_API_KEY

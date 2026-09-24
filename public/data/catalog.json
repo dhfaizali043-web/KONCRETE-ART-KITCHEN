@@ -17,6 +17,7 @@
     },
     "chat": {
       "name": "Studio Assistant",
+      "apiUrl": "",
       "greeting": "Namaste! Koncrete Art Kitchen me aapka swagat hai. Main aapki kaise madad kar sakta hoon?",
       "quickReplies": ["Products", "Price", "How to order", "Payment options", "Delivery"],
       "knowledge": [

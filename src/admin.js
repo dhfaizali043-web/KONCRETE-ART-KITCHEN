@@ -29,6 +29,7 @@ const els = {
   bankAccount: $('bankAccount'),
   bankIfsc: $('bankIfsc'),
   chatName: $('chatName'),
+  chatApiUrl: $('chatApiUrl'),
   chatGreeting: $('chatGreeting'),
   chatQuick: $('chatQuick'),
   chatKnowledge: $('chatKnowledge'),
@@ -125,6 +126,7 @@ function fillForm(data) {
   els.bankIfsc.value = bank.ifsc || ''
   const chat = store.chat || {}
   els.chatName.value = chat.name || ''
+  els.chatApiUrl.value = chat.apiUrl || ''
   els.chatGreeting.value = chat.greeting || ''
   els.chatQuick.value = (chat.quickReplies || []).join('\n')
   els.chatKnowledge.value = (chat.knowledge || [])
@@ -188,6 +190,7 @@ function collect() {
       },
       chat: {
         name: els.chatName.value.trim() || 'Studio Assistant',
+        apiUrl: els.chatApiUrl.value.trim(),
         greeting: els.chatGreeting.value.trim(),
         quickReplies: lines(els.chatQuick.value),
         knowledge: lines(els.chatKnowledge.value)
