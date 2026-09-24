@@ -81,4 +81,9 @@ the built-in local assistant automatically.
 - Never put the API key in the website, `catalog.json`, or any committed file.
 - `ALLOWED_ORIGIN` in `wrangler.toml` restricts which site may call the Worker.
   Update it if your website domain changes.
-- Requests are limited to the last 12 messages, 4000 characters each.
+- Requests are limited to the last 12 messages, 4000 characters each, and 40 KB
+  per request.
+- A best-effort rate limit of 20 requests per minute per IP protects against
+  accidental runaway costs. For stronger limits, enable Cloudflare Rate Limiting
+  rules on the Worker route.
+- Set a spending limit on your AI provider account as an extra safety net.

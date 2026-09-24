@@ -20,6 +20,15 @@ export default {
       return json({ error: 'Method not allowed' }, 405, cors)
     }
 
+    const length = Number(request.headers.get('Content-Length') || 0)
+    if (length > 40000) {
+      return json({ error: 'Request too large' }, 413, cors)
+    }
+
+    if (isRateLimited(request)) {
+      return json({ error: 'Too many requests. Please wait a moment.' }, 429, cors)
+    }
+
     let body
     try {
       body = await request.json()
@@ -88,6 +97,27 @@ function sanitizeMessages(messages) {
       role: message.role,
       content: message.content.slice(0, 4000)
     }))
+}
+
+const rateBuckets = new Map()
+const RATE_WINDOW_MS = 60 * 1000
+const RATE_MAX = 20
+
+function isRateLimited(request) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
+  const now = Date.now()
+  const bucket = rateBuckets.get(ip)
+  if (!bucket || now - bucket.start > RATE_WINDOW_MS) {
+    rateBuckets.set(ip, { start: now, count: 1 })
+    return false
+  }
+  bucket.count += 1
+  if (rateBuckets.size > 5000) {
+    for (const [key, value] of rateBuckets) {
+      if (now - value.start > RATE_WINDOW_MS) rateBuckets.delete(key)
+    }
+  }
+  return bucket.count > RATE_MAX
 }
 
 function providerOf(env) {
