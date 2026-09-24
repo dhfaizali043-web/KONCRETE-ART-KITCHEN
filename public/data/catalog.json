@@ -36,6 +36,14 @@
         {
           "q": "Do you have a physical store?",
           "a": "Hum ek design studio hain aur online orders lete hain. Aap WhatsApp par baat kar sakte hain ya website se order kar sakte hain."
+        },
+        {
+          "q": "What is your return and refund policy?",
+          "a": "Kharab, defective ya galat item milne par 48 ghante ke andar photos ke saath WhatsApp par batayein — hum repair, replacement ya refund kar dete hain. Made-to-order aur personalised pieces change of mind ke liye return nahi hote. Poori policy Returns page par hai."
+        },
+        {
+          "q": "Can I cancel my order?",
+          "a": "Ji haan, production shuru hone se pehle order free me cancel ho sakta hai. Ek baar production shuru hone ke baad, khaas kar personalised pieces, cancel karna mushkil ho jata hai. Jaldi WhatsApp par bata dein."
         }
       ]
     }

@@ -459,8 +459,9 @@ const answers = {
   },
   warranty() {
     return {
-      text: 'Har piece shipment se pehle hum khud check karte hain. Agar koi damage ya issue ho to delivery ke turant baad WhatsApp par batayein, hum theek karenge. Zyada details ke liye WhatsApp par poochein.',
-      cta: hasContact() ? { label: 'WhatsApp par poochein', href: whatsappHref('Mujhe warranty/return ke baare me jaanna hai'), external: true } : null
+      text: 'Har piece shipment se pehle hum khud check karte hain. Agar item damaged, defective ya galat mile to delivery ke 48 ghante ke andar photos ke saath WhatsApp par batayein — hum repair, replacement ya refund kar dete hain. Made-to-order/personalised pieces change of mind ke liye return nahi hote.',
+      cta: { label: 'Return policy dekhein', href: './returns.html' },
+      quick: ['How to order', 'Payment options']
     }
   }
 }

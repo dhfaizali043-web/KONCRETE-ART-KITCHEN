@@ -11,6 +11,7 @@ export default defineConfig({
         main: entry('./index.html'),
         shop: entry('./shop.html'),
         checkout: entry('./checkout.html'),
+        returns: entry('./returns.html'),
         admin: entry('./admin.html')
       }
     }
