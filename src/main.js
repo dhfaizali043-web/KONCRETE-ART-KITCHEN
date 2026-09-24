@@ -47,13 +47,11 @@ form?.addEventListener('submit', (event) => {
   const place = data.get('place')
   const name = data.get('name')
   const email = data.get('email')
-  const finish = data.get('finish')
   const message = data.get('message') || ''
   const body = [
     `Place: ${place}`,
     `Name: ${name}`,
     `Email: ${email}`,
-    `Finish: ${finish}`,
     '',
     message
   ].join('\n')
