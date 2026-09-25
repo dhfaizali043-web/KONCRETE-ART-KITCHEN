@@ -13,6 +13,7 @@ export default defineConfig({
         category: entry('./category.html'),
         product: entry('./product.html'),
         checkout: entry('./checkout.html'),
+        contact: entry('./contact.html'),
         returns: entry('./returns.html'),
         shipping: entry('./shipping.html'),
         privacy: entry('./privacy.html'),
