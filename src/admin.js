@@ -404,6 +404,7 @@ function addProduct(product) {
   const el = document.createElement('div')
   el.className = 'admin-product'
   const bullets = Array.isArray(product.bullets) ? product.bullets : []
+  const custom = product.custom || {}
   const images = Array.isArray(product.images) && product.images.length
     ? product.images.slice()
     : product.image
@@ -443,6 +444,31 @@ function addProduct(product) {
       <label class="admin-check"><input data-field="available" type="checkbox" ${
         product.available === false ? '' : 'checked'
       } /> Available</label>
+    </div>
+    <div class="admin-custom">
+      <div class="admin-images-head">
+        <span>Customisation — let the customer type their own text</span>
+      </div>
+      <div class="admin-grid">
+        <label class="admin-check"><input data-field="custom-enabled" type="checkbox" ${
+          custom.enabled ? 'checked' : ''
+        } /> Allow customisation on this product</label>
+        <label>Field label <input data-field="custom-label" value="${escapeAttr(
+          custom.label
+        )}" placeholder="Name / text to be made" /></label>
+        <label>Placeholder <input data-field="custom-placeholder" value="${escapeAttr(
+          custom.placeholder
+        )}" placeholder="Type the name or text" /></label>
+        <label>Max length <input data-field="custom-max" type="number" min="1" max="200" value="${escapeAttr(
+          custom.maxLength ?? 60
+        )}" /></label>
+        <label>Help note (optional) <input data-field="custom-note" value="${escapeAttr(
+          custom.note
+        )}" placeholder="We will contact you to confirm the design" /></label>
+        <label class="admin-check"><input data-field="custom-required" type="checkbox" ${
+          custom.required ? 'checked' : ''
+        } /> Required before adding to cart</label>
+      </div>
     </div>`
   els.products.appendChild(el)
   const list = el.querySelector('[data-image-list]')
@@ -851,6 +877,14 @@ function collect() {
       images,
       image: images[0] || '',
       available: get('available').checked,
+      custom: {
+        enabled: get('custom-enabled') ? get('custom-enabled').checked : false,
+        label: get('custom-label') ? get('custom-label').value.trim() : '',
+        placeholder: get('custom-placeholder') ? get('custom-placeholder').value.trim() : '',
+        note: get('custom-note') ? get('custom-note').value.trim() : '',
+        maxLength: Number(get('custom-max') ? get('custom-max').value : 0) || 60,
+        required: get('custom-required') ? get('custom-required').checked : false
+      },
       reviews: collectReviews(el)
     }
   })

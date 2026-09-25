@@ -173,6 +173,11 @@ function renderSummary() {
           <img src="${image}" alt="${escapeHtml(name)}" />
           <div>
             <strong>${escapeHtml(name)}</strong>
+            ${
+              item.custom
+                ? `<em class="summary-custom">Customisation: ${escapeHtml(item.custom)}</em>`
+                : ''
+            }
             <span>Qty ${item.qty}</span>
           </div>
           <span>${line > 0 ? money(line) : '—'}</span>
@@ -295,7 +300,8 @@ function confirmOrder() {
   const lines = cart.map((item) => {
     const p = findProduct(item.id)
     const label = p ? p.name : item.id
-    return `• ${label} × ${item.qty}`
+    const custom = item.custom ? ` (Customisation: ${item.custom})` : ''
+    return `• ${label} × ${item.qty}${custom}`
   })
   const text = [
     'New order — Koncrete Art Kitchen',
@@ -335,7 +341,8 @@ function buildOrder({ name, phone, address, note }) {
         id: item.id,
         name: p ? p.name : item.id,
         qty: item.qty,
-        price: p ? Number(p.price) : 0
+        price: p ? Number(p.price) : 0,
+        custom: item.custom || ''
       }
     }),
     total: money(grandTotal()),

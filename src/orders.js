@@ -66,7 +66,9 @@ function orderCard(order) {
         ${items
           .map(
             (item) =>
-              `<li><span>${esc(item.name || 'Item')} × ${Number(item.qty) || 1}</span></li>`
+              `<li><span>${esc(item.name || 'Item')} × ${Number(item.qty) || 1}${
+                item.custom ? ` — Customisation: ${esc(item.custom)}` : ''
+              }</span></li>`
           )
           .join('')}
       </ul>

@@ -140,7 +140,12 @@ async function loadOrders() {
 function orderCard(order) {
   const id = esc(order.id)
   const items = (order.items || [])
-    .map((item) => `${esc(item.name)} × ${item.qty || 1}`)
+    .map(
+      (item) =>
+        `${esc(item.name)} × ${item.qty || 1}${
+          item.custom ? `<br><em>Customisation: ${esc(item.custom)}</em>` : ''
+        }`
+    )
     .join('<br>')
   const status = String(order.status || 'new').toLowerCase()
   const options = STATUSES.map(

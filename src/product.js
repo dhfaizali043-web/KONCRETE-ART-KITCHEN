@@ -9,6 +9,17 @@ function byId(id) {
   return document.getElementById(id)
 }
 
+function customValue() {
+  const el = byId('pdCustom')
+  return el ? el.value.trim() : ''
+}
+
+function customValid() {
+  const custom = (current && current.custom) || {}
+  if (!custom.enabled || !custom.required) return true
+  return customValue().length > 0
+}
+
 function setCrumb(product) {
   const crumb = byId('productCrumb')
   if (!crumb) return
@@ -88,6 +99,19 @@ function renderInfo(product) {
         F.categoryName(product.category)
       )}</a>${subLink}</p>`
     : ''
+  const custom = product.custom || {}
+  const customBlock =
+    custom.enabled
+      ? `<div class="pd-custom">
+          <label class="pd-label" for="pdCustom">${F.escapeHtml(
+            custom.label || 'Customisation'
+          )}${custom.required ? ' *' : ''}</label>
+          <input type="text" id="pdCustom" maxlength="${Number(custom.maxLength) || 60}" placeholder="${F.escapeHtml(
+            custom.placeholder || 'Type your text here'
+          )}" />
+          ${custom.note ? `<p class="pd-custom-note">${F.escapeHtml(custom.note)}</p>` : ''}
+        </div>`
+      : ''
 
   return `
     <div class="pd-info">
@@ -100,6 +124,7 @@ function renderInfo(product) {
       ${description}
       ${bulletList}
       ${meta}
+      ${customBlock}
       <div class="pd-qty-row">
         <span class="pd-label">Quantity</span>
         <div class="pd-qty">
@@ -425,13 +450,21 @@ function whatsappBuy() {
     F.toast('Set your WhatsApp number in Admin first')
     return
   }
+  if (!customValid()) {
+    F.toast('Please fill the customisation field first')
+    return
+  }
   const price = Number(current.price) > 0 ? ` — ${F.money(Number(current.price) * qty)}` : ''
+  const custom = customValue()
   const text = [
     'Hi Koncrete Art Kitchen, I would like to order:',
     `• ${current.name} × ${qty}${price}`,
+    custom ? `Customisation: ${custom}` : '',
     '',
     `Product: ${location.href}`
-  ].join('\n')
+  ]
+    .filter(Boolean)
+    .join('\n')
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
 }
 
@@ -455,7 +488,11 @@ function bind(product) {
       return
     }
     if (event.target.closest('#pdAdd')) {
-      F.addToCart(product.id, qty)
+      if (!customValid()) {
+        F.toast('Please fill the customisation field first')
+        return
+      }
+      F.addToCart(product.id, qty, customValue())
     }
     if (event.target.closest('#pdBuy')) {
       whatsappBuy()

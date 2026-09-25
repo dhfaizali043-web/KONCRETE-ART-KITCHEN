@@ -105,19 +105,24 @@ function renderCart() {
         const name = p ? p.name : item.id
         const image = p ? F.primaryImage(p) : ''
         const price = p ? Number(p.price) : 0
+        const key = F.cartKey(item)
+        const custom = item.custom
+          ? `<span class="cart-line-custom">Customisation: ${F.escapeHtml(item.custom)}</span>`
+          : ''
         return `
           <li class="cart-line">
             <img src="${F.escapeHtml(image)}" alt="${F.escapeHtml(name)}" />
             <div class="cart-line-info">
               <strong>${F.escapeHtml(name)}</strong>
+              ${custom}
               <span>${price > 0 ? F.money(price) : 'Price on request'}</span>
               <div class="qty">
-                <button type="button" data-line-dec="${F.escapeHtml(item.id)}" aria-label="Decrease">-</button>
+                <button type="button" data-line-dec="${F.escapeHtml(key)}" aria-label="Decrease">-</button>
                 <span>${item.qty}</span>
-                <button type="button" data-line-inc="${F.escapeHtml(item.id)}" aria-label="Increase">+</button>
+                <button type="button" data-line-inc="${F.escapeHtml(key)}" aria-label="Increase">+</button>
               </div>
             </div>
-            <button type="button" class="cart-remove" data-line-remove="${F.escapeHtml(item.id)}" aria-label="Remove">x</button>
+            <button type="button" class="cart-remove" data-line-remove="${F.escapeHtml(key)}" aria-label="Remove">x</button>
           </li>`
       })
       .join('')
@@ -177,11 +182,9 @@ function bind() {
     const dec = event.target.closest('[data-line-dec]')
     const rem = event.target.closest('[data-line-remove]')
     if (inc) {
-      const item = F.state.cart.find((i) => i.id === inc.dataset.lineInc)
-      if (item) F.setQty(item.id, item.qty + 1)
+      F.changeQty(inc.dataset.lineInc, 1)
     } else if (dec) {
-      const item = F.state.cart.find((i) => i.id === dec.dataset.lineDec)
-      if (item) F.setQty(item.id, item.qty - 1)
+      F.changeQty(dec.dataset.lineDec, -1)
     } else if (rem) {
       F.removeFromCart(rem.dataset.lineRemove)
     }

@@ -5033,3 +5033,72 @@ body.admin-locked {
 .order-reorder {
   font-size: 0.8rem;
 }
+
+/* ---------- product customisation ---------- */
+.pd-custom {
+  margin: 1.2rem 0 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.pd-custom .pd-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(241, 235, 224, 0.66);
+}
+
+.pd-custom input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(241, 235, 224, 0.2);
+  border-radius: 8px;
+  background: rgba(20, 18, 16, 0.5);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.pd-custom input:focus {
+  outline: none;
+  border-color: var(--halo);
+}
+
+.pd-custom-note {
+  font-size: 0.76rem;
+  color: rgba(241, 235, 224, 0.55);
+  margin: 0;
+}
+
+.sf-custom-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--halo);
+  border: 1px solid rgba(232, 196, 138, 0.4);
+  border-radius: 999px;
+  padding: 0.16rem 0.5rem;
+  margin: 0.25rem 0 0.4rem;
+}
+
+.cart-line-custom,
+.summary-custom {
+  display: block;
+  font-size: 0.72rem;
+  font-style: normal;
+  color: var(--halo);
+  margin: 0.15rem 0 0.25rem;
+}
+
+.admin-custom {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.admin-custom .admin-images-head {
+  margin-bottom: 0.5rem;
+}

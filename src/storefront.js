@@ -168,24 +168,42 @@ function persistCart() {
   window.dispatchEvent(new CustomEvent('kak:cart'))
 }
 
-function addToCart(id, qty = 1) {
-  const existing = state.cart.find((item) => item.id === id)
+function addToCart(id, qty = 1, custom = '') {
+  const value = String(custom || '').trim()
+  const key = lineKey(id, value)
+  const existing = state.cart.find((item) => cartKey(item) === key)
   if (existing) existing.qty += qty
-  else state.cart.push({ id, qty })
+  else state.cart.push({ id, qty, custom: value })
   persistCart()
   toast('Added to cart')
 }
 
-function setQty(id, qty) {
-  const item = state.cart.find((i) => i.id === id)
+function cartKey(item) {
+  return lineKey(item.id, item.custom)
+}
+
+function lineKey(id, custom) {
+  return `${id}::${String(custom || '').trim()}`
+}
+
+function changeQty(key, delta) {
+  const item = state.cart.find((i) => cartKey(i) === key)
   if (!item) return
-  item.qty = qty
-  if (item.qty <= 0) state.cart = state.cart.filter((i) => i.id !== id)
+  item.qty += delta
+  if (item.qty <= 0) state.cart = state.cart.filter((i) => cartKey(i) !== key)
   persistCart()
 }
 
-function removeFromCart(id) {
-  state.cart = state.cart.filter((i) => i.id !== id)
+function setQty(key, qty) {
+  const item = state.cart.find((i) => cartKey(i) === key)
+  if (!item) return
+  item.qty = qty
+  if (item.qty <= 0) state.cart = state.cart.filter((i) => cartKey(i) !== key)
+  persistCart()
+}
+
+function removeFromCart(key) {
+  state.cart = state.cart.filter((i) => cartKey(i) !== key)
   persistCart()
 }
 
@@ -283,6 +301,7 @@ function productCard(p, options = {}) {
       </div>
       <div class="sf-body">
         <h3 class="sf-title"><a href="${escapeHtml(productHref(p.id))}">${escapeHtml(p.name)}</a></h3>
+        ${p.custom && p.custom.enabled ? '<span class="sf-custom-tag">Customisable</span>' : ''}
         ${ratingRow}
         <p class="sf-desc">${escapeHtml(p.description || '')}</p>
         ${bulletList}
@@ -489,6 +508,9 @@ window.KAKFront = {
   searchProducts,
   addToCart,
   setQty,
+  changeQty,
+  cartKey,
+  lineKey,
   removeFromCart,
   cartCount,
   cartTotal,
