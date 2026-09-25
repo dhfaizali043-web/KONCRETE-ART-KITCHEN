@@ -21,6 +21,7 @@ const els = {
   whatsapp: $('whatsapp'),
   currencySymbol: $('currencySymbol'),
   currencyCode: $('currencyCode'),
+  orderAlertEmail: $('orderAlertEmail'),
   payUpiId: $('payUpiId'),
   payUpiName: $('payUpiName'),
   payRazorpay: $('payRazorpay'),
@@ -34,6 +35,8 @@ const els = {
   chatQuick: $('chatQuick'),
   chatKnowledge: $('chatKnowledge'),
   authEnabled: $('authEnabled'),
+  authOwners: $('authOwners'),
+  rulesCode: $('rulesCode'),
   fbApiKey: $('fbApiKey'),
   fbAuthDomain: $('fbAuthDomain'),
   fbProjectId: $('fbProjectId'),
@@ -77,7 +80,9 @@ function init() {
     const input = event.target.closest('[data-upload]')
     if (input) handleUpload(input)
   })
+  els.authOwners.addEventListener('input', updateRulesCode)
 
+  updateRulesCode()
   loadRemote()
 }
 
@@ -156,6 +161,9 @@ function fillForm(data) {
   els.fbStorageBucket.value = fb.storageBucket || ''
   els.fbSenderId.value = fb.messagingSenderId || ''
   els.fbAppId.value = fb.appId || ''
+  els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
+  els.authOwners.value = (auth.owners || []).join(', ')
+  updateRulesCode()
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
 }
@@ -338,6 +346,7 @@ function collect() {
       },
       auth: {
         enabled: els.authEnabled.checked,
+        owners: ownersList(),
         config: {
           apiKey: els.fbApiKey.value.trim(),
           authDomain: els.fbAuthDomain.value.trim(),
@@ -346,6 +355,9 @@ function collect() {
           messagingSenderId: els.fbSenderId.value.trim(),
           appId: els.fbAppId.value.trim()
         }
+      },
+      orders: {
+        alertEmail: els.orderAlertEmail.value.trim()
       }
     },
     products
@@ -421,6 +433,38 @@ function lines(value) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function ownersList() {
+  return String(els.authOwners.value || '')
+    .split(',')
+    .map((email) => email.trim())
+    .filter(Boolean)
+}
+
+function updateRulesCode() {
+  if (!els.rulesCode) return
+  const list = ownersList()
+    .map((email) => `'${email.replace(/'/g, "\\'")}'`)
+    .join(', ')
+  els.rulesCode.textContent = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner() {
+      return request.auth != null && request.auth.token.email in [${list}];
+    }
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /orders/{orderId} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow read: if (request.auth != null && resource.data.uid == request.auth.uid)
+        || isOwner();
+      allow update: if isOwner();
+    }
+  }
+}`
 }
 
 function slugify(value) {

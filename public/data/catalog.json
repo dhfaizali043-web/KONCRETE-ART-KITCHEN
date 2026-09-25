@@ -49,6 +49,7 @@
     },
     "auth": {
       "enabled": false,
+      "owners": [],
       "config": {
         "apiKey": "",
         "authDomain": "",
@@ -57,6 +58,9 @@
         "messagingSenderId": "",
         "appId": ""
       }
+    },
+    "orders": {
+      "alertEmail": ""
     }
   },
   "products": [

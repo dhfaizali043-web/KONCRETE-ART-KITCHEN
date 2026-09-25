@@ -298,13 +298,13 @@ function confirmOrder() {
     return
   }
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
-  saveOrderToAccount({ name, phone, address, note })
+  const order = buildOrder({ name, phone, address, note })
+  saveOrderToAccount(order)
+  sendOrderAlert(order)
 }
 
-function saveOrderToAccount({ name, phone, address, note }) {
-  const auth = window.KAKAuth
-  if (!auth || !auth.enabled || !auth.currentUser()) return
-  const order = {
+function buildOrder({ name, phone, address, note }) {
+  return {
     items: cart.map((item) => {
       const p = findProduct(item.id)
       return {
@@ -321,8 +321,45 @@ function saveOrderToAccount({ name, phone, address, note }) {
     address,
     note
   }
+}
+
+function saveOrderToAccount(order) {
+  const auth = window.KAKAuth
+  if (!auth || !auth.enabled || !auth.currentUser()) return
   auth.saveOrder(order).catch(() => {})
-  auth.saveProfile({ name, phone, address }).catch(() => {})
+  auth.saveProfile({ name: order.name, phone: order.phone, address: order.address }).catch(() => {})
+}
+
+function sendOrderAlert(order) {
+  const email = ((catalog.store.orders || {}).alertEmail || '').trim()
+  if (!email) return
+  const lines = (order.items || [])
+    .map((item) => `- ${item.name} x ${item.qty} = ${money(item.price * item.qty)}`)
+    .join('\n')
+  const message = [
+    'New order — Koncrete Art Kitchen',
+    '',
+    lines,
+    '',
+    `Total: ${order.total}`,
+    `Payment: ${order.method}`,
+    '',
+    `Name: ${order.name || '-'}`,
+    `Phone: ${order.phone || '-'}`,
+    `Address: ${order.address || '-'}`,
+    order.note ? `Note: ${order.note}` : ''
+  ]
+    .filter(Boolean)
+    .join('\n')
+  fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      _subject: 'New order — Koncrete Art Kitchen',
+      name: order.name || 'Customer',
+      message
+    })
+  }).catch(() => {})
 }
 
 function showToast(message) {

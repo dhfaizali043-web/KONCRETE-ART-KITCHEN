@@ -79,7 +79,15 @@
             Currency code
             <input type="text" id="currencyCode" placeholder="INR" />
           </label>
+          <label class="admin-wide">
+            Order alert email (new orders are emailed here; leave blank to disable)
+            <input type="email" id="orderAlertEmail" placeholder="orders@yourdomain.com" />
+          </label>
         </div>
+        <p class="admin-help">
+          The first time an order is placed, the alert service sends one confirmation email
+          to this address — click the link in it once to start receiving order alerts.
+        </p>
       </section>
 
       <section class="admin-card">
@@ -179,24 +187,15 @@
           project). Customer data is protected by Firestore security rules — paste these
           under Firestore &rarr; Rules:
         </p>
-        <pre class="admin-code">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{uid} {
-      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == uid;
-    }
-    match /orders/{orderId} {
-      allow create: if request.auth != null
-        &amp;&amp; request.resource.data.uid == request.auth.uid;
-      allow read: if request.auth != null
-        &amp;&amp; resource.data.uid == request.auth.uid;
-    }
-  }
-}</pre>
+        <pre class="admin-code" id="rulesCode"></pre>
         <div class="admin-grid">
           <label class="admin-check">
             <input type="checkbox" id="authEnabled" />
             Enable customer login &amp; order history
+          </label>
+          <label class="admin-wide">
+            Owner email(s) for the orders dashboard (comma separated — sign in with one of these)
+            <input type="text" id="authOwners" placeholder="you@example.com" />
           </label>
           <label>
             apiKey
@@ -225,12 +224,23 @@ service cloud.firestore {
         </div>
       </section>
 
+      <section class="admin-card">
+        <h2>7. Orders</h2>
+        <p class="admin-help">
+          Sign in with an owner email (set in section 6) to see every order and update its
+          status. Customers only ever see their own orders.
+        </p>
+        <div id="adminOrders"></div>
+      </section>
+
       <div class="admin-publish">
         <button class="btn btn-solid" id="saveBtn">Save &amp; publish</button>
         <p class="admin-status" id="status" role="status" aria-live="polite"></p>
       </div>
     </main>
 
+    <script type="module" src="./src/auth.js"></script>
     <script type="module" src="./src/admin.js"></script>
+    <script type="module" src="./src/admin-orders.js"></script>
   </body>
 </html>

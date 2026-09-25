@@ -338,6 +338,20 @@ async function getOrders() {
     .sort((a, b) => timeOf(b.createdAt) - timeOf(a.createdAt))
 }
 
+async function getAllOrders(limitCount = 100) {
+  if (!state.db) return []
+  const { collection, query, orderBy, limit, getDocs } = state.fs
+  const q = query(collection(state.db, 'orders'), orderBy('createdAt', 'desc'), limit(limitCount))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+}
+
+async function updateOrderStatus(id, status) {
+  if (!state.db) return
+  const { doc, updateDoc, serverTimestamp } = state.fs
+  await updateDoc(doc(state.db, 'orders', id), { status, updatedAt: serverTimestamp() })
+}
+
 function timeOf(value) {
   if (!value) return 0
   if (typeof value.toDate === 'function') return value.toDate().getTime()
@@ -368,5 +382,14 @@ window.KAKAuth = {
   saveProfile,
   saveOrder,
   getOrders,
-  open: () => (state.user ? openAccount() : openAuth('signin'))
+  getAllOrders,
+  updateOrderStatus,
+  open: () => (state.user ? openAccount() : openAuth('signin')),
+  openAuth: (tab) => openAuth(tab || 'signin'),
+  signIn: (email, password) => state.authMod.signInWithEmailAndPassword(state.auth, email, password),
+  signInWithGoogle: () => {
+    const provider = new state.authMod.GoogleAuthProvider()
+    return state.authMod.signInWithPopup(state.auth, provider)
+  },
+  signOutUser: () => state.authMod.signOut(state.auth)
 }
