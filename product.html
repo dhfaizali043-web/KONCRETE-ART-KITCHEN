@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product — Koncrete Art Kitchen</title>
+    <meta
+      name="description"
+      content="View a Koncrete Art Kitchen piece — details, images and options. Add to cart and order on WhatsApp."
+    />
+    <meta name="theme-color" content="#161412" />
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body class="has-bottom-nav">
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="announce-bar" id="announceBar">
+      <span id="announceText">Made to order — crafted in our studio</span>
+    </div>
+
+    <header class="site-header is-light" id="header">
+      <div class="header-inner">
+        <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
+          <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
+        </a>
+        <nav class="nav" id="nav" aria-label="Primary">
+          <a href="./index.html#atelier">Atelier</a>
+          <a href="./index.html#work">Work</a>
+          <a href="./shop.html">Shop</a>
+          <a href="./index.html#commission">Commission</a>
+        </nav>
+        <div class="header-actions">
+          <button class="icon-btn" type="button" data-search-open aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.9 9.5l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+            <span class="icon-label">Search</span>
+          </button>
+          <button class="icon-btn" type="button" data-wish-open aria-label="Wishlist">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7l-1.4-1.3C5.4 14.7 2 11.6 2 7.9 2 5 4.2 2.8 7.1 2.8c1.6 0 3.2.8 4.2 2 1-1.2 2.6-2 4.2-2C18.4 2.8 20.6 5 20.6 7.9c0 3.7-3.4 6.8-8.6 11.5z"/></svg>
+            <span class="icon-label">Wishlist</span>
+            <span class="count" data-wish-count hidden>0</span>
+          </button>
+          <button class="icon-btn" type="button" id="openCart" aria-label="Cart">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h-2v2h1.2l1.7 8.3A2 2 0 009.9 16H18v-2H10.3l-.4-2H18a2 2 0 002-1.6L21.3 6H7.6L7 4zm1.5 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm9 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+            <span class="icon-label">Cart</span>
+            <span class="count" data-cart-count hidden>0</span>
+          </button>
+          <button class="icon-btn" type="button" id="accountBtn" aria-label="Account">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a4 4 0 100 8 4 4 0 000-8zm0 2a2 2 0 110 4 2 2 0 010-4zm0 8c-3.9 0-7 2.2-7 5v1h14v-1c0-2.8-3.1-5-7-5z"/></svg>
+            <span class="icon-label">Account</span>
+          </button>
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+      <div class="cat-nav" id="catNav" aria-label="Categories"></div>
+    </header>
+
+    <main>
+      <section class="product-page">
+        <nav class="crumb" id="productCrumb" aria-label="Breadcrumb">
+          <a href="./index.html">Home</a> / <a href="./shop.html">Shop</a> / <span>Product</span>
+        </nav>
+        <div class="product-detail" id="productDetail">
+          <p class="pd-loading">Loading…</p>
+        </div>
+
+        <section class="pd-related" id="pdRelatedWrap" hidden>
+          <h2>You may also like</h2>
+          <div class="product-grid" id="pdRelated"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-cols">
+        <div class="footer-brand">
+          <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+          <p>Design-led studio making custom name plates and wall pieces — designed and made in-house since 2024.</p>
+        </div>
+        <div>
+          <h3>Shop</h3>
+          <a href="./shop.html">All products</a>
+          <a href="./category.html?cat=name-plate">Name plates</a>
+          <a href="./category.html?cat=wall-decor">Wall decor</a>
+          <a href="./category.html?cat=custom">Custom &amp; family</a>
+        </div>
+        <div>
+          <h3>Support</h3>
+          <a href="./shipping.html">Shipping</a>
+          <a href="./returns.html">Returns &amp; refunds</a>
+          <a href="./privacy.html">Privacy</a>
+          <a href="./terms.html">Terms</a>
+        </div>
+        <div>
+          <h3>Studio</h3>
+          <a href="./index.html#atelier">About</a>
+          <a href="./index.html#process">Process</a>
+          <a href="./index.html#commission">Commission</a>
+          <a href="./admin.html">Admin</a>
+        </div>
+      </div>
+      <div class="footer-row">
+        <p>Koncrete Art Kitchen · Est. 2024</p>
+        <p>Design-led studio · Made in-house</p>
+        <p><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Cart">
+      <div class="cart-head">
+        <h2>Your cart</h2>
+        <button class="cart-close" id="closeCart" aria-label="Close cart">Close</button>
+      </div>
+      <p class="cart-empty" id="cartEmpty">Your cart is empty.</p>
+      <ul class="cart-items" id="cartItems"></ul>
+      <div class="cart-foot">
+        <div class="cart-total">
+          <span>Total</span>
+          <strong id="cartTotal">₹0</strong>
+        </div>
+        <a class="btn btn-solid" id="checkoutBtn" href="./checkout.html">Checkout</a>
+      </div>
+    </aside>
+
+    <nav class="bottom-nav" aria-label="Mobile">
+      <a href="./index.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 8h-3v10h-5v-6h-2v6H6V11H3z"/></svg>
+        Home
+      </a>
+      <a href="./shop.html" class="active">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4H5v2h1l1.7 8.3A2 2 0 009.9 16H18v-2H10.3l-.4-2H18a2 2 0 002-1.6L21.3 6H7.6z"/></svg>
+        Shop
+      </a>
+      <button type="button" data-search-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.9 9.5l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+        Search
+      </button>
+      <button type="button" data-wish-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7l-1.4-1.3C5.4 14.7 2 11.6 2 7.9 2 5 4.2 2.8 7.1 2.8c1.6 0 3.2.8 4.2 2 1-1.2 2.6-2 4.2-2C18.4 2.8 20.6 5 20.6 7.9c0 3.7-3.4 6.8-8.6 11.5z"/></svg>
+        Wishlist
+      </button>
+      <button type="button" id="bottomCart">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4H5v2h1l1.7 8.3A2 2 0 009.9 16H18v-2H10.3l-.4-2H18a2 2 0 002-1.6L21.3 6H7.6L7 4zm1.5 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm9 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+        Cart
+      </button>
+    </nav>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/storefront.js"></script>
+    <script type="module" src="./src/auth.js"></script>
+    <script type="module" src="./src/shop.js"></script>
+    <script type="module" src="./src/product.js"></script>
+    <script type="module" src="./src/site-images.js"></script>
+    <script type="module" src="./src/chat.js"></script>
+  </body>
+</html>

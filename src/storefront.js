@@ -89,6 +89,10 @@ function categoryHref(categoryId) {
   return `./category.html?cat=${encodeURIComponent(categoryId)}`
 }
 
+function productHref(productId) {
+  return `./product.html?id=${encodeURIComponent(productId)}`
+}
+
 function renderCatNav() {
   const nav = document.getElementById('catNav')
   if (!nav) return
@@ -262,12 +266,13 @@ function productCard(p, options = {}) {
     <article class="sf-card${out ? ' is-out' : ''}" data-id="${id}">
       <div class="sf-media">
         <img data-main-image src="${escapeHtml(main)}" alt="${escapeHtml(p.name)}" loading="lazy" />
+        <a class="sf-media-link" href="${escapeHtml(productHref(p.id))}" aria-label="${escapeHtml(p.name)}"></a>
         ${badge ? `<span class="sf-badge">${escapeHtml(badge)}</span>` : ''}
         <button type="button" class="sf-wish${isWished(p.id) ? ' active' : ''}" data-wish="${id}" aria-label="Add to wishlist">${ICON_HEART}</button>
         ${thumbs}
       </div>
       <div class="sf-body">
-        <h3 class="sf-title">${escapeHtml(p.name)}</h3>
+        <h3 class="sf-title"><a href="${escapeHtml(productHref(p.id))}">${escapeHtml(p.name)}</a></h3>
         ${ratingRow}
         <p class="sf-desc">${escapeHtml(p.description || '')}</p>
         ${bulletList}
@@ -324,7 +329,7 @@ function openSearch() {
       }
       results.innerHTML = list
         .map(
-          (p) => `<a class="sf-result" href="./shop.html?q=${encodeURIComponent(p.name)}">
+          (p) => `<a class="sf-result" href="${escapeHtml(productHref(p.id))}">
             <img src="${escapeHtml(primaryImage(p))}" alt="" />
             <span><strong>${escapeHtml(p.name)}</strong><em>${escapeHtml(categoryName(p.category))}</em></span>
           </a>`
@@ -359,9 +364,9 @@ function openWishlist() {
     ? items
         .map(
           (p) => `<li class="sf-wish-line">
-            <img src="${escapeHtml(primaryImage(p))}" alt="" />
+            <a href="${escapeHtml(productHref(p.id))}"><img src="${escapeHtml(primaryImage(p))}" alt="" /></a>
             <div>
-              <strong>${escapeHtml(p.name)}</strong>
+              <strong><a href="${escapeHtml(productHref(p.id))}">${escapeHtml(p.name)}</a></strong>
               <span>${Number(p.price) > 0 ? money(p.price) : 'Price on request'}</span>
             </div>
             <button type="button" class="sf-quick" data-add="${escapeHtml(p.id)}" aria-label="Add to cart">${ICON_PLUS}</button>
@@ -467,6 +472,7 @@ window.KAKFront = {
   subcategories,
   subcategoryName,
   categoryHref,
+  productHref,
   renderCatNav,
   starRow,
   searchProducts,
