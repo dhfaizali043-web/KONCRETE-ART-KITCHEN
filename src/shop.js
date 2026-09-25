@@ -5,6 +5,7 @@ const F = window.KAKFront
 const grid = document.getElementById('productGrid')
 const emptyEl = document.getElementById('shopEmpty')
 const chipsEl = document.getElementById('shopChips')
+const subChipsEl = document.getElementById('shopSubChips')
 const searchEl = document.getElementById('shopSearch')
 const drawer = document.getElementById('cartDrawer')
 const overlay = document.getElementById('cartOverlay')
@@ -15,7 +16,7 @@ const openCartBtn = document.getElementById('openCart')
 const bottomCartBtn = document.getElementById('bottomCart')
 const closeCartBtn = document.getElementById('closeCart')
 
-const filter = { cat: 'all', q: '' }
+const filter = { cat: 'all', sub: 'all', q: '' }
 
 function renderChips() {
   if (!chipsEl) return
@@ -29,15 +30,45 @@ function renderChips() {
         )}">${F.escapeHtml(c.name)}</button>`
     )
     .join('')
+  renderSubChips()
+}
+
+function renderSubChips() {
+  if (!subChipsEl) return
+  const subs = filter.cat === 'all' ? [] : F.subcategories(filter.cat)
+  if (!subs.length) {
+    subChipsEl.hidden = true
+    subChipsEl.innerHTML = ''
+    return
+  }
+  const items = [{ id: 'all', name: 'All' }, ...subs]
+  subChipsEl.hidden = false
+  subChipsEl.innerHTML = items
+    .map(
+      (s) =>
+        `<button type="button" class="sf-chip sf-chip-sub${filter.sub === s.id ? ' active' : ''}" data-sub="${F.escapeHtml(
+          s.id
+        )}">${F.escapeHtml(s.name)}</button>`
+    )
+    .join('')
 }
 
 function haystack(p) {
   const bullets = Array.isArray(p.bullets) ? p.bullets : []
-  return [p.name, p.description, F.categoryName(p.category), ...bullets].join(' ').toLowerCase()
+  return [
+    p.name,
+    p.description,
+    F.categoryName(p.category),
+    F.subcategoryName(p.category, p.subcategory),
+    ...bullets
+  ]
+    .join(' ')
+    .toLowerCase()
 }
 
 function matches(p) {
   if (filter.cat !== 'all' && p.category !== filter.cat) return false
+  if (filter.sub !== 'all' && p.subcategory !== filter.sub) return false
   if (filter.q && !haystack(p).includes(filter.q.toLowerCase())) return false
   return true
 }
@@ -52,6 +83,7 @@ function renderProducts() {
 function updateUrl() {
   const params = new URLSearchParams()
   if (filter.cat !== 'all') params.set('cat', filter.cat)
+  if (filter.sub !== 'all') params.set('sub', filter.sub)
   if (filter.q) params.set('q', filter.q)
   const query = params.toString()
   history.replaceState(null, '', query ? `?${query}` : location.pathname)
@@ -117,7 +149,17 @@ function bind() {
     const chip = event.target.closest('[data-cat]')
     if (!chip) return
     filter.cat = chip.dataset.cat
+    filter.sub = 'all'
     renderChips()
+    renderProducts()
+    updateUrl()
+  })
+
+  subChipsEl?.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-sub]')
+    if (!chip) return
+    filter.sub = chip.dataset.sub
+    renderSubChips()
     renderProducts()
     updateUrl()
   })
@@ -163,6 +205,7 @@ function bind() {
 function readParams() {
   const params = new URLSearchParams(location.search)
   filter.cat = params.get('cat') || 'all'
+  filter.sub = params.get('sub') || 'all'
   filter.q = params.get('q') || ''
   if (searchEl && filter.q) searchEl.value = filter.q
 }

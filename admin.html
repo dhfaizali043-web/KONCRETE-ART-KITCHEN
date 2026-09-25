@@ -30,6 +30,7 @@
         <nav class="admin-nav" id="adminNav" aria-label="Admin sections">
           <button type="button" data-go="dashboard">Dashboard</button>
           <button type="button" data-go="products">Shop / Products</button>
+          <button type="button" data-go="categories">Categories</button>
           <button type="button" data-go="home">Homepage content</button>
           <button type="button" data-go="images">Site images</button>
           <button type="button" data-go="orders">Orders</button>
@@ -74,6 +75,18 @@
           <button class="btn btn-ghost" id="addBtn" type="button">+ Add product</button>
         </section>
 
+        <section class="admin-card" data-section="categories" hidden>
+          <h2>Categories &amp; subcategories</h2>
+          <p class="admin-help">
+            Add or edit the categories shown on the home page circles and the shop
+            filters. Each category can have subcategories. Assign a product to a
+            category and subcategory in <strong>Shop / Products</strong>. The ID is a
+            short slug (no spaces) used in links — keep it stable once products use it.
+          </p>
+          <div id="categoryList"></div>
+          <button class="btn btn-ghost" id="addCategoryBtn" type="button">+ Add category</button>
+        </section>
+
         <section class="admin-card" data-section="home" hidden>
           <h2>Homepage content</h2>
           <p class="admin-help">
@@ -86,10 +99,6 @@
             <label class="admin-wide">
               Announcement bar (one message per line)
               <textarea id="homeAnnouncements" rows="3" placeholder="Made to order&#10;Pan-India shipping&#10;Secure payments"></textarea>
-            </label>
-            <label class="admin-wide">
-              Categories (one per line, format: id | Name | image path optional)
-              <textarea id="homeCategories" rows="4" placeholder="name-plate | Name Plates&#10;round | Round Name Plates"></textarea>
             </label>
             <label class="admin-wide">
               "Why shop with us" (one per line: Title | text)

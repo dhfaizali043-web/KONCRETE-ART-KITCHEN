@@ -89,22 +89,63 @@
       {
         "id": "name-plate",
         "name": "Name Plates",
-        "image": ""
+        "image": "",
+        "subcategories": [
+          {
+            "id": "round",
+            "name": "Round"
+          },
+          {
+            "id": "rectangle",
+            "name": "Rectangle"
+          },
+          {
+            "id": "number",
+            "name": "House Number"
+          },
+          {
+            "id": "led",
+            "name": "With LED Halo"
+          }
+        ]
       },
       {
-        "id": "round",
-        "name": "Round Name Plates",
-        "image": ""
-      },
-      {
-        "id": "number",
-        "name": "Number Plates",
-        "image": ""
+        "id": "wall-decor",
+        "name": "Wall Decor",
+        "image": "",
+        "subcategories": [
+          {
+            "id": "relief",
+            "name": "Relief Panels"
+          },
+          {
+            "id": "quotes",
+            "name": "Quote Pieces"
+          },
+          {
+            "id": "abstract",
+            "name": "Abstract Forms"
+          }
+        ]
       },
       {
         "id": "custom",
         "name": "Custom & Family",
-        "image": ""
+        "image": "",
+        "subcategories": [
+          {
+            "id": "family",
+            "name": "Family Name Plates"
+          },
+          {
+            "id": "gifting",
+            "name": "Gifting"
+          },
+          {
+            "id": "kids",
+            "name": "Kids Room"
+          }
+        ]
       }
     ],
     "features": [

@@ -35,7 +35,6 @@ const els = {
   chatQuick: $('chatQuick'),
   chatKnowledge: $('chatKnowledge'),
   homeAnnouncements: $('homeAnnouncements'),
-  homeCategories: $('homeCategories'),
   homeFeatures: $('homeFeatures'),
   homeReviews: $('homeReviews'),
   newsTitle: $('newsTitle'),
@@ -52,6 +51,8 @@ const els = {
   fbSenderId: $('fbSenderId'),
   fbAppId: $('fbAppId'),
   products: $('products'),
+  categoryList: $('categoryList'),
+  addCategoryBtn: $('addCategoryBtn'),
   siteImages: $('siteImages'),
   status: $('status'),
   ghStatus: $('ghStatus'),
@@ -143,10 +144,51 @@ function init() {
     }
   })
   els.products.addEventListener('change', (event) => {
-    const input = event.target.closest('[data-upload]')
-    if (input) handleUpload(input)
+    const upload = event.target.closest('[data-upload]')
+    if (upload) {
+      handleUpload(upload)
+      return
+    }
+    const catSelect = event.target.closest('[data-field="category"]')
+    if (catSelect) populateSubcategorySelect(catSelect.closest('.admin-product'))
   })
   els.authOwners.addEventListener('input', updateRulesCode)
+  els.addCategoryBtn?.addEventListener('click', () => addCategoryRow({}))
+  els.categoryList?.addEventListener('click', (event) => {
+    const addSub = event.target.closest('[data-sub-add]')
+    if (addSub) {
+      const list = addSub.closest('.admin-cat').querySelector('[data-sub-list]')
+      addSubcategoryRow(list, {})
+      return
+    }
+    const removeSub = event.target.closest('[data-sub-remove]')
+    if (removeSub) {
+      removeSub.closest('[data-sub]').remove()
+      return
+    }
+    const removeCat = event.target.closest('[data-cat-remove]')
+    if (removeCat) removeCat.closest('.admin-cat').remove()
+  })
+  els.categoryList?.addEventListener('input', (event) => {
+    const imageInput = event.target.closest('[data-field="cat-image"]')
+    if (imageInput) {
+      const catEl = imageInput.closest('.admin-cat')
+      const value = imageInput.value.trim()
+      setPreviewSrc(catEl.querySelector('[data-cat-img]'), value ? resolveImage(value) : '')
+    }
+    const nameInput = event.target.closest('[data-field="cat-name"]')
+    if (nameInput) {
+      const title = nameInput.closest('.admin-cat').querySelector('[data-cat-title]')
+      if (title) title.textContent = nameInput.value.trim() || 'New category'
+    }
+    if (event.target.closest('[data-field="cat-id"]') || event.target.closest('[data-field="cat-name"]')) {
+      refreshProductCategoryOptions()
+    }
+  })
+  els.categoryList?.addEventListener('change', (event) => {
+    const upload = event.target.closest('[data-cat-upload]')
+    if (upload) handleCategoryImageUpload(upload)
+  })
   els.siteImages?.addEventListener('input', (event) => {
     const input = event.target.closest('[data-img-path]')
     if (!input) return
@@ -269,9 +311,7 @@ function fillForm(data) {
   els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
   els.authOwners.value = (auth.owners || []).join(', ')
   els.homeAnnouncements.value = (store.announcements || []).join('\n')
-  els.homeCategories.value = (store.categories || [])
-    .map((c) => `${c.id || ''} | ${c.name || ''}${c.image ? ' | ' + c.image : ''}`)
-    .join('\n')
+  renderCategoriesAdmin(store.categories || [])
   els.homeFeatures.value = (store.features || [])
     .map((f) => `${f.title || ''} | ${f.text || ''}`)
     .join('\n')
@@ -322,6 +362,7 @@ function addProduct(product) {
       <label>Price <input data-field="price" type="number" min="0" value="${escapeAttr(product.price ?? 0)}" /></label>
       <label>ID (optional) <input data-field="id" value="${escapeAttr(product.id)}" placeholder="auto from name" /></label>
       <label>Category <select data-field="category">${categoryOptions(product.category)}</select></label>
+      <label>Subcategory <select data-field="subcategory">${subcategoryOptions(product.category, product.subcategory)}</select></label>
       <label>Badge (optional) <input data-field="badge" value="${escapeAttr(product.badge)}" placeholder="New / Best seller" /></label>
       <label>Old price (optional) <input data-field="oldPrice" type="number" min="0" value="${escapeAttr(product.oldPrice ?? 0)}" /></label>
       <label>Rating (0-5, optional) <input data-field="rating" type="number" min="0" max="5" step="0.1" value="${escapeAttr(product.rating ?? 0)}" /></label>
@@ -354,6 +395,108 @@ function addImageRow(list, src) {
       <button type="button" class="admin-remove admin-image-remove" data-image-remove>Remove image</button>
     </div>`
   list.appendChild(row)
+}
+
+function renderCategoriesAdmin(categories) {
+  if (!els.categoryList) return
+  els.categoryList.innerHTML = ''
+  const list = Array.isArray(categories) ? categories : []
+  if (!list.length) {
+    addCategoryRow({})
+    return
+  }
+  list.forEach((cat) => addCategoryRow(cat))
+}
+
+function addCategoryRow(category) {
+  const cat = category || {}
+  const subs = Array.isArray(cat.subcategories) ? cat.subcategories : []
+  const el = document.createElement('div')
+  el.className = 'admin-cat'
+  el.innerHTML = `
+    <div class="admin-cat-head">
+      <strong data-cat-title>${escapeHtml(cat.name || 'New category')}</strong>
+      <button type="button" class="admin-remove" data-cat-remove>Remove category</button>
+    </div>
+    <div class="admin-grid">
+      <label>ID (slug) <input data-field="cat-id" value="${escapeAttr(cat.id)}" placeholder="name-plate" /></label>
+      <label>Name <input data-field="cat-name" value="${escapeAttr(cat.name)}" placeholder="Name Plates" /></label>
+      <div class="admin-wide admin-image" data-cat-img>
+        <img class="admin-image-preview" alt="" src="${cat.image ? escapeAttr(resolveImage(cat.image)) : ''}" ${
+          cat.image ? '' : 'hidden'
+        } />
+        <div class="admin-image-fields">
+          <label>Image path or URL (optional) <input data-field="cat-image" value="${escapeAttr(cat.image)}" placeholder="brand/site/example.jpg" /></label>
+          <label class="admin-upload">Upload image from device
+            <input type="file" accept="image/*" data-cat-upload />
+          </label>
+          <span class="admin-upload-status" data-cat-img-status></span>
+        </div>
+      </div>
+    </div>
+    <div class="admin-sub-block">
+      <div class="admin-sub-head">
+        <span>Subcategories</span>
+        <button type="button" class="admin-remove" data-sub-add>+ Add subcategory</button>
+      </div>
+      <div class="admin-sub-list" data-sub-list></div>
+    </div>`
+  els.categoryList.appendChild(el)
+  const subList = el.querySelector('[data-sub-list]')
+  subs.forEach((sub) => addSubcategoryRow(subList, sub))
+}
+
+function addSubcategoryRow(list, sub) {
+  const item = sub || {}
+  const row = document.createElement('div')
+  row.className = 'admin-sub'
+  row.setAttribute('data-sub', '')
+  row.innerHTML = `
+    <input data-field="sub-id" value="${escapeAttr(item.id)}" placeholder="id (slug)" />
+    <input data-field="sub-name" value="${escapeAttr(item.name)}" placeholder="Subcategory name" />
+    <button type="button" class="admin-remove" data-sub-remove aria-label="Remove subcategory">Remove</button>`
+  list.appendChild(row)
+}
+
+function populateSubcategorySelect(productEl, selected) {
+  const catSelect = productEl.querySelector('[data-field="category"]')
+  const subSelect = productEl.querySelector('[data-field="subcategory"]')
+  if (!catSelect || !subSelect) return
+  const current = selected !== undefined ? selected : subSelect.value
+  subSelect.innerHTML = subcategoryOptions(catSelect.value, current)
+}
+
+function refreshProductCategoryOptions() {
+  if (!els.products) return
+  ;[...els.products.querySelectorAll('.admin-product')].forEach((productEl) => {
+    const catSelect = productEl.querySelector('[data-field="category"]')
+    const subSelect = productEl.querySelector('[data-field="subcategory"]')
+    if (!catSelect) return
+    const catValue = catSelect.value
+    const subValue = subSelect ? subSelect.value : ''
+    catSelect.innerHTML = categoryOptions(catValue)
+    if (subSelect) subSelect.innerHTML = subcategoryOptions(catValue, subValue)
+  })
+}
+
+async function handleCategoryImageUpload(input) {
+  const catEl = input.closest('.admin-cat')
+  const status = catEl.querySelector('[data-cat-img-status]')
+  const imageField = catEl.querySelector('[data-field="cat-image"]')
+  const file = input.files && input.files[0]
+  if (!file) return
+
+  setUploadStatus(status, 'Uploading...', '')
+  try {
+    const path = await uploadImageTo(file, 'public/brand/categories')
+    imageField.value = path
+    setPreviewSrc(catEl.querySelector('[data-cat-img]'), resolveImage(path))
+    setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
+  } catch (error) {
+    setUploadStatus(status, error.message, 'error')
+  } finally {
+    input.value = ''
+  }
 }
 
 function renderSiteImages(images) {
@@ -520,6 +663,7 @@ function collect() {
       rating: Number(get('rating') ? get('rating').value : 0) || 0,
       ratingCount: Number(get('ratingCount') ? get('ratingCount').value : 0) || 0,
       category: get('category') ? get('category').value.trim() : '',
+      subcategory: get('subcategory') ? get('subcategory').value.trim() : '',
       images,
       image: images[0] || '',
       available: get('available').checked
@@ -569,12 +713,7 @@ function collect() {
         alertEmail: els.orderAlertEmail.value.trim()
       },
       announcements: lines(els.homeAnnouncements.value),
-      categories: lines(els.homeCategories.value)
-        .map((line) => {
-          const [id, name, image] = line.split('|').map((part) => (part || '').trim())
-          return { id, name: name || id, image: image || '' }
-        })
-        .filter((cat) => cat.id),
+      categories: collectCategories(),
       features: lines(els.homeFeatures.value)
         .map((line) => {
           const [title, ...rest] = line.split('|')
@@ -715,19 +854,29 @@ function lines(value) {
     .filter(Boolean)
 }
 
-function parseCategories(value) {
-  return lines(value)
-    .map((line) => {
-      const [id, name, image] = line.split('|').map((part) => (part || '').trim())
-      return { id, name: name || id, image: image || '' }
+function collectCategories() {
+  if (!els.categoryList) return []
+  return [...els.categoryList.querySelectorAll('.admin-cat')]
+    .map((el) => {
+      const id = (el.querySelector('[data-field="cat-id"]')?.value || '').trim()
+      const name = (el.querySelector('[data-field="cat-name"]')?.value || '').trim()
+      const image = (el.querySelector('[data-field="cat-image"]')?.value || '').trim()
+      const subcategories = [...el.querySelectorAll('[data-sub]')]
+        .map((row) => {
+          const subId = (row.querySelector('[data-field="sub-id"]')?.value || '').trim()
+          const subName = (row.querySelector('[data-field="sub-name"]')?.value || '').trim()
+          return { id: subId, name: subName || subId }
+        })
+        .filter((sub) => sub.id)
+      return { id, name: name || id, image, subcategories }
     })
     .filter((cat) => cat.id)
 }
 
 function categoryOptions(selected) {
-  const list = parseCategories(els.homeCategories ? els.homeCategories.value : '')
+  const list = collectCategories()
   if (selected && !list.some((cat) => cat.id === selected)) {
-    list.push({ id: selected, name: selected })
+    list.push({ id: selected, name: selected, subcategories: [] })
   }
   const options = ['<option value="">— none —</option>']
   list.forEach((cat) => {
@@ -737,6 +886,23 @@ function categoryOptions(selected) {
       )}</option>`
     )
   })
+  return options.join('')
+}
+
+function subcategoryOptions(categoryId, selected) {
+  const cat = collectCategories().find((c) => c.id === categoryId)
+  const subs = cat ? cat.subcategories : []
+  const options = ['<option value="">— none —</option>']
+  subs.forEach((sub) => {
+    options.push(
+      `<option value="${escapeAttr(sub.id)}"${sub.id === selected ? ' selected' : ''}>${escapeHtml(
+        sub.name
+      )}</option>`
+    )
+  })
+  if (selected && !subs.some((sub) => sub.id === selected)) {
+    options.push(`<option value="${escapeAttr(selected)}" selected>${escapeHtml(selected)}</option>`)
+  }
   return options.join('')
 }
 

@@ -3799,3 +3799,91 @@ body.no-scroll {
 .sf-hero .btn-ghost:hover {
   background: rgba(20, 18, 16, 0.05);
 }
+
+/* ---------- Shop subcategory chips ---------- */
+.sf-subchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.2rem;
+}
+
+.sf-subchips[hidden] {
+  display: none;
+}
+
+.sf-chip-sub {
+  font-size: 0.68rem;
+  padding: 0.38rem 0.8rem;
+  background: transparent;
+  border-style: dashed;
+}
+
+.sf-chip-sub.active {
+  background: var(--rust);
+  border-color: var(--rust);
+  border-style: solid;
+  color: var(--paper);
+}
+
+/* ---------- Admin category editor ---------- */
+.admin-cat {
+  border: 1px dashed var(--line);
+  background: #fff;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-cat-head,
+.admin-sub-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.admin-cat-head strong {
+  font-family: Cinzel, serif;
+  font-size: 1rem;
+}
+
+.admin-sub-block {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+
+.admin-sub-head span {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.admin-sub-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-sub {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-sub input {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 640px) {
+  .admin-sub {
+    grid-template-columns: 1fr;
+  }
+}

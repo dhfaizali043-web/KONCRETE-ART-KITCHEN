@@ -75,6 +75,16 @@ function categoryName(id) {
   return found ? found.name : id
 }
 
+function subcategories(categoryId) {
+  const found = (state.catalog.store.categories || []).find((c) => c.id === categoryId)
+  return found && Array.isArray(found.subcategories) ? found.subcategories : []
+}
+
+function subcategoryName(categoryId, subId) {
+  const found = subcategories(categoryId).find((s) => s.id === subId)
+  return found ? found.name : subId
+}
+
 /* ---------- icons ---------- */
 const ICON_STAR =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>'
@@ -261,7 +271,7 @@ function searchProducts(query) {
   const q = String(query || '').trim().toLowerCase()
   if (!q) return []
   return state.catalog.products.filter((p) => {
-    const hay = [p.name, p.description, categoryName(p.category), ...(p.bullets || [])]
+    const hay = [p.name, p.description, categoryName(p.category), subcategoryName(p.category, p.subcategory), ...(p.bullets || [])]
       .join(' ')
       .toLowerCase()
     return hay.includes(q)
@@ -439,6 +449,8 @@ window.KAKFront = {
   money,
   findProduct,
   categoryName,
+  subcategories,
+  subcategoryName,
   starRow,
   searchProducts,
   addToCart,
