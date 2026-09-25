@@ -14,6 +14,7 @@ export default defineConfig({
         product: entry('./product.html'),
         checkout: entry('./checkout.html'),
         contact: entry('./contact.html'),
+        orders: entry('./orders.html'),
         returns: entry('./returns.html'),
         shipping: entry('./shipping.html'),
         privacy: entry('./privacy.html'),

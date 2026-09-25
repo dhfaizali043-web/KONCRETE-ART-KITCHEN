@@ -3,14 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact — Koncrete Art Kitchen</title>
-    <meta
-      name="description"
-      content="Contact Koncrete Art Kitchen. Visit the studio, message us on WhatsApp, or send a brief for a custom piece."
-    />
+    <title>My orders — Koncrete Art Kitchen</title>
+    <meta name="description" content="View your Koncrete Art Kitchen order history." />
     <meta name="theme-color" content="#161412" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/contact.html" />
+    <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,50 +27,23 @@
         <a href="./shop.html">Shop</a>
         <a href="./index.html#commission">Commission</a>
         <a href="./index.html#atelier">Atelier</a>
-        <a href="./contact.html" aria-current="page">Contact</a>
+        <a href="./contact.html">Contact</a>
       </nav>
       <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
     </header>
 
-    <main class="contact-page">
-      <section class="contact-hero">
-        <div class="section-index">Visit · Write · Call</div>
-        <h1>Contact</h1>
-        <p class="lede">
-          Visit the studio, message us on WhatsApp, or send a brief below. We reply with
-          options and next steps.
-        </p>
+    <main class="orders-page">
+      <section class="orders-hero">
+        <div class="section-index">Account</div>
+        <h1>My orders</h1>
+        <p class="lede">Login karke apne pichle orders aur unka status dekhein.</p>
       </section>
 
-      <section class="contact-wrap">
-        <div class="contact-info" id="contactInfo">
-          <p class="contact-empty">Studio details load ho rahe hain…</p>
-        </div>
-
-        <form class="contact-form" id="contactForm">
-          <h2>Send a message</h2>
-          <label>
-            Your name
-            <input type="text" name="name" required placeholder="Full name" />
-          </label>
-          <label>
-            Phone / WhatsApp (optional)
-            <input type="tel" name="phone" placeholder="+91 ..." />
-          </label>
-          <label>
-            Message
-            <textarea name="message" rows="5" required placeholder="Tell us what you have in mind."></textarea>
-          </label>
-          <button class="btn btn-solid" type="submit">Send on WhatsApp</button>
-          <p class="form-status" id="contactStatus" hidden></p>
-        </form>
-      </section>
-
-      <section class="contact-map" id="contactMap" hidden>
-        <iframe id="contactMapFrame" title="Studio location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </section>
+      <div class="orders-body" id="ordersBody">
+        <p class="orders-msg">Loading…</p>
+      </div>
     </main>
 
     <footer class="site-footer">
@@ -97,7 +66,6 @@
           <a href="./privacy.html">Privacy</a>
           <a href="./terms.html">Terms</a>
           <a href="./contact.html">Contact</a>
-          <a href="./orders.html">My orders</a>
         </div>
         <div>
           <h3>Studio</h3>
@@ -110,21 +78,33 @@
       <div class="footer-row">
         <p>Koncrete Art Kitchen · Est. 2024</p>
         <p>Design-led studio · Made in-house</p>
-        <p>
-          <a href="./shop.html">Shop</a> · <a href="./returns.html">Returns</a> ·
-          <a href="./shipping.html">Shipping</a> · <a href="./privacy.html">Privacy</a> ·
-          <a href="./terms.html">Terms</a> · <a href="./contact.html">Contact</a> ·
-          <a href="./index.html">Home</a>
-        </p>
+        <p><a href="./index.html">Home</a></p>
       </div>
     </footer>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Cart">
+      <div class="cart-head">
+        <h2>Your cart</h2>
+        <button class="cart-close" id="closeCart" aria-label="Close cart">Close</button>
+      </div>
+      <p class="cart-empty" id="cartEmpty">Your cart is empty.</p>
+      <ul class="cart-items" id="cartItems"></ul>
+      <div class="cart-foot">
+        <div class="cart-total">
+          <span>Total</span>
+          <strong id="cartTotal">₹0</strong>
+        </div>
+        <a class="btn btn-solid" id="checkoutBtn" href="./checkout.html">Checkout</a>
+      </div>
+    </aside>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script type="module" src="./src/storefront.js"></script>
     <script type="module" src="./src/auth.js"></script>
     <script type="module" src="./src/main.js"></script>
-    <script type="module" src="./src/contact.js"></script>
+    <script type="module" src="./src/orders.js"></script>
     <script type="module" src="./src/site-images.js"></script>
     <script type="module" src="./src/chat.js"></script>
   </body>

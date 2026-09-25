@@ -219,6 +219,7 @@ function openAccount() {
     <p class="auth-sub">${escapeHtml(email)}</p>
     <div class="auth-actions">
       <button type="button" class="btn btn-solid" id="authOrdersBtn">My orders</button>
+      <a class="btn btn-ghost" href="./orders.html">Full order history</a>
       <button type="button" class="btn btn-ghost" id="authLogout">Logout</button>
     </div>
     <div class="auth-orders" id="authOrders"></div>`

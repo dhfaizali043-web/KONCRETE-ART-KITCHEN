@@ -4912,3 +4912,124 @@ body.admin-locked {
   font-size: 0.84rem;
   color: rgba(241, 235, 224, 0.72);
 }
+
+/* ---------- order history ---------- */
+.orders-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 6vw 5rem;
+}
+
+.orders-hero {
+  padding: 6rem 0 2rem;
+}
+
+.orders-hero h1 {
+  font-family: var(--serif, 'Cinzel', serif);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  letter-spacing: 0.04em;
+  margin: 0.6rem 0 1rem;
+}
+
+.orders-hero .lede {
+  max-width: 46ch;
+  color: rgba(241, 235, 224, 0.72);
+  line-height: 1.7;
+}
+
+.orders-msg {
+  color: rgba(241, 235, 224, 0.72);
+}
+
+.orders-empty {
+  border: 1px solid rgba(241, 235, 224, 0.14);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(241, 235, 224, 0.03);
+}
+
+.orders-empty p {
+  margin-bottom: 1rem;
+  color: rgba(241, 235, 224, 0.72);
+}
+
+.order-card {
+  border: 1px solid rgba(241, 235, 224, 0.14);
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1rem;
+  background: rgba(241, 235, 224, 0.03);
+}
+
+.order-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.order-ref {
+  font-family: var(--serif, 'Cinzel', serif);
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+
+.order-status {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(241, 235, 224, 0.24);
+  color: rgba(241, 235, 224, 0.8);
+}
+
+.order-status.is-delivered {
+  border-color: #6f9a6a;
+  color: #9ecb96;
+}
+
+.order-status.is-cancelled {
+  border-color: #9a5a4a;
+  color: #d99a8a;
+}
+
+.order-status.is-shipped,
+.order-status.is-in-production {
+  border-color: var(--halo);
+  color: var(--halo);
+}
+
+.order-items {
+  list-style: none;
+  margin: 0 0 0.9rem;
+  padding: 0;
+  border-top: 1px solid rgba(241, 235, 224, 0.1);
+}
+
+.order-items li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(241, 235, 224, 0.08);
+  font-size: 0.88rem;
+  color: rgba(241, 235, 224, 0.82);
+}
+
+.order-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: rgba(241, 235, 224, 0.66);
+  margin-bottom: 0.9rem;
+}
+
+.order-card-foot strong {
+  color: var(--paper);
+}
+
+.order-reorder {
+  font-size: 0.8rem;
+}
