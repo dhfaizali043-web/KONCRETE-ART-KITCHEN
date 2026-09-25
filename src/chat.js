@@ -132,7 +132,7 @@ function open() {
     greeted = true
     const chat = catalog.store.chat || {}
     addWelcome(chat)
-    botSay(chat.greeting || 'Namaste! Kaise madad kar sakta hoon?')
+    botSay(chat.greeting || 'Hello! How can I help you?')
     setQuickReplies(chat.quickReplies)
   }
   inputEl?.focus()
@@ -171,7 +171,7 @@ function addWelcome(chat) {
     <i class="chat-spark s3" aria-hidden="true"></i>
     <img src="${GENIE_FULL}" alt="" />
     <strong>${escapeHtml(chat.name || 'Studio Genie')}</strong>
-    <em>Aapki AI assistant</em>
+    <em>Your AI assistant</em>
   `
   logEl.appendChild(wrap)
   scrollLog()
@@ -304,11 +304,11 @@ function respond(text) {
   }
 
   botSay(
-    'Yeh sawaal mere paas filhal nahi hai. Aap seedha humein WhatsApp par bhej dein, hum jaldi jawab denge.',
+    'I do not have an answer for that yet. Please send it to us on WhatsApp and we will reply shortly.',
     {
       cta: hasContact()
-        ? { label: 'WhatsApp par poochein', href: whatsappHref('Namaste, mujhe ek sawaal hai: ' + text), external: true }
-        : { label: 'Shop dekhein', href: './shop.html' },
+        ? { label: 'Ask on WhatsApp', href: whatsappHref('Hello, I have a question: ' + text), external: true }
+        : { label: 'Go to shop', href: './shop.html' },
       quick: ['Products', 'Price', 'How to order', 'Payment options']
     }
   )
@@ -383,34 +383,34 @@ function productList() {
 const answers = {
   greeting() {
     return {
-      text: 'Namaste! Main aapko products, price, order aur payment ke baare me bata sakta hoon. Aap kya jaanna chahenge?',
+      text: 'Hello! I can help you with products, prices, ordering and payments. What would you like to know?',
       quick: ['Products', 'Price', 'How to order', 'Payment options', 'Delivery']
     }
   },
   products() {
     const list = productList()
-    if (!list.length) return { text: 'Abhi products add nahi hue. Thodi der me dobara dekh lein.', cta: { label: 'Shop kholein', href: './shop.html' } }
+    if (!list.length) return { text: 'No products have been added yet. Please check back soon.', cta: { label: 'Open shop', href: './shop.html' } }
     const names = list.slice(0, 6).map((p) => p.name).join(', ')
     return {
-      text: `Hum custom LED-backlit name plates banate hain. Kuch designs: ${names}${list.length > 6 ? ', aur zyada' : ''}.\nPoora collection shop page par dekh sakte hain.`,
-      cta: { label: 'Shop dekhein', href: './shop.html' },
+      text: `We make custom LED-backlit name plates. A few designs: ${names}${list.length > 6 ? ', and more' : ''}.\nYou can see the full collection on the shop page.`,
+      cta: { label: 'Open shop', href: './shop.html' },
       quick: ['Price', 'How to order', 'Custom design']
     }
   },
   price() {
     const list = productList()
-    if (!list.length) return { text: 'Price list filhal available nahi hai. WhatsApp par poochein.' }
+    if (!list.length) return { text: 'The price list is not available yet. Please ask us on WhatsApp.' }
     const lines = list.slice(0, 5).map((p) => `• ${p.name} — ${Number(p.price) > 0 ? money(p.price) : 'price on request'}`)
     return {
-      text: `Hamari starting prices:\n${lines.join('\n')}\nCustom size aur design ke hisaab se rate thoda alag ho sakta hai.`,
-      cta: { label: 'Shop dekhein', href: './shop.html' },
+      text: `Our starting prices:\n${lines.join('\n')}\nThe rate may vary slightly with custom size and design.`,
+      cta: { label: 'Open shop', href: './shop.html' },
       quick: ['How to order', 'Custom design', 'Payment options']
     }
   },
   order() {
     return {
-      text: 'Order karna aasan hai:\n1. Shop page par product chunein\n2. "Add to cart" karein\n3. Cart se "Checkout" kholein\n4. Details aur payment method chunein\n5. "Confirm order on WhatsApp" par click karein.\nHum WhatsApp par confirm karke aage badhate hain.',
-      cta: { label: 'Shop par jayein', href: './shop.html' },
+      text: 'Ordering is easy:\n1. Choose a product on the shop page\n2. Click "Add to cart"\n3. Open "Checkout" from the cart\n4. Enter your details and choose a payment method\n5. Click "Confirm order on WhatsApp".\nWe confirm on WhatsApp and take it forward.',
+      cta: { label: 'Go to shop', href: './shop.html' },
       quick: ['Payment options', 'Delivery', 'Custom design']
     }
   },
@@ -421,53 +421,53 @@ const answers = {
     if (pay.razorpayLink) methods.push('Card / Netbanking (Razorpay)')
     if (pay.bank && (pay.bank.accountNumber || pay.bank.ifsc)) methods.push('Bank transfer')
     const text = methods.length
-      ? `Hum yeh payment options lete hain: ${methods.join(', ')}. Checkout page par poori details milengi.`
-      : 'Payment options checkout page par milenge. Order karne par hum WhatsApp par details bhej dete hain.'
+      ? `We accept these payment options: ${methods.join(', ')}. Full details are on the checkout page.`
+      : 'Payment options are shown on the checkout page. When you place an order, we send the details on WhatsApp.'
     return {
       text,
-      cta: { label: 'Checkout kholein', href: './checkout.html' },
+      cta: { label: 'Open checkout', href: './checkout.html' },
       quick: ['How to order', 'Delivery']
     }
   },
   delivery() {
     return {
-      text: 'Har piece hum in-house banate hain, isliye thoda time lagta hai. Exact delivery time aur shipping charges WhatsApp par aapke pincode ke hisaab se bata dete hain. Pan-India courier available hai.',
-      cta: hasContact() ? { label: 'WhatsApp par poochein', href: whatsappHref('Delivery time aur shipping charges?'), external: true } : null,
+      text: 'Every piece is made in-house, so it takes a little time. We share the exact delivery time and shipping charges on WhatsApp based on your PIN code. Pan-India courier is available.',
+      cta: hasContact() ? { label: 'Ask on WhatsApp', href: whatsappHref('What is the delivery time and shipping charge?'), external: true } : null,
       quick: ['How to order', 'Custom design']
     }
   },
   custom() {
     return {
-      text: 'Ji haan, hum custom design banate hain — apna naam, size, theme ya layout bhej dein. Hum design develop karke aapko preview dikhate hain, phir banate hain.',
-      cta: hasContact() ? { label: 'Custom design bhejein', href: whatsappHref('Namaste, mujhe custom design chahiye'), external: true } : { label: 'Shop dekhein', href: './shop.html' },
+      text: 'Yes, we make custom designs — send us your name, size, theme or layout. We develop the design, share a preview with you, and then make it.',
+      cta: hasContact() ? { label: 'Send custom design', href: whatsappHref('Hello, I would like a custom design'), external: true } : { label: 'Open shop', href: './shop.html' },
       quick: ['Price', 'How to order']
     }
   },
   contact() {
     if (!hasContact()) {
-      return { text: 'WhatsApp number jald hi add hoga. Filhal aap shop page se order kar sakte hain.', cta: { label: 'Shop dekhein', href: './shop.html' } }
+      return { text: 'The WhatsApp number will be added soon. For now you can order from the shop page.', cta: { label: 'Open shop', href: './shop.html' } }
     }
     return {
-      text: 'Aap humein WhatsApp par message kar sakte hain. Hum jaldi reply karte hain.',
-      cta: { label: 'WhatsApp kholein', href: whatsappHref('Namaste!'), external: true }
+      text: 'You can message us on WhatsApp. We reply quickly.',
+      cta: { label: 'Open WhatsApp', href: whatsappHref('Hello!'), external: true }
     }
   },
   hours() {
     return {
-      text: 'Hum online orders 24x7 lete hain. WhatsApp par message chhod dein, hum working hours me reply karte hain.',
-      cta: hasContact() ? { label: 'WhatsApp par message', href: whatsappHref('Namaste!'), external: true } : null
+      text: 'We accept online orders 24x7. Leave a message on WhatsApp and we will reply during working hours.',
+      cta: hasContact() ? { label: 'Message on WhatsApp', href: whatsappHref('Hello!'), external: true } : null
     }
   },
   about() {
     return {
-      text: 'Koncrete Art Kitchen ek design-led studio hai (Est. 2024). Hum custom LED-backlit name plates design karte hain aur poori banavat — design, 3D printing, finishing, mould making aur casting — apne in-house studio me karte hain.',
+      text: 'Koncrete Art Kitchen is a design-led studio (Est. 2024). We design custom LED-backlit name plates and do all the making — design, 3D printing, finishing, mould making and casting — in our in-house studio.',
       quick: ['Products', 'How to order', 'Price']
     }
   },
   warranty() {
     return {
-      text: 'Har piece shipment se pehle hum khud check karte hain. Agar item damaged, defective ya galat mile to delivery ke 48 ghante ke andar photos ke saath WhatsApp par batayein — hum repair, replacement ya refund kar dete hain. Made-to-order/personalised pieces change of mind ke liye return nahi hote.',
-      cta: { label: 'Return policy dekhein', href: './returns.html' },
+      text: 'We check every piece ourselves before shipping. If an item arrives damaged, defective or wrong, tell us on WhatsApp with photos within 48 hours of delivery — we will repair, replace or refund. Made-to-order/personalised pieces are not returnable for change of mind.',
+      cta: { label: 'Read return policy', href: './returns.html' },
       quick: ['How to order', 'Payment options']
     }
   }

@@ -22,7 +22,7 @@
     "chat": {
       "name": "Studio Genie",
       "apiUrl": "",
-      "greeting": "Namaste! Main Koncrete Art Kitchen ka Studio Genie hoon. Products, price, order ya payment — jo poochhna ho, poochhiye.",
+      "greeting": "Hello! I am Studio Genie from Koncrete Art Kitchen. Ask me about products, prices, ordering or payments.",
       "quickReplies": [
         "Products",
         "Price",
@@ -33,27 +33,27 @@
       "knowledge": [
         {
           "q": "Do you do custom designs?",
-          "a": "Ji haan. Aap apna naam, size, theme ya layout WhatsApp par bhej dein. Hum design develop karke aapko preview dikhate hain, phir banate hain."
+          "a": "Yes. Send your name, size, theme or layout on WhatsApp. We develop the design, share a preview with you, and then make it."
         },
         {
           "q": "How long does it take to make and deliver?",
-          "a": "Har piece in-house banta hai, isliye thoda time lagta hai. Exact time aur shipping charges aapke pincode ke hisaab se WhatsApp par bata dete hain."
+          "a": "Every piece is made in-house, so it takes a little time. We share the exact time and shipping charges on WhatsApp based on your PIN code."
         },
         {
           "q": "Do you ship across India?",
-          "a": "Ji haan, hum pan-India courier karte hain. Shipping charges location ke hisaab se hote hain."
+          "a": "Yes, we ship across India by courier. Shipping charges depend on the location."
         },
         {
           "q": "Do you have a physical store?",
-          "a": "Hum ek design studio hain aur online orders lete hain. Aap WhatsApp par baat kar sakte hain ya website se order kar sakte hain."
+          "a": "We are a design studio and take orders online. You can talk to us on WhatsApp or order from the website."
         },
         {
           "q": "What is your return and refund policy?",
-          "a": "Kharab, defective ya galat item milne par 48 ghante ke andar photos ke saath WhatsApp par batayein — hum repair, replacement ya refund kar dete hain. Made-to-order aur personalised pieces change of mind ke liye return nahi hote. Poori policy Returns page par hai."
+          "a": "If an item arrives damaged, defective or wrong, tell us on WhatsApp with photos within 48 hours of delivery — we will repair, replace or refund. Made-to-order and personalised pieces are not returnable for change of mind. The full policy is on the Returns page."
         },
         {
           "q": "Can I cancel my order?",
-          "a": "Ji haan, production shuru hone se pehle order free me cancel ho sakta hai. Ek baar production shuru hone ke baad, khaas kar personalised pieces, cancel karna mushkil ho jata hai. Jaldi WhatsApp par bata dein."
+          "a": "Yes, an order can be cancelled free of charge before production starts. Once production has started, especially for personalised pieces, cancelling becomes difficult. Tell us on WhatsApp as early as possible."
         }
       ]
     },

@@ -88,83 +88,84 @@
         <section class="admin-card" data-section="setup" hidden>
           <h2>Setup guide</h2>
           <p class="admin-help">
-            Sab kuch yahin se manage hota hai. Sirf teen cheezein ek baar set karni hain —
-            neeche step-by-step. Inme koi bhi secret (API key, token) is page par ya
-            catalog me save nahi hota.
+            You manage everything from here. Only three things need a one-time setup —
+            step by step below. No secret (API key, token) is ever saved on this page or
+            in the catalog.
           </p>
 
-          <h3 class="admin-subtitle">1. Publish karna (GitHub)</h3>
+          <h3 class="admin-subtitle">1. Publishing (GitHub)</h3>
           <p class="admin-help">
-            Store par jo bhi change karo (products, payments, images, settings) wo tabhi live
-            hota hai jab tum <strong>Save &amp; publish</strong> dabate ho. Uske liye ek
-            GitHub token chahiye — sirf ek baar.
+            Any change you make to the store (products, payments, images, settings) goes
+            live only when you press <strong>Save &amp; publish</strong>. That needs a
+            GitHub token — just once.
           </p>
           <ol class="admin-steps">
             <li>
-              Kholo
+              Open
               <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a>
-              par <strong>Fine-grained token</strong> banao.
+              and create a <strong>Fine-grained token</strong>.
             </li>
             <li>
-              <em>Repository access</em> me sirf apna store repo chuno, aur
-              <em>Permissions &rarr; Contents: Read and write</em> do.
+              Under <em>Repository access</em> choose only your store repo, and give
+              <em>Permissions &rarr; Contents: Read and write</em>.
             </li>
             <li>
-              Token copy karke <strong>GitHub &amp; publish</strong> section me paste karo.
-              Token sirf tumhare browser me (localStorage) rehta hai, kahin bhej nahi jaata.
+              Copy the token and paste it in the <strong>GitHub &amp; publish</strong> section.
+              The token stays only in your browser (localStorage) and is never sent anywhere.
             </li>
           </ol>
 
-          <h3 class="admin-subtitle">2. Payments aur contact</h3>
+          <h3 class="admin-subtitle">2. Payments and contact</h3>
           <p class="admin-help">
-            <strong>Payments</strong> section me UPI ID, bank details aur Razorpay link bharo.
-            <strong>Store settings</strong> me WhatsApp number aur social links. Jo field khaali
-            chhodoge wo checkout/footer par dikhega hi nahi.
+            Fill UPI ID, bank details and the Razorpay link in the <strong>Payments</strong>
+            section. Add the WhatsApp number and social links in
+            <strong>Store settings</strong>. Any field you leave blank will not appear at
+            checkout or in the footer.
           </p>
 
           <h3 class="admin-subtitle">3. AI assistant (Studio Genie)</h3>
           <p class="admin-help">
-            Bina kuch setup kiye bhi assistant kaam karta hai (built-in knowledge base use
-            karta hai). Asli AI answer chahiye to ek baar Cloudflare Worker deploy karo —
-            key sirf Cloudflare me secret ke roop me rahegi, website/catalog me kabhi nahi.
+            The assistant works even without setup (it uses the built-in knowledge base).
+            For real AI answers, deploy the Cloudflare Worker once — the key stays only as
+            a Cloudflare secret, never in the website or catalog.
           </p>
           <ol class="admin-steps">
             <li>
-              Free account banao
-              <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a>
-              par.
+              Create a free account at
+              <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a>.
             </li>
             <li>
-              Computer par is project ke <code>worker</code> folder me jao aur ye chalao:
+              On your computer, go to this project's <code>worker</code> folder and run:
               <code>npx wrangler deploy</code>
             </li>
             <li>
-              Apni AI key secret ke roop me set karo (provider ke naam se ek):
+              Set your AI key as a secret (one, named after the provider):
               <code>npx wrangler secret put USER_LLM_API_KEY</code>
             </li>
             <li>
-              Deploy ke baad jo URL mile (jaise <code>https://kak-ai-proxy.xxx.workers.dev</code>)
-              wo <strong>Chat assistant</strong> section ke <em>AI API endpoint</em> me paste
-              karke Publish karo.
+              After deploy, copy the URL you get (for example
+              <code>https://kak-ai-proxy.xxx.workers.dev</code>) into the
+              <em>AI API endpoint</em> field in the <strong>Chat assistant</strong> section
+              and publish.
             </li>
           </ol>
 
           <h3 class="admin-subtitle">4. Customer login / order history</h3>
           <p class="admin-help">
-            Optional hai — guest checkout hamesha chalta rahega. Chahte ho to
+            Optional — guest checkout always works. If you want it,
             <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a>
-            par free project banao, ek <em>Web</em> app add karo, aur uski config
-            <strong>Customer accounts</strong> section me paste karo. Wahan diye gaye
-            Firestore rules bhi paste kar dena. Firebase config public hoti hai (sirf project
-            identify karti hai), customer data rules se protected rehta hai.
+            create a free project, add a <em>Web</em> app, and paste its config in the
+            <strong>Customer accounts</strong> section. Also paste the Firestore rules shown
+            there. The Firebase config is public (it only identifies the project), while
+            customer data is protected by the rules.
           </p>
 
-          <h3 class="admin-subtitle">Kya public hota hai?</h3>
+          <h3 class="admin-subtitle">What is public?</h3>
           <ul class="admin-list">
-            <li>Products, prices, images, UPI/bank/Razorpay — ye customers ko dikhne chahiye, isliye public hain.</li>
-            <li>GitHub token — sirf tumhare browser me, kabhi publish nahi hota.</li>
-            <li>AI key — sirf Cloudflare Worker secret me, kabhi repo/browser me nahi.</li>
-            <li>Admin PIN (agar set karo) — tumhare browser me hashed form me.</li>
+            <li>Products, prices, images, UPI/bank/Razorpay — customers need to see these, so they are public.</li>
+            <li>GitHub token — only in your browser, never published.</li>
+            <li>AI key — only in the Cloudflare Worker secret, never in the repo or browser.</li>
+            <li>Admin PIN (if you set one) — in your browser in hashed form.</li>
           </ul>
         </section>
 
@@ -327,7 +328,7 @@
             </label>
             <label class="admin-wide">
               Greeting message
-              <input type="text" id="chatGreeting" placeholder="Namaste! Kaise madad kar sakta hoon?" />
+              <input type="text" id="chatGreeting" placeholder="Hello! How can I help you?" />
             </label>
             <label class="admin-wide">
               Quick replies (one per line)
@@ -335,7 +336,7 @@
             </label>
             <label class="admin-wide">
               Knowledge base (Question | Answer, one per line)
-              <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Ji haan, hum pan-India courier karte hain."></textarea>
+              <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Yes, we ship across India by courier."></textarea>
             </label>
           </div>
         </section>
@@ -447,9 +448,9 @@
         <section class="admin-card" data-section="addresses" hidden>
           <h2>Studio addresses</h2>
           <p class="admin-help">
-            Apne studio / dukaan ke address yahan add karo. Ye website ke footer me (har page
-            par) aur home page ke Commission section me dikhte hain. Ek address ko
-            <strong>Primary</strong> mark karo — wahi sabse pehle dikhega.
+            Add your studio / shop addresses here. They appear in the website footer (on
+            every page) and in the Commission section on the home page. Mark one address as
+            <strong>Primary</strong> — that one shows first.
           </p>
           <div id="addressList"></div>
           <button class="btn btn-ghost" id="addAddressBtn" type="button">+ Add address</button>
@@ -458,10 +459,10 @@
         <section class="admin-card" data-section="security" hidden>
           <h2>Security &amp; privacy</h2>
           <p class="admin-help">
-            Apne dashboard ko is device par PIN se lock karo. Jab tak PIN set hai, admin
-            khulte hi lock screen aayegi. Ye ek device-level lock hai (tumhare browser me
-            hashed PIN) — casual access rokta hai. Asli suraksha GitHub token hi hai, jo
-            sirf tumhare browser me rehta hai aur publish ke alawa kahin nahi jaata.
+            Lock your dashboard on this device with a PIN. While a PIN is set, the admin
+            shows a lock screen when opened. This is a device-level lock (the hashed PIN is
+            in your browser) — it stops casual access. Your real protection is the GitHub
+            token, which stays only in your browser and never leaves except for publishing.
           </p>
           <div class="admin-grid">
             <label>
@@ -480,8 +481,8 @@
           </div>
           <p class="admin-help" id="pinStatus" role="status" aria-live="polite"></p>
           <p class="admin-help">
-            PIN bhool gaye? Browser settings se is site ka data clear kar do — lock hat
-            jaayega (saath me GitHub token bhi hat jaayega, dobara paste kar lena).
+            Forgot the PIN? Clear this site's data from your browser settings — the lock is
+            removed (the GitHub token is removed too, so paste it again).
           </p>
         </section>
 

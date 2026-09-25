@@ -89,7 +89,7 @@ function renderOrders(orders) {
   if (!orders.length) {
     box.innerHTML = `
       <div class="orders-empty">
-        <p>Abhi koi order nahi hai.</p>
+        <p>You have no orders yet.</p>
         <a class="btn btn-solid" href="./shop.html">Start shopping</a>
       </div>`
     return
@@ -102,7 +102,7 @@ function renderSignIn(auth) {
   if (!box) return
   box.innerHTML = `
     <div class="orders-empty">
-      <p>Apne orders dekhne ke liye login karein.</p>
+      <p>Sign in to see your orders.</p>
       <button type="button" class="btn btn-solid" id="ordersLogin">Login or create account</button>
     </div>`
   const btn = document.getElementById('ordersLogin')
@@ -131,7 +131,7 @@ function bindReorder() {
       }
     })
     if (!added) {
-      window.KAKFront.toast('Ye products ab available nahi hain')
+      window.KAKFront.toast('These products are no longer available')
       return
     }
     window.location.href = './checkout.html'
@@ -142,7 +142,7 @@ async function init() {
   const box = document.getElementById('ordersBody')
   const auth = await waitAuth()
   if (!auth) {
-    if (box) box.innerHTML = '<p class="orders-msg">Account service load nahi hui.</p>'
+    if (box) box.innerHTML = '<p class="orders-msg">Account service could not load.</p>'
     return
   }
   try {
@@ -154,7 +154,7 @@ async function init() {
     if (box) {
       box.innerHTML = `
         <div class="orders-empty">
-          <p>Login abhi enable nahi hai. Admin panel &gt; Customer accounts me Firebase config daalein.</p>
+          <p>Login is not enabled yet. Add the Firebase config in Admin &gt; Customer accounts.</p>
           <a class="btn btn-ghost" href="./admin.html">Open admin</a>
         </div>`
     }
@@ -166,7 +166,7 @@ async function init() {
       renderSignIn(auth)
       return
     }
-    if (box) box.innerHTML = '<p class="orders-msg">Orders load ho rahe hain…</p>'
+    if (box) box.innerHTML = '<p class="orders-msg">Loading orders…</p>'
     try {
       const orders = await auth.getOrders()
       renderOrders(orders)

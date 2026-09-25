@@ -4677,7 +4677,7 @@ body.admin-locked {
 }
 
 .admin-review-list:empty::after {
-  content: 'Abhi koi review nahi. "+ Add review" se add karo.';
+  content: 'No reviews yet. Use "+ Add review" to add one.';
   display: block;
   font-size: 0.8rem;
   color: var(--ink-soft);

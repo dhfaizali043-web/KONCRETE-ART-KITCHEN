@@ -257,7 +257,7 @@ function boot() {
   els.pinRemoveBtn?.addEventListener('click', removePin)
   els.lockNowBtn?.addEventListener('click', () => {
     if (!localStorage.getItem(LS.pin)) {
-      setPinStatus('Pehle PIN set karo, phir lock kar sakte ho.', 'warn')
+      setPinStatus('Set a PIN first, then you can lock the admin.', 'warn')
       return
     }
     showLock(true)
@@ -417,7 +417,7 @@ function addProduct(product) {
     </div>
     <div class="admin-images">
       <div class="admin-images-head">
-        <span>Images — pehli image main (thumbnail) hogi</span>
+        <span>Images — the first image is the main (thumbnail)</span>
         <button type="button" class="admin-remove" data-image-add>+ Add image</button>
       </div>
       <div class="admin-image-list" data-image-list></div>
@@ -440,7 +440,7 @@ function addProduct(product) {
       <label>Rating (0-5, optional) <input data-field="rating" type="number" min="0" max="5" step="0.1" value="${escapeAttr(product.rating ?? 0)}" /></label>
       <label>Rating count (optional) <input data-field="ratingCount" type="number" min="0" value="${escapeAttr(product.ratingCount ?? 0)}" /></label>
       <label class="admin-wide">Description <textarea data-field="description" rows="2">${escapeHtml(product.description)}</textarea></label>
-      <label class="admin-wide">Bullet points / keywords <textarea data-field="bullets" rows="4" placeholder="Har line ek bullet hogi, e.g.&#10;Handmade in our studio&#10;Made to order">${escapeHtml(bullets.join('\n'))}</textarea></label>
+      <label class="admin-wide">Bullet points / keywords <textarea data-field="bullets" rows="4" placeholder="One bullet per line, e.g.&#10;Handmade in our studio&#10;Made to order">${escapeHtml(bullets.join('\n'))}</textarea></label>
       <label class="admin-check"><input data-field="available" type="checkbox" ${
         product.available === false ? '' : 'checked'
       } /> Available</label>
@@ -1256,26 +1256,26 @@ async function savePin() {
   const pin = els.pinNew ? els.pinNew.value.trim() : ''
   const confirm = els.pinConfirm ? els.pinConfirm.value.trim() : ''
   if (!/^\d{4,6}$/.test(pin)) {
-    setPinStatus('PIN 4 se 6 digits ka hona chahiye.', 'error')
+    setPinStatus('PIN must be 4 to 6 digits.', 'error')
     return
   }
   if (pin !== confirm) {
-    setPinStatus('Dono PIN match nahi kar rahe.', 'error')
+    setPinStatus('The two PINs do not match.', 'error')
     return
   }
   localStorage.setItem(LS.pin, await hashPin(pin))
   if (els.pinNew) els.pinNew.value = ''
   if (els.pinConfirm) els.pinConfirm.value = ''
-  setPinStatus('PIN set ho gaya. Ab admin khulte hi lock lagega.')
+  setPinStatus('PIN set. The admin will now lock when opened.')
 }
 
 async function removePin() {
   if (!localStorage.getItem(LS.pin)) {
-    setPinStatus('Koi PIN set nahi hai.', 'warn')
+    setPinStatus('No PIN is set.', 'warn')
     return
   }
   localStorage.removeItem(LS.pin)
-  setPinStatus('PIN hata diya. Ab admin bina lock khulega.')
+  setPinStatus('PIN removed. The admin will open without a lock.')
 }
 
 let booted = false

@@ -37,7 +37,7 @@ async function start() {
   }
   if (!AUTH.enabled) {
     el.innerHTML =
-      '<p class="admin-help">Customer accounts abhi band hain. Section 6 me Firebase config bhar kar login enable karein — uske baad yahan saare orders dikhenge.</p>'
+      '<p class="admin-help">Customer accounts are off. Add the Firebase config in section 6 and enable login — after that, all orders appear here.</p>'
     return
   }
   AUTH.onAuthChange((user) => render(user))
@@ -72,7 +72,7 @@ function renderSignIn(el) {
     try {
       await fn()
     } catch (error) {
-      msg.textContent = error.message || 'Sign in nahi ho paya'
+      msg.textContent = error.message || 'Could not sign in'
       msg.className = 'auth-msg is-error'
     }
   }
@@ -110,7 +110,7 @@ async function loadOrders() {
     const orders = await AUTH.getAllOrders()
     setDashOrders(orders.length)
     if (!orders.length) {
-      list.innerHTML = '<p class="admin-help">Abhi koi order nahi aaya.</p>'
+      list.innerHTML = '<p class="admin-help">No orders yet.</p>'
       return
     }
     list.innerHTML = orders.map(orderCard).join('')
@@ -133,7 +133,7 @@ async function loadOrders() {
       })
     })
   } catch (error) {
-    list.innerHTML = `<p class="auth-msg is-error">${esc(error.message || 'Orders load nahi ho paye')}</p>`
+    list.innerHTML = `<p class="auth-msg is-error">${esc(error.message || 'Could not load orders')}</p>`
   }
 }
 

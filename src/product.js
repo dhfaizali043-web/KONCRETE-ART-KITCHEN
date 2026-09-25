@@ -246,7 +246,7 @@ function renderReviews(product) {
         </div>
         <div class="rv-bars">${dist}</div>
       </div>`
-    : '<p class="rv-empty">Abhi koi review nahi hai. Pehla review aap likhiye.</p>'
+    : '<p class="rv-empty">No reviews yet. Be the first to write one.</p>'
 
   const list = reviews.length
     ? `<ul class="rv-list">${reviews
@@ -285,9 +285,9 @@ function renderReviews(product) {
     </div>
     ${summary}
     <form class="rv-form" id="reviewForm" hidden>
-      <h3>Apna review likhiye</h3>
+      <h3>Write a review</h3>
       <div class="rv-pick">
-        <span>Aapki rating</span>
+        <span>Your rating</span>
         <div class="rv-stars-input" id="rvStars" role="radiogroup" aria-label="Your rating">
           ${[1, 2, 3, 4, 5]
             .map(
@@ -297,14 +297,14 @@ function renderReviews(product) {
             .join('')}
         </div>
       </div>
-      <label>Naam<input type="text" id="rvName" maxlength="40" placeholder="Aapka naam" /></label>
-      <label>Review<textarea id="rvText" rows="3" maxlength="500" placeholder="Product kaisa laga?"></textarea></label>
+      <label>Name<input type="text" id="rvName" maxlength="40" placeholder="Your name" /></label>
+      <label>Review<textarea id="rvText" rows="3" maxlength="500" placeholder="How was the product?"></textarea></label>
       <label class="rv-file">Product / unboxing photo (optional)
         <input type="file" id="rvPhoto" accept="image/*" />
       </label>
       <p class="rv-note" id="rvNote">
-        Submit karne par aapka review WhatsApp par khulega — wahan apni photo attach kar dein.
-        Studio review check karke site par laga dega.
+        On submit, your review opens on WhatsApp — attach your photo there.
+        The studio checks it and adds it to the site.
       </p>
       <div class="rv-actions">
         <button type="submit" class="btn btn-solid">Submit review</button>
@@ -341,7 +341,7 @@ function closePhoto() {
 
 function submitReview(product) {
   if (selectedRating < 1) {
-    F.toast('Pehle star rating chuniye')
+    F.toast('Please choose a star rating first')
     return
   }
   const nameEl = byId('rvName')
@@ -349,7 +349,7 @@ function submitReview(product) {
   const name = nameEl ? nameEl.value.trim() : ''
   const text = textEl ? textEl.value.trim() : ''
   if (!text) {
-    F.toast('Review likhna zaroori hai')
+    F.toast('Please write your review')
     return
   }
   const number = String((F.state.catalog.store || {}).whatsapp || '').replace(/[^\d]/g, '')
@@ -367,7 +367,7 @@ function submitReview(product) {
     `Name: ${name || 'Anonymous'}`,
     `Review: ${text}`,
     '',
-    'Main apni product/unboxing photo is chat me bhej raha/rahi hoon.'
+    'I am sending my product/unboxing photo in this chat.'
   ].join('\n')
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank')
 
@@ -385,7 +385,7 @@ function submitReview(product) {
       b.setAttribute('aria-pressed', 'false')
     })
   }
-  F.toast('Shukriya! Review WhatsApp par bhejein.')
+  F.toast('Thank you! Send the review on WhatsApp.')
 }
 
 function bindReviews(product) {
@@ -435,8 +435,8 @@ function bindReviews(product) {
     if (!note) return
     const chosen = file.files && file.files[0]
     note.textContent = chosen
-      ? `Photo chuni: ${chosen.name} — submit ke baad WhatsApp chat me yahi photo attach kar dein.`
-      : 'Submit karne par aapka review WhatsApp par khulega — wahan apni photo attach kar dein. Studio review check karke site par laga dega.'
+      ? `Photo selected: ${chosen.name} — after submitting, attach this photo in the WhatsApp chat.`
+      : 'On submit, your review opens on WhatsApp — attach your photo there. The studio checks it and adds it to the site.'
   })
 
   document.addEventListener('keydown', (event) => {

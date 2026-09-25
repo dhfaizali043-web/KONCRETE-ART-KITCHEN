@@ -238,7 +238,7 @@ async function renderOrders() {
   try {
     const orders = await getOrders()
     if (!orders.length) {
-      box.innerHTML = '<p class="auth-msg">Abhi koi order nahi hai.</p>'
+      box.innerHTML = '<p class="auth-msg">You have no orders yet.</p>'
       return
     }
     box.innerHTML = orders
@@ -280,19 +280,19 @@ function setMsg(el, text, kind) {
 function friendlyError(error) {
   const code = (error && error.code) || ''
   const map = {
-    'auth/invalid-email': 'Email address theek nahi hai.',
-    'auth/missing-password': 'Password daalein.',
-    'auth/weak-password': 'Password kam se kam 6 characters ka rakhein.',
-    'auth/email-already-in-use': 'Ye email pehle se registered hai. Sign in karein.',
-    'auth/invalid-credential': 'Email ya password galat hai.',
-    'auth/wrong-password': 'Password galat hai.',
-    'auth/user-not-found': 'Is email se koi account nahi mila.',
-    'auth/too-many-requests': 'Bahut zyada koshish. Thodi der baad try karein.',
-    'auth/popup-blocked': 'Popup block ho gaya. Browser me popup allow karein.',
-    'auth/operation-not-allowed': 'Ye sign-in method Firebase me enable nahi hai.',
-    'auth/unauthorized-domain': 'Ye domain Firebase Authorized domains me add karein.'
+    'auth/invalid-email': 'That email address is not valid.',
+    'auth/missing-password': 'Please enter your password.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/email-already-in-use': 'This email is already registered. Please sign in.',
+    'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/wrong-password': 'Incorrect password.',
+    'auth/user-not-found': 'No account found for this email.',
+    'auth/too-many-requests': 'Too many attempts. Please try again later.',
+    'auth/popup-blocked': 'Popup was blocked. Please allow popups in your browser.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled in Firebase.',
+    'auth/unauthorized-domain': 'Add this domain to Firebase Authorized domains.'
   }
-  return map[code] || (error && error.message) || 'Kuch galat ho gaya. Dobara try karein.'
+  return map[code] || (error && error.message) || 'Something went wrong. Please try again.'
 }
 
 async function getProfile() {

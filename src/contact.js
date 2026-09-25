@@ -60,7 +60,7 @@ function renderContact(store) {
     )
   } else {
     blocks.push(
-      '<div class="contact-block"><h2>Studio</h2><p class="contact-lines">Studio address admin panel se add karein.</p></div>'
+      '<div class="contact-block"><h2>Studio</h2><p class="contact-lines">Add the studio address from the admin panel.</p></div>'
     )
   }
 
@@ -119,16 +119,16 @@ function bindForm(store) {
         '_blank',
         'noopener'
       )
-      showStatus(status, 'WhatsApp khul raha hai — message bhej dein.')
+      showStatus(status, 'Opening WhatsApp — send the message.')
     } else if (email) {
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(
         `Website enquiry — ${name}`
       )}&body=${encodeURIComponent(body)}`
-      showStatus(status, 'Aapka mail app khul raha hai.')
+      showStatus(status, 'Opening your mail app.')
     } else {
       showStatus(
         status,
-        'WhatsApp number set nahi hai. Admin panel me number add karein.',
+        'WhatsApp number is not set. Add it in the admin panel.',
         true
       )
     }
