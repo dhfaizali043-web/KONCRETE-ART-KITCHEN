@@ -2260,6 +2260,12 @@ h2 {
   text-transform: capitalize;
 }
 
+#siteImages .admin-image {
+  border: 1px dashed var(--line);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
 .admin-shell {
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);

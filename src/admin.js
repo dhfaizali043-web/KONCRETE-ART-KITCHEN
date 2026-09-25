@@ -44,6 +44,7 @@ const els = {
   fbSenderId: $('fbSenderId'),
   fbAppId: $('fbAppId'),
   products: $('products'),
+  siteImages: $('siteImages'),
   status: $('status'),
   ghStatus: $('ghStatus'),
   dashGithub: $('dashGithub'),
@@ -55,6 +56,35 @@ const els = {
 }
 
 let sha = null
+let currentImages = {}
+
+const DEFAULT_IMAGES = {
+  logoWhite: 'brand/logo-white.png',
+  logoBlack: 'brand/logo-black.png',
+  seal: 'brand/kak-logo.jpg',
+  hero: 'brand/nameplates/plate-04.png',
+  gallery1: 'brand/nameplates/plate-01.png',
+  gallery2: 'brand/nameplates/plate-02.png',
+  gallery3: 'brand/nameplates/plate-03.png',
+  gallery4: 'brand/nameplates/plate-04.png',
+  gallery5: 'brand/nameplates/plate-05.png',
+  genie: 'brand/genie.webp',
+  genieAvatar: 'brand/genie-avatar.webp'
+}
+
+const SITE_IMAGE_SLOTS = [
+  { key: 'logoWhite', label: 'Logo (white)', hint: 'Header and footer logo on every page' },
+  { key: 'logoBlack', label: 'Logo (black)', hint: 'Mobile home-screen icon' },
+  { key: 'hero', label: 'Home hero image', hint: 'Large image at the top of the home page' },
+  { key: 'seal', label: 'Studio seal / wordmark', hint: 'Image in the About section' },
+  { key: 'gallery1', label: 'Home gallery 1', hint: 'First tile in the home gallery' },
+  { key: 'gallery2', label: 'Home gallery 2' },
+  { key: 'gallery3', label: 'Home gallery 3' },
+  { key: 'gallery4', label: 'Home gallery 4' },
+  { key: 'gallery5', label: 'Home gallery 5' },
+  { key: 'genie', label: 'Chat assistant image', hint: 'Large image in the chat panel' },
+  { key: 'genieAvatar', label: 'Chat assistant avatar', hint: 'Small round image on the chat button' }
+]
 
 function fieldValue(input, key, fallback) {
   const saved = localStorage.getItem(LS[key])
@@ -88,6 +118,18 @@ function init() {
     if (input) handleUpload(input)
   })
   els.authOwners.addEventListener('input', updateRulesCode)
+  els.siteImages?.addEventListener('input', (event) => {
+    const input = event.target.closest('[data-img-path]')
+    if (!input) return
+    const card = input.closest('[data-img-key]')
+    const key = card.dataset.imgKey
+    currentImages[key] = input.value.trim()
+    setPreviewSrc(card, input.value.trim() ? resolveImage(input.value.trim()) : '')
+  })
+  els.siteImages?.addEventListener('change', (event) => {
+    const input = event.target.closest('[data-img-upload]')
+    if (input) handleSiteImageUpload(input)
+  })
 
   const navButtons = document.querySelectorAll('[data-go]')
   navButtons.forEach((btn) => {
@@ -198,6 +240,7 @@ function fillForm(data) {
   els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
   els.authOwners.value = (auth.owners || []).join(', ')
   updateRulesCode()
+  renderSiteImages(store.images || {})
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
   setText('dashProducts', (data.products || []).length)
@@ -242,6 +285,28 @@ function addProduct(product) {
   els.products.appendChild(el)
 }
 
+function renderSiteImages(images) {
+  currentImages = { ...DEFAULT_IMAGES, ...(images || {}) }
+  if (!els.siteImages) return
+  els.siteImages.innerHTML = SITE_IMAGE_SLOTS.map((slot) => {
+    const value = currentImages[slot.key] || ''
+    return `<div class="admin-image" data-img-key="${slot.key}">
+      <img class="admin-image-preview" alt="" src="${value ? escapeAttr(resolveImage(value)) : ''}" ${
+        value ? '' : 'hidden'
+      } />
+      <div class="admin-image-fields">
+        <strong>${escapeHtml(slot.label)}</strong>
+        ${slot.hint ? `<span class="admin-help">${escapeHtml(slot.hint)}</span>` : ''}
+        <label>Image path or URL <input data-img-path value="${escapeAttr(value)}" /></label>
+        <label class="admin-upload">Upload image from device
+          <input type="file" accept="image/*" data-img-upload />
+        </label>
+        <span class="admin-upload-status" data-img-status></span>
+      </div>
+    </div>`
+  }).join('')
+}
+
 function resolveImage(src) {
   const value = String(src || '')
   if (!value) return ''
@@ -278,7 +343,7 @@ async function handleUpload(input) {
   setUploadStatus(status, 'Uploading...', '')
 
   try {
-    const path = await uploadImage(file)
+    const path = await uploadImageTo(file, 'public/brand/products')
     imageField.value = path
     setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
   } catch (error) {
@@ -288,16 +353,38 @@ async function handleUpload(input) {
   }
 }
 
-async function uploadImage(file) {
+async function handleSiteImageUpload(input) {
+  const card = input.closest('[data-img-key]')
+  const status = card.querySelector('[data-img-status]')
+  const pathField = card.querySelector('[data-img-path]')
+  const file = input.files && input.files[0]
+  if (!file) return
+
+  setPreviewSrc(card, URL.createObjectURL(file))
+  setUploadStatus(status, 'Uploading...', '')
+
+  try {
+    const path = await uploadImageTo(file, 'public/brand/site')
+    currentImages[card.dataset.imgKey] = path
+    pathField.value = path
+    setUploadStatus(status, 'Uploaded. Now click "Save & publish".', 'ok')
+  } catch (error) {
+    setUploadStatus(status, error.message, 'error')
+  } finally {
+    input.value = ''
+  }
+}
+
+async function uploadImageTo(file, dir) {
   const config = getConfig()
   if (!config.token) {
-    throw new Error('Add your GitHub token in section 1 to upload images.')
+    throw new Error('Add your GitHub token in "GitHub & publish" to upload images.')
   }
 
   const prepared = await prepareImage(file)
-  const base = slugify(String(file.name).replace(/\.[^.]+$/, '')) || 'product'
+  const base = slugify(String(file.name).replace(/\.[^.]+$/, '')) || 'image'
   const filename = `${base}-${Date.now()}.${prepared.ext}`
-  const repoPath = `public/brand/products/${filename}`
+  const repoPath = `${dir}/${filename}`
   const buffer = await prepared.blob.arrayBuffer()
 
   const res = await fetch(apiUrl({ repo: config.repo, branch: config.branch, path: repoPath }, false), {
@@ -308,13 +395,13 @@ async function uploadImage(file) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      message: `content: upload product image ${filename}`,
+      message: `content: upload image ${filename}`,
       content: encodeBase64Binary(buffer),
       branch: config.branch
     })
   })
   if (!res.ok) throw new Error(await ghError(res))
-  return `brand/products/${filename}`
+  return `${dir.replace(/^public\//, '')}/${filename}`
 }
 
 async function prepareImage(file) {
@@ -399,7 +486,8 @@ function collect() {
       },
       orders: {
         alertEmail: els.orderAlertEmail.value.trim()
-      }
+      },
+      images: { ...DEFAULT_IMAGES, ...currentImages }
     },
     products
   }

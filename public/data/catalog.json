@@ -61,6 +61,19 @@
     },
     "orders": {
       "alertEmail": ""
+    },
+    "images": {
+      "logoWhite": "brand/logo-white.png",
+      "logoBlack": "brand/logo-black.png",
+      "seal": "brand/kak-logo.jpg",
+      "hero": "brand/nameplates/plate-04.png",
+      "gallery1": "brand/nameplates/plate-01.png",
+      "gallery2": "brand/nameplates/plate-02.png",
+      "gallery3": "brand/nameplates/plate-03.png",
+      "gallery4": "brand/nameplates/plate-04.png",
+      "gallery5": "brand/nameplates/plate-05.png",
+      "genie": "brand/genie.webp",
+      "genieAvatar": "brand/genie-avatar.webp"
     }
   },
   "products": [

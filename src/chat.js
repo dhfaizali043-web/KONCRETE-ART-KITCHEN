@@ -60,8 +60,15 @@ function hasContact() {
   return Boolean(number) && number !== '910000000000'
 }
 
-const GENIE_FULL = './brand/genie.webp'
-const GENIE_AVATAR = './brand/genie-avatar.webp'
+let GENIE_FULL = './brand/genie.webp'
+let GENIE_AVATAR = './brand/genie-avatar.webp'
+
+function assetPath(value) {
+  const path = String(value || '')
+  if (!path) return ''
+  if (/^(https?:|data:|blob:)/i.test(path)) return path
+  return './' + path.replace(/^\.?\//, '')
+}
 
 function buildWidget() {
   const launcher = document.createElement('button')
@@ -489,6 +496,18 @@ async function init() {
     .replace(/\/+$/, '')
   const statusEl = document.getElementById('chatStatus')
   if (statusEl) statusEl.textContent = apiUrl ? 'AI online' : 'Assistant online'
+
+  const imgs = (catalog.store && catalog.store.images) || {}
+  if (imgs.genieAvatar) {
+    GENIE_AVATAR = assetPath(imgs.genieAvatar)
+    document
+      .querySelectorAll('.chat-launcher-img, .chat-avatar img, .chat-msg-avatar img')
+      .forEach((el) => (el.src = GENIE_AVATAR))
+  }
+  if (imgs.genie) {
+    GENIE_FULL = assetPath(imgs.genie)
+    document.querySelectorAll('.chat-welcome img').forEach((el) => (el.src = GENIE_FULL))
+  }
 }
 
 init()
