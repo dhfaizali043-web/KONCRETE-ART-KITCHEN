@@ -475,7 +475,7 @@ function escapeHtml(str) {
 async function init() {
   buildWidget()
   try {
-    const res = await fetch(CATALOG_URL, { cache: 'no-store' })
+    const res = await fetch(CATALOG_URL + '?t=' + Date.now(), { cache: 'no-store' })
     catalog = await res.json()
   } catch {
     catalog = { store: {}, products: [] }

@@ -30,7 +30,7 @@ function notify() {
 
 async function loadStore() {
   try {
-    const res = await fetch(CATALOG_URL, { cache: 'no-store' })
+    const res = await fetch(CATALOG_URL + '?t=' + Date.now(), { cache: 'no-store' })
     if (!res.ok) return null
     return (await res.json()).store || null
   } catch {

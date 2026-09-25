@@ -45,9 +45,12 @@ const els = {
   fbAppId: $('fbAppId'),
   products: $('products'),
   status: $('status'),
+  ghStatus: $('ghStatus'),
+  dashGithub: $('dashGithub'),
   loadBtn: $('loadBtn'),
   saveBtn: $('saveBtn'),
   addBtn: $('addBtn'),
+  downloadBtn: $('downloadBtn'),
   forgetBtn: $('forgetBtn')
 }
 
@@ -68,6 +71,10 @@ function init() {
   els.saveBtn.addEventListener('click', save)
   els.addBtn.addEventListener('click', () => addProduct({}))
   els.forgetBtn.addEventListener('click', forgetToken)
+  els.downloadBtn?.addEventListener('click', () => {
+    downloadCatalog(JSON.stringify(collect(), null, 2) + '\n')
+    setStatus('Downloaded catalog.json — upload it manually to ' + els.path.value.trim(), 'warn')
+  })
   els.products.addEventListener('click', (event) => {
     const btn = event.target.closest('button[data-remove]')
     if (btn) btn.closest('.admin-product').remove()
@@ -135,15 +142,25 @@ async function loadRemote() {
       const json = await res.json()
       sha = json.sha
       data = JSON.parse(decodeBase64(json.content))
+      fillForm(data)
+      setGithubState(true, `Connected to ${config.repo} (${config.branch}). ${data.products.length} products loaded.`)
+      setStatus('Loaded latest data from GitHub. Publish to make edits live.')
     } else {
-      const res = await fetch('./data/catalog.json', { cache: 'no-store' })
+      const res = await fetch('./data/catalog.json?t=' + Date.now(), { cache: 'no-store' })
       data = await res.json()
-      setStatus('Loaded local copy (read-only). Add a token to publish.', 'warn')
+      fillForm(data)
+      setGithubState(false, 'Read-only: not connected to GitHub. Open "GitHub & publish" and add a token to go live.')
+      setStatus('Loaded site copy (read-only). Connect GitHub in "GitHub & publish" to publish changes.', 'warn')
     }
-    fillForm(data)
-    if (config.token) setStatus('Loaded latest data from GitHub.')
   } catch (error) {
-    setStatus('Could not load: ' + error.message, 'error')
+    setGithubState(false, 'Not connected: ' + error.message)
+    setStatus('Could not load from GitHub (' + error.message + '). Check your token, repository and file path. Showing the site copy instead.', 'error')
+    try {
+      const res = await fetch('./data/catalog.json?t=' + Date.now(), { cache: 'no-store' })
+      fillForm(await res.json())
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -391,21 +408,45 @@ function collect() {
 async function save() {
   const config = getConfig()
   const data = collect()
-  const content = JSON.stringify(data, null, 2) + '\n'
 
+  if (!data.products.length) {
+    setStatus('Nothing to publish — add at least one product in "Shop / Products" first.', 'error')
+    showSection('products')
+    return
+  }
+  if (data.products.some((p) => !p.name)) {
+    setStatus('Every product needs a name. Please fill in the product name(s) and try again.', 'error')
+    showSection('products')
+    return
+  }
   if (!config.token) {
-    downloadCatalog(content)
-    setStatus('No token — downloaded catalog.json. Upload it to ' + config.path, 'warn')
+    setStatus('Not connected to GitHub, so nothing was published. Open "GitHub & publish", paste your token, then click Save & publish again.', 'error')
+    showSection('connect')
     return
   }
 
+  const content = JSON.stringify(data, null, 2) + '\n'
   setStatus('Publishing…')
   try {
+    const commit = await putFile(config, content)
+    setGithubState(true, `Connected to ${config.repo} (${config.branch}).`)
+    setStatus('Published — the live shop updates in about a minute.' + (commit ? ' Commit ' + commit.slice(0, 7) : ''))
+  } catch (error) {
+    setStatus('Publish failed: ' + error.message, 'error')
+  }
+}
+
+async function putFile(config, content) {
+  let attempt = 0
+  while (attempt < 3) {
+    attempt += 1
     if (!sha) {
       const res = await fetch(apiUrl(config, true), {
-        headers: { Authorization: `token ${config.token}`, Accept: 'application/vnd.github+json' }
+        headers: { Authorization: `token ${config.token}`, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
       })
       if (res.ok) sha = (await res.json()).sha
+      else if (res.status !== 404) throw new Error(await ghError(res))
     }
     const body = {
       message: 'content: update shop catalog',
@@ -422,18 +463,34 @@ async function save() {
       },
       body: JSON.stringify(body)
     })
-    if (!res.ok) throw new Error(await ghError(res))
-    const json = await res.json()
-    sha = json.content?.sha || sha
-    setStatus('Published. The live site updates in about a minute.')
-  } catch (error) {
-    setStatus('Publish failed: ' + error.message, 'error')
+    if (res.ok) {
+      const json = await res.json()
+      sha = json.content?.sha || sha
+      return json.commit?.sha || ''
+    }
+    if (res.status === 409) {
+      sha = null
+      continue
+    }
+    throw new Error(await ghError(res))
+  }
+  throw new Error('The file changed while publishing. Please click Save & publish again.')
+}
+
+function setGithubState(connected, message) {
+  if (els.ghStatus) {
+    els.ghStatus.textContent = message
+    els.ghStatus.className = 'admin-help'
+  }
+  if (els.dashGithub) {
+    els.dashGithub.textContent = message
   }
 }
 
 function forgetToken() {
   localStorage.removeItem(LS.token)
   els.token.value = ''
+  setGithubState(false, 'Token removed. Not connected to GitHub — changes cannot be published.')
   setStatus('Token removed from this browser.')
 }
 

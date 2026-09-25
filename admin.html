@@ -57,6 +57,7 @@
             <button class="btn btn-ghost" data-go="orders" type="button">View orders</button>
             <button class="btn btn-ghost" data-go="payments" type="button">Payment details</button>
           </div>
+          <p class="admin-help" id="dashGithub"></p>
         </section>
 
         <section class="admin-card" data-section="products" hidden>
@@ -232,10 +233,12 @@
         <section class="admin-card" data-section="connect" hidden>
           <h2>GitHub &amp; publish</h2>
           <p class="admin-help">
-            Create a fine-grained personal access token on GitHub with
+            <strong>Products, prices, payments and settings only go live after you publish
+            here.</strong> Create a fine-grained personal access token on GitHub with
             <strong>Contents: Read and write</strong> access to this repository, then paste
-            it here. It is stored only in this browser (localStorage) and is never sent
+            it below. It is stored only in this browser (localStorage) and is never sent
             anywhere except github.com.
+            <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Create a token</a>
           </p>
           <div class="admin-grid">
             <label>
@@ -255,8 +258,10 @@
               <input type="text" id="path" placeholder="public/data/catalog.json" />
             </label>
           </div>
+          <p class="admin-help" id="ghStatus"></p>
           <div class="admin-actions">
-            <button class="btn btn-ghost" id="loadBtn" type="button">Load current data</button>
+            <button class="btn btn-ghost" id="loadBtn" type="button">Test / load current data</button>
+            <button class="btn btn-ghost" id="downloadBtn" type="button">Download catalog.json</button>
             <button class="btn btn-ghost" id="forgetBtn" type="button">Forget token</button>
           </div>
         </section>
