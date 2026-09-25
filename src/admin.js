@@ -143,6 +143,17 @@ function boot() {
       if (!list.querySelector('.admin-image-row')) addImageRow(list, '')
       return
     }
+    const addReview = event.target.closest('[data-review-add]')
+    if (addReview) {
+      const list = addReview.closest('.admin-product').querySelector('[data-review-list]')
+      addReviewRow(list, {})
+      return
+    }
+    const removeReview = event.target.closest('[data-review-remove]')
+    if (removeReview) {
+      removeReview.closest('.admin-review').remove()
+      return
+    }
     const btn = event.target.closest('button[data-remove]')
     if (btn) btn.closest('.admin-product').remove()
   })
@@ -162,6 +173,11 @@ function boot() {
     const upload = event.target.closest('[data-upload]')
     if (upload) {
       handleUpload(upload)
+      return
+    }
+    const reviewUpload = event.target.closest('[data-review-upload]')
+    if (reviewUpload) {
+      handleReviewImageUpload(reviewUpload)
       return
     }
     const catSelect = event.target.closest('[data-field="category"]')
@@ -387,6 +403,13 @@ function addProduct(product) {
       </div>
       <div class="admin-image-list" data-image-list></div>
     </div>
+    <div class="admin-reviews">
+      <div class="admin-images-head">
+        <span>Reviews — customer comments, ratings aur photos</span>
+        <button type="button" class="admin-remove" data-review-add>+ Add review</button>
+      </div>
+      <div class="admin-review-list" data-review-list></div>
+    </div>
     <div class="admin-grid">
       <label>Name <input data-field="name" value="${escapeAttr(product.name)}" /></label>
       <label>Price <input data-field="price" type="number" min="0" value="${escapeAttr(product.price ?? 0)}" /></label>
@@ -406,6 +429,33 @@ function addProduct(product) {
   els.products.appendChild(el)
   const list = el.querySelector('[data-image-list]')
   images.forEach((src) => addImageRow(list, src))
+  const reviewList = el.querySelector('[data-review-list]')
+  const reviews = Array.isArray(product.reviews) ? product.reviews : []
+  reviews.forEach((review) => addReviewRow(reviewList, review))
+}
+
+function addReviewRow(list, review) {
+  const r = review || {}
+  const row = document.createElement('div')
+  row.className = 'admin-review'
+  const photo = r.photo ? r.photo : ''
+  row.innerHTML = `
+    <div class="admin-review-head">
+      <strong data-review-title>${escapeHtml(r.name || 'New review')}</strong>
+      <button type="button" class="admin-remove" data-review-remove>Remove review</button>
+    </div>
+    <div class="admin-grid">
+      <label>Customer name <input data-review-field="name" value="${escapeAttr(r.name)}" /></label>
+      <label>Rating (1–5) <input data-review-field="rating" type="number" min="1" max="5" step="0.5" value="${escapeAttr(r.rating ?? 5)}" /></label>
+      <label>Date (optional) <input data-review-field="date" value="${escapeAttr(r.date)}" placeholder="2026-09-25" /></label>
+      <label class="admin-wide">Comment <textarea data-review-field="text" rows="2">${escapeHtml(r.text)}</textarea></label>
+      <label class="admin-wide">Photo path or URL (optional) <input data-review-field="photo" value="${escapeAttr(photo)}" /></label>
+      <label class="admin-upload">Upload photo from device
+        <input type="file" accept="image/*" data-review-upload />
+      </label>
+      <span class="admin-upload-status" data-upload-status></span>
+    </div>`
+  list.appendChild(row)
 }
 
 function addImageRow(list, src) {
@@ -522,6 +572,25 @@ async function handleCategoryImageUpload(input) {
     imageField.value = path
     setPreviewSrc(catEl.querySelector('[data-cat-img]'), resolveImage(path))
     setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
+  } catch (error) {
+    setUploadStatus(status, error.message, 'error')
+  } finally {
+    input.value = ''
+  }
+}
+
+async function handleReviewImageUpload(input) {
+  const reviewEl = input.closest('.admin-review')
+  const status = reviewEl.querySelector('[data-upload-status]')
+  const photoField = reviewEl.querySelector('[data-review-field="photo"]')
+  const file = input.files && input.files[0]
+  if (!file) return
+
+  setUploadStatus(status, 'Uploading...', '')
+  try {
+    const path = await uploadImageTo(file, 'public/brand/reviews')
+    photoField.value = path
+    setUploadStatus(status, 'Photo uploaded. Now click "Save & publish".', 'ok')
   } catch (error) {
     setUploadStatus(status, error.message, 'error')
   } finally {
@@ -673,6 +742,21 @@ async function prepareImage(file) {
   return { blob, ext: 'jpg' }
 }
 
+function collectReviews(productEl) {
+  return [...productEl.querySelectorAll('.admin-review')]
+    .map((el) => {
+      const get = (field) => el.querySelector(`[data-review-field="${field}"]`)
+      const name = get('name') ? get('name').value.trim() : ''
+      const text = get('text') ? get('text').value.trim() : ''
+      const rating = get('rating') ? Number(get('rating').value) : 0
+      const date = get('date') ? get('date').value.trim() : ''
+      const photo = get('photo') ? get('photo').value.trim() : ''
+      if (!name && !text && !photo && !rating) return null
+      return { name, rating: Math.max(1, Math.min(5, rating || 5)), text, date, photo }
+    })
+    .filter(Boolean)
+}
+
 function collect() {
   const products = [...els.products.querySelectorAll('.admin-product')].map((el) => {
     const get = (field) => el.querySelector(`[data-field="${field}"]`)
@@ -696,7 +780,8 @@ function collect() {
       subcategory: get('subcategory') ? get('subcategory').value.trim() : '',
       images,
       image: images[0] || '',
-      available: get('available').checked
+      available: get('available').checked,
+      reviews: collectReviews(el)
     }
   })
   return {

@@ -4389,3 +4389,296 @@ body.no-scroll {
 body.admin-locked {
   overflow: hidden;
 }
+
+/* ---------- Product reviews ---------- */
+.product-reviews {
+  margin-top: 3.5rem;
+}
+
+.rv-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.rv-top h2 {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  margin: 0;
+}
+
+.pd-write {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.pd-write:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.rv-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.6rem;
+  align-items: center;
+  padding: 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.rv-score {
+  text-align: center;
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+}
+
+.rv-score strong {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.rv-score span {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.rv-bars {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.rv-bar {
+  display: grid;
+  grid-template-columns: 14px 1fr 28px;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.rv-bar-track {
+  height: 8px;
+  background: rgba(20, 18, 16, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.rv-bar-fill {
+  height: 100%;
+  background: var(--halo);
+}
+
+.rv-empty {
+  color: var(--ink-soft);
+}
+
+.rv-form {
+  margin-top: 1.4rem;
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.rv-form h3 {
+  margin: 0;
+}
+
+.rv-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.rv-form input[type='text'],
+.rv-form textarea {
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.rv-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.rv-stars-input button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: rgba(20, 18, 16, 0.25);
+  padding: 0 0.1rem;
+}
+
+.rv-stars-input button.active {
+  color: var(--rust);
+}
+
+.rv-file input {
+  font-size: 0.82rem;
+}
+
+.rv-note {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.rv-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.rv-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.6rem 0 0;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.rv-item {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 0.9rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.rv-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--halo);
+  color: var(--char);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.rv-body {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.rv-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.rv-date {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.rv-body p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.rv-photo {
+  border: 0;
+  padding: 0;
+  width: 110px;
+  height: 110px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: transparent;
+}
+
+.rv-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rv-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: rgba(10, 8, 6, 0.85);
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.rv-lightbox[hidden] {
+  display: none;
+}
+
+.rv-lightbox img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 8px;
+}
+
+.rv-lightbox-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 0;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .rv-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-score {
+    justify-items: start;
+  }
+}
+
+/* ---------- admin product reviews ---------- */
+.admin-reviews {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+
+.admin-review {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.7rem;
+  margin-bottom: 0.6rem;
+  background: var(--paper);
+}
+
+.admin-review-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.admin-review-list:empty::after {
+  content: 'Abhi koi review nahi. "+ Add review" se add karo.';
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}

@@ -70,6 +70,17 @@ function findProduct(id) {
   return state.catalog.products.find((p) => p.id === id)
 }
 
+function productRating(product) {
+  const reviews = Array.isArray(product.reviews)
+    ? product.reviews.filter((r) => r && Number(r.rating) > 0)
+    : []
+  if (reviews.length) {
+    const sum = reviews.reduce((total, r) => total + Number(r.rating), 0)
+    return { average: sum / reviews.length, count: reviews.length }
+  }
+  return { average: Number(product.rating) || 0, count: Number(product.ratingCount) || 0 }
+}
+
 function categoryName(id) {
   const found = (state.catalog.store.categories || []).find((c) => c.id === id)
   return found ? found.name : id
@@ -239,8 +250,7 @@ function productCard(p, options = {}) {
   const main = primaryImage(p)
   const price = Number(p.price) > 0 ? money(p.price) : 'Price on request'
   const oldPrice = Number(p.oldPrice) > 0 && Number(p.oldPrice) > Number(p.price) ? money(p.oldPrice) : ''
-  const rating = Number(p.rating) || 0
-  const ratingCount = Number(p.ratingCount) || 0
+  const { average: rating, count: ratingCount } = productRating(p)
   const badge = out ? 'Sold out' : p.badge || ''
   const showThumbs = options.thumbs !== false && images.length > 1
   const thumbs = showThumbs
@@ -468,6 +478,7 @@ window.KAKFront = {
   escapeHtml,
   money,
   findProduct,
+  productRating,
   categoryName,
   subcategories,
   subcategoryName,

@@ -64,8 +64,7 @@ function renderInfo(product) {
     Number(product.oldPrice) > 0 && Number(product.oldPrice) > Number(product.price)
       ? `<s class="pd-old">${F.money(product.oldPrice)}</s>`
       : ''
-  const rating = Number(product.rating) || 0
-  const ratingCount = Number(product.ratingCount) || 0
+  const { average: rating, count: ratingCount } = F.productRating(product)
   const ratingRow =
     rating > 0
       ? `<div class="pd-rating">${F.starRow(rating)}<span>${
@@ -169,10 +168,255 @@ function injectSchema(product) {
           : 'https://schema.org/InStock'
     }
   }
+  const { average, count } = F.productRating(product)
+  if (count > 0) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: average.toFixed(1),
+      reviewCount: count
+    }
+  }
   const tag = document.createElement('script')
   tag.type = 'application/ld+json'
   tag.textContent = JSON.stringify(schema)
   document.head.appendChild(tag)
+}
+
+let selectedRating = 0
+
+function reviewDate(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return String(value)
+  try {
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+  } catch {
+    return String(value)
+  }
+}
+
+function reviewsOf(product) {
+  return (Array.isArray(product.reviews) ? product.reviews : []).filter(
+    (r) => r && (r.text || Number(r.rating) > 0)
+  )
+}
+
+function renderReviews(product) {
+  const reviews = reviewsOf(product)
+  const { average, count } = F.productRating(product)
+  const dist = [5, 4, 3, 2, 1]
+    .map((star) => {
+      const n = reviews.filter((r) => Math.round(Number(r.rating)) === star).length
+      const pct = count ? Math.round((n / count) * 100) : 0
+      return `<div class="rv-bar"><span>${star}</span><div class="rv-bar-track"><div class="rv-bar-fill" style="width:${pct}%"></div></div><em>${n}</em></div>`
+    })
+    .join('')
+
+  const summary = count
+    ? `<div class="rv-summary">
+        <div class="rv-score">
+          <strong>${average.toFixed(1)}</strong>
+          ${F.starRow(average)}
+          <span>${count} review${count > 1 ? 's' : ''}</span>
+        </div>
+        <div class="rv-bars">${dist}</div>
+      </div>`
+    : '<p class="rv-empty">Abhi koi review nahi hai. Pehla review aap likhiye.</p>'
+
+  const list = reviews.length
+    ? `<ul class="rv-list">${reviews
+        .map((r) => {
+          const photo = r.photo ? F.resolveImg(r.photo) : ''
+          return `<li class="rv-item">
+            <div class="rv-avatar">${F.escapeHtml(
+              String(r.name || 'A').trim().charAt(0).toUpperCase() || 'A'
+            )}</div>
+            <div class="rv-body">
+              <div class="rv-head">
+                <strong>${F.escapeHtml(r.name || 'Anonymous')}</strong>
+                ${r.date ? `<span class="rv-date">${F.escapeHtml(reviewDate(r.date))}</span>` : ''}
+              </div>
+              ${Number(r.rating) > 0 ? F.starRow(r.rating) : ''}
+              ${r.text ? `<p>${F.escapeHtml(r.text)}</p>` : ''}
+              ${
+                photo
+                  ? `<button type="button" class="rv-photo" data-rv-photo="${F.escapeHtml(
+                      photo
+                    )}" aria-label="View customer photo"><img src="${F.escapeHtml(
+                      photo
+                    )}" alt="Customer photo" loading="lazy" /></button>`
+                  : ''
+              }
+            </div>
+          </li>`
+        })
+        .join('')}</ul>`
+    : ''
+
+  return `
+    <div class="rv-top">
+      <h2>Ratings &amp; reviews</h2>
+      <button type="button" class="btn pd-write" id="writeReviewBtn">Write a review</button>
+    </div>
+    ${summary}
+    <form class="rv-form" id="reviewForm" hidden>
+      <h3>Apna review likhiye</h3>
+      <div class="rv-pick">
+        <span>Aapki rating</span>
+        <div class="rv-stars-input" id="rvStars" role="radiogroup" aria-label="Your rating">
+          ${[1, 2, 3, 4, 5]
+            .map(
+              (n) =>
+                `<button type="button" data-star="${n}" aria-label="${n} star" aria-pressed="false">★</button>`
+            )
+            .join('')}
+        </div>
+      </div>
+      <label>Naam<input type="text" id="rvName" maxlength="40" placeholder="Aapka naam" /></label>
+      <label>Review<textarea id="rvText" rows="3" maxlength="500" placeholder="Product kaisa laga?"></textarea></label>
+      <label class="rv-file">Product / unboxing photo (optional)
+        <input type="file" id="rvPhoto" accept="image/*" />
+      </label>
+      <p class="rv-note" id="rvNote">
+        Submit karne par aapka review WhatsApp par khulega — wahan apni photo attach kar dein.
+        Studio review check karke site par laga dega.
+      </p>
+      <div class="rv-actions">
+        <button type="submit" class="btn btn-solid">Submit review</button>
+        <button type="button" class="btn pd-buy" id="reviewCancel">Cancel</button>
+      </div>
+    </form>
+    ${list}`
+}
+
+function openPhoto(src) {
+  let box = document.getElementById('rvLightbox')
+  if (!box) {
+    box = document.createElement('div')
+    box.id = 'rvLightbox'
+    box.className = 'rv-lightbox'
+    box.innerHTML =
+      '<button type="button" class="rv-lightbox-close" aria-label="Close">Close</button><img alt="Customer photo" />'
+    document.body.appendChild(box)
+    box.addEventListener('click', (event) => {
+      if (event.target === box || event.target.closest('.rv-lightbox-close')) closePhoto()
+    })
+  }
+  const img = box.querySelector('img')
+  if (img) img.src = src
+  box.hidden = false
+  document.body.classList.add('no-scroll')
+}
+
+function closePhoto() {
+  const box = document.getElementById('rvLightbox')
+  if (box) box.hidden = true
+  document.body.classList.remove('no-scroll')
+}
+
+function submitReview(product) {
+  if (selectedRating < 1) {
+    F.toast('Pehle star rating chuniye')
+    return
+  }
+  const nameEl = byId('rvName')
+  const textEl = byId('rvText')
+  const name = nameEl ? nameEl.value.trim() : ''
+  const text = textEl ? textEl.value.trim() : ''
+  if (!text) {
+    F.toast('Review likhna zaroori hai')
+    return
+  }
+  const number = String((F.state.catalog.store || {}).whatsapp || '').replace(/[^\d]/g, '')
+  if (!number || number === '910000000000') {
+    F.toast('Set your WhatsApp number in Admin first')
+    return
+  }
+  const stars = '★'.repeat(selectedRating) + '☆'.repeat(5 - selectedRating)
+  const message = [
+    'New product review — Koncrete Art Kitchen',
+    '',
+    `Product: ${product.name}`,
+    `Link: ${location.href}`,
+    `Rating: ${stars} (${selectedRating}/5)`,
+    `Name: ${name || 'Anonymous'}`,
+    `Review: ${text}`,
+    '',
+    'Main apni product/unboxing photo is chat me bhej raha/rahi hoon.'
+  ].join('\n')
+  window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank')
+
+  const form = byId('reviewForm')
+  if (form) form.hidden = true
+  if (nameEl) nameEl.value = ''
+  if (textEl) textEl.value = ''
+  const file = byId('rvPhoto')
+  if (file) file.value = ''
+  selectedRating = 0
+  const starsEl = byId('rvStars')
+  if (starsEl) {
+    starsEl.querySelectorAll('[data-star]').forEach((b) => {
+      b.classList.remove('active')
+      b.setAttribute('aria-pressed', 'false')
+    })
+  }
+  F.toast('Shukriya! Review WhatsApp par bhejein.')
+}
+
+function bindReviews(product) {
+  const wrap = byId('productReviews')
+  if (!wrap) return
+  wrap.addEventListener('click', (event) => {
+    if (event.target.closest('#writeReviewBtn')) {
+      const form = byId('reviewForm')
+      if (form) {
+        form.hidden = false
+        const name = byId('rvName')
+        if (name) name.focus()
+      }
+      return
+    }
+    if (event.target.closest('#reviewCancel')) {
+      const form = byId('reviewForm')
+      if (form) form.hidden = true
+      return
+    }
+    const star = event.target.closest('[data-star]')
+    if (star) {
+      selectedRating = Number(star.dataset.star)
+      const starsEl = byId('rvStars')
+      if (starsEl) {
+        starsEl.querySelectorAll('[data-star]').forEach((b) => {
+          const on = Number(b.dataset.star) <= selectedRating
+          b.classList.toggle('active', on)
+          b.setAttribute('aria-pressed', String(on))
+        })
+      }
+      return
+    }
+    const photo = event.target.closest('[data-rv-photo]')
+    if (photo) openPhoto(photo.dataset.rvPhoto)
+  })
+
+  const form = byId('reviewForm')
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    submitReview(product)
+  })
+
+  const file = byId('rvPhoto')
+  file?.addEventListener('change', () => {
+    const note = byId('rvNote')
+    if (!note) return
+    const chosen = file.files && file.files[0]
+    note.textContent = chosen
+      ? `Photo chuni: ${chosen.name} — submit ke baad WhatsApp chat me yahi photo attach kar dein.`
+      : 'Submit karne par aapka review WhatsApp par khulega — wahan apni photo attach kar dein. Studio review check karke site par laga dega.'
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closePhoto()
+  })
 }
 
 function whatsappBuy() {
@@ -231,6 +475,12 @@ async function init() {
   setCrumb(current)
   const root = byId('productDetail')
   if (root) root.innerHTML = renderGallery(current) + renderInfo(current)
+  const reviewsWrap = byId('productReviews')
+  if (reviewsWrap) {
+    reviewsWrap.innerHTML = renderReviews(current)
+    reviewsWrap.hidden = false
+    bindReviews(current)
+  }
   renderRelated(current)
   bind(current)
   injectSchema(current)
