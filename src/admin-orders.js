@@ -108,6 +108,7 @@ async function loadOrders() {
   list.innerHTML = '<p class="admin-help">Loading orders…</p>'
   try {
     const orders = await AUTH.getAllOrders()
+    setDashOrders(orders.length)
     if (!orders.length) {
       list.innerHTML = '<p class="admin-help">Abhi koi order nahi aaya.</p>'
       return
@@ -161,6 +162,11 @@ function orderCard(order) {
       <button class="btn btn-ghost" data-save-status="${id}" type="button">Save</button>
     </div>
   </div>`
+}
+
+function setDashOrders(value) {
+  const el = document.getElementById('dashOrders')
+  if (el) el.textContent = String(value)
 }
 
 function timeOf(value) {

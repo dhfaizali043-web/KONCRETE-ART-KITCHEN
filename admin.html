@@ -25,219 +25,248 @@
       <p><a href="./shop.html">View shop</a></p>
     </header>
 
-    <main class="admin-wrap">
-      <h1>Admin</h1>
-      <p class="admin-intro">
-        Edit your store settings and products, then publish. Changes are committed to
-        the GitHub repository and the live site updates automatically in about a minute.
-      </p>
+    <div class="admin-shell">
+      <aside class="admin-side">
+        <nav class="admin-nav" id="adminNav" aria-label="Admin sections">
+          <button type="button" data-go="dashboard">Dashboard</button>
+          <button type="button" data-go="products">Shop / Products</button>
+          <button type="button" data-go="orders">Orders</button>
+          <button type="button" data-go="payments">Payments</button>
+          <button type="button" data-go="chat">Chat assistant</button>
+          <button type="button" data-go="accounts">Customer accounts</button>
+          <button type="button" data-go="store">Store settings</button>
+          <button type="button" data-go="connect">GitHub &amp; publish</button>
+        </nav>
+      </aside>
 
-      <section class="admin-card">
-        <h2>1. Connect GitHub</h2>
-        <p class="admin-help">
-          Create a fine-grained personal access token on GitHub with
-          <strong>Contents: Read and write</strong> access to this repository, then paste it
-          here. It is stored only in this browser (localStorage) and is never sent anywhere
-          except github.com.
-        </p>
-        <div class="admin-grid">
-          <label>
-            GitHub token
-            <input type="password" id="token" placeholder="github_pat_..." autocomplete="off" />
-          </label>
-          <label>
-            Repository
-            <input type="text" id="repo" placeholder="owner/repo" />
-          </label>
-          <label>
-            Branch
-            <input type="text" id="branch" placeholder="main" />
-          </label>
-          <label>
-            File path
-            <input type="text" id="path" placeholder="public/data/catalog.json" />
-          </label>
+      <main class="admin-wrap">
+        <section class="admin-card" data-section="dashboard">
+          <h2>Dashboard</h2>
+          <p class="admin-help">
+            Welcome. Use the menu to manage each part of your store. Edit what you need,
+            then click <strong>Save &amp; publish</strong> at the bottom — the live site
+            updates in about a minute.
+          </p>
+          <div class="admin-stats">
+            <div class="admin-stat"><strong id="dashProducts">0</strong><span>Products</span></div>
+            <div class="admin-stat"><strong id="dashOrders">&mdash;</strong><span>Orders</span></div>
+            <div class="admin-stat"><strong id="dashLogin">&mdash;</strong><span>Customer login</span></div>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-ghost" data-go="products" type="button">Manage products</button>
+            <button class="btn btn-ghost" data-go="orders" type="button">View orders</button>
+            <button class="btn btn-ghost" data-go="payments" type="button">Payment details</button>
+          </div>
+        </section>
+
+        <section class="admin-card" data-section="products" hidden>
+          <h2>Shop / Products</h2>
+          <p class="admin-help">
+            Edit any field, add or remove products, and upload product images from your
+            device. Uploaded images are stored in the repository under
+            <strong>public/brand/products</strong>. Click <strong>Save &amp; publish</strong>
+            at the bottom to make changes live (about one minute).
+          </p>
+          <div id="products"></div>
+          <button class="btn btn-ghost" id="addBtn" type="button">+ Add product</button>
+        </section>
+
+        <section class="admin-card" data-section="orders" hidden>
+          <h2>Orders</h2>
+          <p class="admin-help">
+            Sign in with an owner email (set in Customer accounts) to see every order and
+            update its status. Customers only ever see their own orders.
+          </p>
+          <div id="adminOrders"></div>
+        </section>
+
+        <section class="admin-card" data-section="payments" hidden>
+          <h2>Payments</h2>
+          <p class="admin-help">
+            These details are shown to customers at checkout. Fill in whichever methods you
+            accept; leave the rest blank to hide them.
+          </p>
+          <div class="admin-grid">
+            <label>
+              UPI ID
+              <input type="text" id="payUpiId" placeholder="yourname@upi" />
+            </label>
+            <label>
+              UPI payee name
+              <input type="text" id="payUpiName" placeholder="Koncrete Art Kitchen" />
+            </label>
+            <label class="admin-wide">
+              Razorpay payment link (for card / netbanking)
+              <input type="url" id="payRazorpay" placeholder="https://rzp.io/l/..." />
+            </label>
+            <label>
+              Bank account name
+              <input type="text" id="bankName" placeholder="Account holder name" />
+            </label>
+            <label>
+              Bank name
+              <input type="text" id="bankBankName" placeholder="Bank name" />
+            </label>
+            <label>
+              Account number
+              <input type="text" id="bankAccount" placeholder="Account number" />
+            </label>
+            <label>
+              IFSC code
+              <input type="text" id="bankIfsc" placeholder="IFSC0001234" />
+            </label>
+          </div>
+        </section>
+
+        <section class="admin-card" data-section="chat" hidden>
+          <h2>Chat assistant</h2>
+          <p class="admin-help">
+            The chat bubble shown on the website answers customer questions using your
+            products, prices, payment details and the knowledge base below. One entry per
+            line in the format <strong>Question | Answer</strong>.
+          </p>
+          <div class="admin-grid">
+            <label>
+              Assistant name
+              <input type="text" id="chatName" placeholder="Studio Genie" />
+            </label>
+            <label class="admin-wide">
+              AI API endpoint (optional - your Cloudflare Worker URL; leave empty to use the built-in assistant)
+              <input type="url" id="chatApiUrl" placeholder="https://kak-ai-proxy.YOUR-SUBDOMAIN.workers.dev" />
+            </label>
+            <label class="admin-wide">
+              Greeting message
+              <input type="text" id="chatGreeting" placeholder="Namaste! Kaise madad kar sakta hoon?" />
+            </label>
+            <label class="admin-wide">
+              Quick replies (one per line)
+              <textarea id="chatQuick" rows="3" placeholder="Products&#10;Price&#10;How to order"></textarea>
+            </label>
+            <label class="admin-wide">
+              Knowledge base (Question | Answer, one per line)
+              <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Ji haan, hum pan-India courier karte hain."></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="admin-card" data-section="accounts" hidden>
+          <h2>Customer accounts (login)</h2>
+          <p class="admin-help">
+            Turn on customer login and order history. This uses <strong>Firebase</strong>
+            (Google) — it has a free plan. Create a project at
+            <strong>console.firebase.google.com</strong>, add a <em>Web</em> app, and paste
+            its config values below. Then enable the sign-in methods you want
+            (Email/Password and/or Google) under <em>Authentication</em>, and create a
+            Firestore database under <em>Firestore Database</em>. Login is optional for
+            customers — guests can still checkout without an account.
+          </p>
+          <p class="admin-help">
+            These config values are <strong>public by design</strong> (they only identify
+            your project). Customer data is protected by Firestore security rules — paste
+            these under Firestore &rarr; Rules:
+          </p>
+          <pre class="admin-code" id="rulesCode"></pre>
+          <div class="admin-grid">
+            <label class="admin-check">
+              <input type="checkbox" id="authEnabled" />
+              Enable customer login &amp; order history
+            </label>
+            <label class="admin-wide">
+              Owner email(s) for the orders dashboard (comma separated — sign in with one of these)
+              <input type="text" id="authOwners" placeholder="you@example.com" />
+            </label>
+            <label>
+              apiKey
+              <input type="text" id="fbApiKey" placeholder="AIza..." autocomplete="off" />
+            </label>
+            <label>
+              authDomain
+              <input type="text" id="fbAuthDomain" placeholder="your-project.firebaseapp.com" />
+            </label>
+            <label>
+              projectId
+              <input type="text" id="fbProjectId" placeholder="your-project" />
+            </label>
+            <label>
+              storageBucket
+              <input type="text" id="fbStorageBucket" placeholder="your-project.appspot.com" />
+            </label>
+            <label>
+              messagingSenderId
+              <input type="text" id="fbSenderId" placeholder="000000000000" />
+            </label>
+            <label>
+              appId
+              <input type="text" id="fbAppId" placeholder="1:000000000000:web:..." />
+            </label>
+          </div>
+        </section>
+
+        <section class="admin-card" data-section="store" hidden>
+          <h2>Store settings</h2>
+          <div class="admin-grid">
+            <label>
+              WhatsApp number (country code, no +)
+              <input type="text" id="whatsapp" placeholder="91XXXXXXXXXX" />
+            </label>
+            <label>
+              Currency symbol
+              <input type="text" id="currencySymbol" placeholder="₹" />
+            </label>
+            <label>
+              Currency code
+              <input type="text" id="currencyCode" placeholder="INR" />
+            </label>
+            <label class="admin-wide">
+              Order alert email (new orders are emailed here; leave blank to disable)
+              <input type="email" id="orderAlertEmail" placeholder="orders@yourdomain.com" />
+            </label>
+          </div>
+          <p class="admin-help">
+            The first time an order is placed, the alert service sends one confirmation
+            email to this address — click the link in it once to start receiving order
+            alerts.
+          </p>
+        </section>
+
+        <section class="admin-card" data-section="connect" hidden>
+          <h2>GitHub &amp; publish</h2>
+          <p class="admin-help">
+            Create a fine-grained personal access token on GitHub with
+            <strong>Contents: Read and write</strong> access to this repository, then paste
+            it here. It is stored only in this browser (localStorage) and is never sent
+            anywhere except github.com.
+          </p>
+          <div class="admin-grid">
+            <label>
+              GitHub token
+              <input type="password" id="token" placeholder="github_pat_..." autocomplete="off" />
+            </label>
+            <label>
+              Repository
+              <input type="text" id="repo" placeholder="owner/repo" />
+            </label>
+            <label>
+              Branch
+              <input type="text" id="branch" placeholder="main" />
+            </label>
+            <label>
+              File path
+              <input type="text" id="path" placeholder="public/data/catalog.json" />
+            </label>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-ghost" id="loadBtn" type="button">Load current data</button>
+            <button class="btn btn-ghost" id="forgetBtn" type="button">Forget token</button>
+          </div>
+        </section>
+
+        <div class="admin-publish">
+          <button class="btn btn-solid" id="saveBtn" type="button">Save &amp; publish</button>
+          <p class="admin-status" id="status" role="status" aria-live="polite"></p>
         </div>
-        <div class="admin-actions">
-          <button class="btn btn-ghost" id="loadBtn">Load current data</button>
-          <button class="btn btn-ghost" id="forgetBtn">Forget token</button>
-        </div>
-      </section>
-
-      <section class="admin-card">
-        <h2>2. Store settings</h2>
-        <div class="admin-grid">
-          <label>
-            WhatsApp number (country code, no +)
-            <input type="text" id="whatsapp" placeholder="91XXXXXXXXXX" />
-          </label>
-          <label>
-            Currency symbol
-            <input type="text" id="currencySymbol" placeholder="₹" />
-          </label>
-          <label>
-            Currency code
-            <input type="text" id="currencyCode" placeholder="INR" />
-          </label>
-          <label class="admin-wide">
-            Order alert email (new orders are emailed here; leave blank to disable)
-            <input type="email" id="orderAlertEmail" placeholder="orders@yourdomain.com" />
-          </label>
-        </div>
-        <p class="admin-help">
-          The first time an order is placed, the alert service sends one confirmation email
-          to this address — click the link in it once to start receiving order alerts.
-        </p>
-      </section>
-
-      <section class="admin-card">
-        <h2>3. Payments</h2>
-        <p class="admin-help">
-          These details are shown to customers at checkout. Fill in whichever methods you
-          accept; leave the rest blank to hide them.
-        </p>
-        <div class="admin-grid">
-          <label>
-            UPI ID
-            <input type="text" id="payUpiId" placeholder="yourname@upi" />
-          </label>
-          <label>
-            UPI payee name
-            <input type="text" id="payUpiName" placeholder="Koncrete Art Kitchen" />
-          </label>
-          <label class="admin-wide">
-            Razorpay payment link (for card / netbanking)
-            <input type="url" id="payRazorpay" placeholder="https://rzp.io/l/..." />
-          </label>
-          <label>
-            Bank account name
-            <input type="text" id="bankName" placeholder="Account holder name" />
-          </label>
-          <label>
-            Bank name
-            <input type="text" id="bankBankName" placeholder="Bank name" />
-          </label>
-          <label>
-            Account number
-            <input type="text" id="bankAccount" placeholder="Account number" />
-          </label>
-          <label>
-            IFSC code
-            <input type="text" id="bankIfsc" placeholder="IFSC0001234" />
-          </label>
-        </div>
-      </section>
-
-      <section class="admin-card">
-        <h2>4. Chat assistant</h2>
-        <p class="admin-help">
-          The chat bubble shown on the website answers customer questions using your
-          products, prices, payment details and the knowledge base below. One entry per
-          line in the format <strong>Question | Answer</strong>.
-        </p>
-        <div class="admin-grid">
-          <label>
-            Assistant name
-            <input type="text" id="chatName" placeholder="Studio Genie" />
-          </label>
-          <label class="admin-wide">
-            AI API endpoint (optional - your Cloudflare Worker URL; leave empty to use the built-in assistant)
-            <input type="url" id="chatApiUrl" placeholder="https://kak-ai-proxy.YOUR-SUBDOMAIN.workers.dev" />
-          </label>
-          <label class="admin-wide">
-            Greeting message
-            <input type="text" id="chatGreeting" placeholder="Namaste! Kaise madad kar sakta hoon?" />
-          </label>
-          <label class="admin-wide">
-            Quick replies (one per line)
-            <textarea id="chatQuick" rows="3" placeholder="Products&#10;Price&#10;How to order"></textarea>
-          </label>
-          <label class="admin-wide">
-            Knowledge base (Question | Answer, one per line)
-            <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Ji haan, hum pan-India courier karte hain."></textarea>
-          </label>
-        </div>
-      </section>
-
-      <section class="admin-card">
-        <h2>5. Products</h2>
-        <p class="admin-help">
-          Edit any field, add or remove products, and upload product images from your
-          device. Uploaded images are stored in the repository under
-          <strong>public/brand/products</strong>. Click <strong>Save &amp; publish</strong>
-          at the bottom to make changes live (about one minute).
-        </p>
-        <div id="products"></div>
-        <button class="btn btn-ghost" id="addBtn">+ Add product</button>
-      </section>
-
-      <section class="admin-card">
-        <h2>6. Customer accounts (login)</h2>
-        <p class="admin-help">
-          Turn on customer login and order history. This uses <strong>Firebase</strong>
-          (Google) — it has a free plan. Create a project at
-          <strong>console.firebase.google.com</strong>, add a <em>Web</em> app, and paste its
-          config values below. Then enable the sign-in methods you want
-          (Email/Password and/or Google) under <em>Authentication</em>, and create a
-          Firestore database under <em>Firestore Database</em>. Login is optional for
-          customers — guests can still checkout without an account.
-        </p>
-        <p class="admin-help">
-          These config values are <strong>public by design</strong> (they only identify your
-          project). Customer data is protected by Firestore security rules — paste these
-          under Firestore &rarr; Rules:
-        </p>
-        <pre class="admin-code" id="rulesCode"></pre>
-        <div class="admin-grid">
-          <label class="admin-check">
-            <input type="checkbox" id="authEnabled" />
-            Enable customer login &amp; order history
-          </label>
-          <label class="admin-wide">
-            Owner email(s) for the orders dashboard (comma separated — sign in with one of these)
-            <input type="text" id="authOwners" placeholder="you@example.com" />
-          </label>
-          <label>
-            apiKey
-            <input type="text" id="fbApiKey" placeholder="AIza..." autocomplete="off" />
-          </label>
-          <label>
-            authDomain
-            <input type="text" id="fbAuthDomain" placeholder="your-project.firebaseapp.com" />
-          </label>
-          <label>
-            projectId
-            <input type="text" id="fbProjectId" placeholder="your-project" />
-          </label>
-          <label>
-            storageBucket
-            <input type="text" id="fbStorageBucket" placeholder="your-project.appspot.com" />
-          </label>
-          <label>
-            messagingSenderId
-            <input type="text" id="fbSenderId" placeholder="000000000000" />
-          </label>
-          <label>
-            appId
-            <input type="text" id="fbAppId" placeholder="1:000000000000:web:..." />
-          </label>
-        </div>
-      </section>
-
-      <section class="admin-card">
-        <h2>7. Orders</h2>
-        <p class="admin-help">
-          Sign in with an owner email (set in section 6) to see every order and update its
-          status. Customers only ever see their own orders.
-        </p>
-        <div id="adminOrders"></div>
-      </section>
-
-      <div class="admin-publish">
-        <button class="btn btn-solid" id="saveBtn">Save &amp; publish</button>
-        <p class="admin-status" id="status" role="status" aria-live="polite"></p>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <script type="module" src="./src/auth.js"></script>
     <script type="module" src="./src/admin.js"></script>

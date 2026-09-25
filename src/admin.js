@@ -82,8 +82,25 @@ function init() {
   })
   els.authOwners.addEventListener('input', updateRulesCode)
 
+  const navButtons = document.querySelectorAll('[data-go]')
+  navButtons.forEach((btn) => {
+    btn.addEventListener('click', () => showSection(btn.dataset.go))
+  })
+  const initial = (location.hash || '#dashboard').slice(1)
+  showSection(document.querySelector(`[data-section="${initial}"]`) ? initial : 'dashboard')
+
   updateRulesCode()
   loadRemote()
+}
+
+function showSection(name) {
+  document.querySelectorAll('[data-section]').forEach((section) => {
+    section.hidden = section.dataset.section !== name
+  })
+  document.querySelectorAll('.admin-nav [data-go]').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.go === name)
+  })
+  if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name)
 }
 
 function getConfig() {
@@ -166,6 +183,13 @@ function fillForm(data) {
   updateRulesCode()
   els.products.innerHTML = ''
   ;(data.products || []).forEach((product) => addProduct(product))
+  setText('dashProducts', (data.products || []).length)
+  setText('dashLogin', auth.enabled === true ? 'On' : 'Off')
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id)
+  if (el) el.textContent = value
 }
 
 function addProduct(product) {
