@@ -22,6 +22,10 @@ const els = {
   currencySymbol: $('currencySymbol'),
   currencyCode: $('currencyCode'),
   orderAlertEmail: $('orderAlertEmail'),
+  socialInstagram: $('socialInstagram'),
+  socialPinterest: $('socialPinterest'),
+  socialYoutube: $('socialYoutube'),
+  socialX: $('socialX'),
   payUpiId: $('payUpiId'),
   payUpiName: $('payUpiName'),
   payRazorpay: $('payRazorpay'),
@@ -309,6 +313,11 @@ function fillForm(data) {
   els.fbSenderId.value = fb.messagingSenderId || ''
   els.fbAppId.value = fb.appId || ''
   els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
+  const social = store.social || {}
+  if (els.socialInstagram) els.socialInstagram.value = social.instagram || ''
+  if (els.socialPinterest) els.socialPinterest.value = social.pinterest || ''
+  if (els.socialYoutube) els.socialYoutube.value = social.youtube || ''
+  if (els.socialX) els.socialX.value = social.x || ''
   els.authOwners.value = (auth.owners || []).join(', ')
   els.homeAnnouncements.value = (store.announcements || []).join('\n')
   renderCategoriesAdmin(store.categories || [])
@@ -711,6 +720,12 @@ function collect() {
       },
       orders: {
         alertEmail: els.orderAlertEmail.value.trim()
+      },
+      social: {
+        instagram: els.socialInstagram ? els.socialInstagram.value.trim() : '',
+        pinterest: els.socialPinterest ? els.socialPinterest.value.trim() : '',
+        youtube: els.socialYoutube ? els.socialYoutube.value.trim() : '',
+        x: els.socialX ? els.socialX.value.trim() : ''
       },
       announcements: lines(els.homeAnnouncements.value),
       categories: collectCategories(),

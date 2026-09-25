@@ -67,6 +67,12 @@
     "orders": {
       "alertEmail": ""
     },
+    "social": {
+      "instagram": "",
+      "pinterest": "",
+      "youtube": "",
+      "x": ""
+    },
     "images": {
       "logoWhite": "brand/logo-white.png",
       "logoBlack": "brand/logo-black.png",
