@@ -38,8 +38,10 @@ async function init() {
       .forEach((el) => el.setAttribute('href', resolvePath(images.logoBlack)))
   }
 
-  applyImage(document.querySelector('.seal'), images.seal)
-  applyImage(document.querySelector('.hero-plate img'), images.hero)
+  document.querySelectorAll('.seal').forEach((el) => applyImage(el, images.seal))
+  document
+    .querySelectorAll('.hero-plate img, .sf-hero-plate img')
+    .forEach((el) => applyImage(el, images.hero))
 
   document.querySelectorAll('.gallery .tile img').forEach((el, index) => {
     const path = images['gallery' + (index + 1)]
