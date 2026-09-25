@@ -58,6 +58,8 @@ const els = {
   products: $('products'),
   categoryList: $('categoryList'),
   addCategoryBtn: $('addCategoryBtn'),
+  addressList: $('addressList'),
+  addAddressBtn: $('addAddressBtn'),
   siteImages: $('siteImages'),
   status: $('status'),
   ghStatus: $('ghStatus'),
@@ -185,6 +187,7 @@ function boot() {
   })
   els.authOwners.addEventListener('input', updateRulesCode)
   els.addCategoryBtn?.addEventListener('click', () => addCategoryRow({}))
+  els.addAddressBtn?.addEventListener('click', () => addAddressRow({}))
   els.categoryList?.addEventListener('click', (event) => {
     const addSub = event.target.closest('[data-sub-add]')
     if (addSub) {
@@ -219,6 +222,13 @@ function boot() {
   els.categoryList?.addEventListener('change', (event) => {
     const upload = event.target.closest('[data-cat-upload]')
     if (upload) handleCategoryImageUpload(upload)
+  })
+  els.addressList?.addEventListener('click', (event) => {
+    const remove = event.target.closest('[data-address-remove]')
+    if (remove) remove.closest('.admin-address').remove()
+  })
+  els.addressList?.addEventListener('change', (event) => {
+    if (event.target.closest('[data-addr-field="primary"]')) enforcePrimaryAddress(event.target)
   })
   els.siteImages?.addEventListener('input', (event) => {
     const input = event.target.closest('[data-img-path]')
@@ -358,6 +368,7 @@ function fillForm(data) {
   els.authOwners.value = (auth.owners || []).join(', ')
   els.homeAnnouncements.value = (store.announcements || []).join('\n')
   renderCategoriesAdmin(store.categories || [])
+  renderAddressesAdmin(store.addresses || [])
   els.homeFeatures.value = (store.features || [])
     .map((f) => `${f.title || ''} | ${f.text || ''}`)
     .join('\n')
@@ -557,6 +568,58 @@ function refreshProductCategoryOptions() {
     catSelect.innerHTML = categoryOptions(catValue)
     if (subSelect) subSelect.innerHTML = subcategoryOptions(catValue, subValue)
   })
+}
+
+function renderAddressesAdmin(addresses) {
+  if (!els.addressList) return
+  els.addressList.innerHTML = ''
+  const list = Array.isArray(addresses) ? addresses : []
+  if (!list.length) {
+    addAddressRow({ primary: true })
+    return
+  }
+  list.forEach((address) => addAddressRow(address))
+}
+
+function addAddressRow(address) {
+  const a = address || {}
+  const el = document.createElement('div')
+  el.className = 'admin-address'
+  el.innerHTML = `
+    <div class="admin-address-head">
+      <strong data-addr-title>${escapeHtml(a.label || 'New address')}</strong>
+      <button type="button" class="admin-remove" data-address-remove>Remove</button>
+    </div>
+    <div class="admin-grid">
+      <label>Label <input data-addr-field="label" value="${escapeAttr(a.label)}" placeholder="Studio / Workshop" /></label>
+      <label>Phone (optional) <input data-addr-field="phone" value="${escapeAttr(a.phone)}" placeholder="+91 ..." /></label>
+      <label class="admin-wide">Address <textarea data-addr-field="lines" rows="3" placeholder="Shop no / building&#10;Street, area&#10;City, State - PIN">${escapeHtml(a.lines)}</textarea></label>
+      <label class="admin-wide">Google Maps link (optional) <input data-addr-field="mapsUrl" value="${escapeAttr(a.mapsUrl)}" placeholder="https://maps.google.com/..." /></label>
+      <label class="admin-check"><input type="checkbox" data-addr-field="primary" ${a.primary ? 'checked' : ''} /> Primary address</label>
+    </div>`
+  els.addressList.appendChild(el)
+}
+
+function enforcePrimaryAddress(changed) {
+  if (!changed.checked) return
+  els.addressList.querySelectorAll('[data-addr-field="primary"]').forEach((box) => {
+    if (box !== changed) box.checked = false
+  })
+}
+
+function collectAddresses() {
+  return [...els.addressList.querySelectorAll('.admin-address')]
+    .map((el) => {
+      const get = (field) => el.querySelector(`[data-addr-field="${field}"]`)
+      const label = get('label') ? get('label').value.trim() : ''
+      const lines = get('lines') ? get('lines').value.trim() : ''
+      const phone = get('phone') ? get('phone').value.trim() : ''
+      const mapsUrl = get('mapsUrl') ? get('mapsUrl').value.trim() : ''
+      const primary = get('primary') ? get('primary').checked : false
+      if (!label && !lines && !phone && !mapsUrl) return null
+      return { label, lines, phone, mapsUrl, primary }
+    })
+    .filter(Boolean)
 }
 
 async function handleCategoryImageUpload(input) {
@@ -833,6 +896,7 @@ function collect() {
         youtube: els.socialYoutube ? els.socialYoutube.value.trim() : '',
         x: els.socialX ? els.socialX.value.trim() : ''
       },
+      addresses: collectAddresses(),
       announcements: lines(els.homeAnnouncements.value),
       categories: collectCategories(),
       features: lines(els.homeFeatures.value)

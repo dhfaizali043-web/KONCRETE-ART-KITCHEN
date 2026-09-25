@@ -58,6 +58,7 @@
           <button type="button" data-go="chat">Chat assistant</button>
           <button type="button" data-go="accounts">Customer accounts</button>
           <button type="button" data-go="store">Store settings</button>
+          <button type="button" data-go="addresses">Addresses</button>
           <button type="button" data-go="security">Security &amp; privacy</button>
           <button type="button" data-go="connect">GitHub &amp; publish</button>
         </nav>
@@ -422,6 +423,17 @@
               <input type="url" id="socialX" placeholder="https://x.com/yourhandle" />
             </label>
           </div>
+        </section>
+
+        <section class="admin-card" data-section="addresses" hidden>
+          <h2>Studio addresses</h2>
+          <p class="admin-help">
+            Apne studio / dukaan ke address yahan add karo. Ye website ke footer me (har page
+            par) aur home page ke Commission section me dikhte hain. Ek address ko
+            <strong>Primary</strong> mark karo — wahi sabse pehle dikhega.
+          </p>
+          <div id="addressList"></div>
+          <button class="btn btn-ghost" id="addAddressBtn" type="button">+ Add address</button>
         </section>
 
         <section class="admin-card" data-section="security" hidden>

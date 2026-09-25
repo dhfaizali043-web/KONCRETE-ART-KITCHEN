@@ -4682,3 +4682,75 @@ body.admin-locked {
   font-size: 0.8rem;
   color: var(--ink-soft);
 }
+
+/* ---------- admin addresses ---------- */
+.admin-address {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.7rem;
+  margin-bottom: 0.6rem;
+  background: var(--paper);
+}
+
+.admin-address-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- footer studio address ---------- */
+.footer-address {
+  margin-top: 1rem;
+}
+
+.footer-address h3 {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(241, 235, 224, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.footer-addr {
+  margin-bottom: 0.8rem;
+  font-size: 0.82rem;
+  color: rgba(241, 235, 224, 0.66);
+  line-height: 1.6;
+}
+
+.footer-addr strong {
+  display: block;
+  color: var(--paper);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.footer-addr p {
+  margin: 0 0 0.3rem;
+}
+
+.footer-addr a {
+  display: inline-block;
+  margin-right: 0.8rem;
+  color: var(--halo);
+  font-size: 0.8rem;
+}
+
+.footer-addr a:hover {
+  color: var(--paper);
+}
+
+/* ---------- home commission studio line ---------- */
+.studio-contact {
+  margin-top: 1.4rem;
+  font-size: 0.86rem;
+  color: var(--stone, rgba(241, 235, 224, 0.7));
+  line-height: 1.7;
+}
+
+.studio-contact a {
+  color: var(--halo);
+}

@@ -76,6 +76,71 @@ function renderSocial(store) {
       .join('')
 }
 
+function renderAddresses(store) {
+  const addresses = (Array.isArray(store.addresses) ? store.addresses : []).filter(
+    (address) => address && (address.lines || address.phone || address.label)
+  )
+  if (!addresses.length) return
+  const sorted = [...addresses].sort((a, b) => (b.primary ? 1 : 0) - (a.primary ? 1 : 0))
+
+  const brand = document.querySelector('.footer-brand')
+  if (brand && !brand.querySelector('.footer-address')) {
+    const box = document.createElement('div')
+    box.className = 'footer-address'
+    box.innerHTML =
+      '<h3>Studio</h3>' +
+      sorted
+        .map((address) => {
+          const lines = String(address.lines || '')
+            .split(/\n+/)
+            .map((line) => line.trim())
+            .filter(Boolean)
+          const phoneDigits = String(address.phone || '').replace(/[^+\d]/g, '')
+          return `<div class="footer-addr">
+            ${address.label ? `<strong>${escapeAttr(address.label)}</strong>` : ''}
+            ${lines.length ? `<p>${lines.map(escapeAttr).join('<br>')}</p>` : ''}
+            ${
+              address.phone
+                ? `<a href="tel:${escapeAttr(phoneDigits)}">${escapeAttr(address.phone)}</a>`
+                : ''
+            }
+            ${
+              address.mapsUrl
+                ? `<a href="${escapeAttr(socialHref(address.mapsUrl))}" target="_blank" rel="noopener">Directions</a>`
+                : ''
+            }
+          </div>`
+        })
+        .join('')
+    brand.appendChild(box)
+  }
+
+  const contact = document.getElementById('studioContact')
+  if (contact && !contact.innerHTML) {
+    const primary = sorted[0]
+    const lines = String(primary.lines || '')
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+    const parts = []
+    if (primary.label) parts.push(`<strong>${escapeAttr(primary.label)}</strong>`)
+    if (lines.length) parts.push(lines.map(escapeAttr).join(', '))
+    if (primary.phone) {
+      const digits = String(primary.phone).replace(/[^+\d]/g, '')
+      parts.push(`<a href="tel:${escapeAttr(digits)}">${escapeAttr(primary.phone)}</a>`)
+    }
+    if (primary.mapsUrl) {
+      parts.push(
+        `<a href="${escapeAttr(socialHref(primary.mapsUrl))}" target="_blank" rel="noopener">Get directions</a>`
+      )
+    }
+    if (parts.length) {
+      contact.innerHTML = parts.join(' · ')
+      contact.hidden = false
+    }
+  }
+}
+
 async function init() {
   let store
   try {
@@ -117,6 +182,7 @@ async function init() {
   })
 
   renderSocial(store)
+  renderAddresses(store)
 }
 
 init()
