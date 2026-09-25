@@ -34,6 +34,9 @@ const els = {
   bankBankName: $('bankBankName'),
   bankAccount: $('bankAccount'),
   bankIfsc: $('bankIfsc'),
+  shipEnabled: $('shipEnabled'),
+  shipFlat: $('shipFlat'),
+  shipFree: $('shipFree'),
   chatName: $('chatName'),
   chatApiUrl: $('chatApiUrl'),
   chatGreeting: $('chatGreeting'),
@@ -342,6 +345,10 @@ function fillForm(data) {
   els.bankBankName.value = bank.bankName || ''
   els.bankAccount.value = bank.accountNumber || ''
   els.bankIfsc.value = bank.ifsc || ''
+  const ship = store.shipping || {}
+  if (els.shipEnabled) els.shipEnabled.checked = !!ship.enabled
+  if (els.shipFlat) els.shipFlat.value = Number(ship.flatRate) || 0
+  if (els.shipFree) els.shipFree.value = Number(ship.freeThreshold) || 0
   const chat = store.chat || {}
   els.chatName.value = chat.name || ''
   els.chatApiUrl.value = chat.apiUrl || ''
@@ -862,6 +869,11 @@ function collect() {
           accountNumber: els.bankAccount.value.trim(),
           ifsc: els.bankIfsc.value.trim()
         }
+      },
+      shipping: {
+        enabled: els.shipEnabled ? els.shipEnabled.checked : false,
+        flatRate: els.shipFlat ? Number(els.shipFlat.value) || 0 : 0,
+        freeThreshold: els.shipFree ? Number(els.shipFree.value) || 0 : 0
       },
       chat: {
         name: els.chatName.value.trim() || 'Studio Genie',

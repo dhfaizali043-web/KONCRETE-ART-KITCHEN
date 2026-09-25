@@ -7,6 +7,9 @@ let currentMethod = 'upi'
 
 const summaryItemsEl = document.getElementById('summaryItems')
 const summaryTotalEl = document.getElementById('summaryTotal')
+const summarySubtotalEl = document.getElementById('summarySubtotal')
+const summaryShipEl = document.getElementById('summaryShip')
+const summaryShipRowEl = document.getElementById('summaryShipRow')
 const upiIdEl = document.getElementById('upiId')
 const upiAmountEl = document.getElementById('upiAmount')
 const upiPayBtn = document.getElementById('upiPayBtn')
@@ -58,6 +61,20 @@ function total() {
     const p = findProduct(item.id)
     return sum + (p ? Number(p.price) * item.qty : 0)
   }, 0)
+}
+
+function shippingQuote() {
+  const ship = catalog.store.shipping || {}
+  const subtotal = total()
+  if (!ship.enabled) return { amount: 0, label: 'Free' }
+  const flat = Number(ship.flatRate) || 0
+  const freeAbove = Number(ship.freeThreshold) || 0
+  if (freeAbove > 0 && subtotal >= freeAbove) return { amount: 0, label: 'Free' }
+  return { amount: flat, label: flat > 0 ? money(flat) : 'Free' }
+}
+
+function grandTotal() {
+  return total() + shippingQuote().amount
 }
 
 async function init() {
@@ -162,7 +179,11 @@ function renderSummary() {
         </li>`
     })
     .join('')
-  summaryTotalEl.textContent = money(total())
+  const quote = shippingQuote()
+  if (summarySubtotalEl) summarySubtotalEl.textContent = money(total())
+  if (summaryShipEl) summaryShipEl.textContent = quote.label
+  if (summaryShipRowEl) summaryShipRowEl.hidden = !(catalog.store.shipping || {}).enabled
+  summaryTotalEl.textContent = money(grandTotal())
 }
 
 function upiLink() {
@@ -170,7 +191,7 @@ function upiLink() {
   const params = new URLSearchParams({
     pa: pay.upiId || '',
     pn: pay.upiName || 'Koncrete Art Kitchen',
-    am: String(total()),
+    am: String(grandTotal()),
     cu: 'INR',
     tn: 'Koncrete Art Kitchen order'
   })
@@ -179,7 +200,7 @@ function upiLink() {
 
 function renderPayments() {
   const pay = catalog.store.payments || {}
-  const amount = money(total())
+  const amount = money(grandTotal())
 
   upiIdEl.textContent = pay.upiId || 'Not set'
   upiAmountEl.textContent = amount
@@ -281,7 +302,8 @@ function confirmOrder() {
     '',
     ...lines,
     '',
-    `Total: ${money(total())}`,
+    `Total: ${money(grandTotal())}`,
+    (catalog.store.shipping || {}).enabled ? `Shipping: ${shippingQuote().label}` : '',
     `Payment: ${methodLabel()}`,
     '',
     `Name: ${name || '—'}`,
@@ -316,7 +338,7 @@ function buildOrder({ name, phone, address, note }) {
         price: p ? Number(p.price) : 0
       }
     }),
-    total: money(total()),
+    total: money(grandTotal()),
     method: methodLabel(),
     name,
     phone,

@@ -288,6 +288,25 @@
               <input type="text" id="bankIfsc" placeholder="IFSC0001234" />
             </label>
           </div>
+
+          <h3 class="admin-subhead">Shipping charges</h3>
+          <p class="admin-help">
+            Set a flat shipping fee added at checkout. Orders above the free-shipping
+            amount ship free. Turn this off to not add any shipping charge.
+          </p>
+          <div class="admin-grid">
+            <label class="admin-check">
+              <input type="checkbox" id="shipEnabled" /> Charge shipping at checkout
+            </label>
+            <label>
+              Flat shipping fee (₹)
+              <input type="number" id="shipFlat" min="0" step="1" placeholder="0" />
+            </label>
+            <label>
+              Free shipping above (₹)
+              <input type="number" id="shipFree" min="0" step="1" placeholder="0" />
+            </label>
+          </div>
         </section>
 
         <section class="admin-card" data-section="chat" hidden>
