@@ -18,6 +18,25 @@
   <body>
     <div class="grain" aria-hidden="true"></div>
 
+    <div class="admin-lock" id="adminLock" hidden>
+      <form class="admin-lock-card" id="adminLockForm">
+        <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
+        <h1>Dashboard locked</h1>
+        <p>Enter your admin PIN to continue.</p>
+        <input
+          type="password"
+          id="adminPinInput"
+          inputmode="numeric"
+          autocomplete="current-password"
+          placeholder="PIN"
+          aria-label="Admin PIN"
+        />
+        <button class="btn btn-solid" type="submit">Unlock</button>
+        <p class="admin-lock-error" id="adminLockError" hidden>Wrong PIN. Try again.</p>
+        <p class="admin-lock-hint">Forgot it? Clear this site's data in your browser settings to reset.</p>
+      </form>
+    </div>
+
     <header class="admin-header">
       <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
         <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
@@ -29,6 +48,7 @@
       <aside class="admin-side">
         <nav class="admin-nav" id="adminNav" aria-label="Admin sections">
           <button type="button" data-go="dashboard">Dashboard</button>
+          <button type="button" data-go="setup">Setup guide</button>
           <button type="button" data-go="products">Shop / Products</button>
           <button type="button" data-go="categories">Categories</button>
           <button type="button" data-go="home">Homepage content</button>
@@ -38,6 +58,7 @@
           <button type="button" data-go="chat">Chat assistant</button>
           <button type="button" data-go="accounts">Customer accounts</button>
           <button type="button" data-go="store">Store settings</button>
+          <button type="button" data-go="security">Security &amp; privacy</button>
           <button type="button" data-go="connect">GitHub &amp; publish</button>
         </nav>
       </aside>
@@ -61,6 +82,89 @@
             <button class="btn btn-ghost" data-go="payments" type="button">Payment details</button>
           </div>
           <p class="admin-help" id="dashGithub"></p>
+        </section>
+
+        <section class="admin-card" data-section="setup" hidden>
+          <h2>Setup guide</h2>
+          <p class="admin-help">
+            Sab kuch yahin se manage hota hai. Sirf teen cheezein ek baar set karni hain —
+            neeche step-by-step. Inme koi bhi secret (API key, token) is page par ya
+            catalog me save nahi hota.
+          </p>
+
+          <h3 class="admin-subtitle">1. Publish karna (GitHub)</h3>
+          <p class="admin-help">
+            Store par jo bhi change karo (products, payments, images, settings) wo tabhi live
+            hota hai jab tum <strong>Save &amp; publish</strong> dabate ho. Uske liye ek
+            GitHub token chahiye — sirf ek baar.
+          </p>
+          <ol class="admin-steps">
+            <li>
+              Kholo
+              <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a>
+              par <strong>Fine-grained token</strong> banao.
+            </li>
+            <li>
+              <em>Repository access</em> me sirf apna store repo chuno, aur
+              <em>Permissions &rarr; Contents: Read and write</em> do.
+            </li>
+            <li>
+              Token copy karke <strong>GitHub &amp; publish</strong> section me paste karo.
+              Token sirf tumhare browser me (localStorage) rehta hai, kahin bhej nahi jaata.
+            </li>
+          </ol>
+
+          <h3 class="admin-subtitle">2. Payments aur contact</h3>
+          <p class="admin-help">
+            <strong>Payments</strong> section me UPI ID, bank details aur Razorpay link bharo.
+            <strong>Store settings</strong> me WhatsApp number aur social links. Jo field khaali
+            chhodoge wo checkout/footer par dikhega hi nahi.
+          </p>
+
+          <h3 class="admin-subtitle">3. AI assistant (Studio Genie)</h3>
+          <p class="admin-help">
+            Bina kuch setup kiye bhi assistant kaam karta hai (built-in knowledge base use
+            karta hai). Asli AI answer chahiye to ek baar Cloudflare Worker deploy karo —
+            key sirf Cloudflare me secret ke roop me rahegi, website/catalog me kabhi nahi.
+          </p>
+          <ol class="admin-steps">
+            <li>
+              Free account banao
+              <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a>
+              par.
+            </li>
+            <li>
+              Computer par is project ke <code>worker</code> folder me jao aur ye chalao:
+              <code>npx wrangler deploy</code>
+            </li>
+            <li>
+              Apni AI key secret ke roop me set karo (provider ke naam se ek):
+              <code>npx wrangler secret put USER_LLM_API_KEY</code>
+            </li>
+            <li>
+              Deploy ke baad jo URL mile (jaise <code>https://kak-ai-proxy.xxx.workers.dev</code>)
+              wo <strong>Chat assistant</strong> section ke <em>AI API endpoint</em> me paste
+              karke Publish karo.
+            </li>
+          </ol>
+
+          <h3 class="admin-subtitle">4. Customer login / order history</h3>
+          <p class="admin-help">
+            Optional hai — guest checkout hamesha chalta rahega. Chahte ho to
+            <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a>
+            par free project banao, ek <em>Web</em> app add karo, aur uski config
+            <strong>Customer accounts</strong> section me paste karo. Wahan diye gaye
+            Firestore rules bhi paste kar dena. Firebase config public hoti hai (sirf project
+            identify karti hai), customer data rules se protected rehta hai.
+          </p>
+
+          <h3 class="admin-subtitle">Kya public hota hai?</h3>
+          <ul class="admin-list">
+            <li>Products, prices, images, UPI/bank/Razorpay — ye customers ko dikhne chahiye, isliye public hain.</li>
+            <li>GitHub token — sirf tumhare browser me, kabhi publish nahi hota.</li>
+            <li>AI key — sirf Cloudflare Worker secret me, kabhi repo/browser me nahi.</li>
+            <li>Admin PIN (agar set karo) — tumhare browser me hashed form me.</li>
+          </ul>
         </section>
 
         <section class="admin-card" data-section="products" hidden>
@@ -318,6 +422,36 @@
               <input type="url" id="socialX" placeholder="https://x.com/yourhandle" />
             </label>
           </div>
+        </section>
+
+        <section class="admin-card" data-section="security" hidden>
+          <h2>Security &amp; privacy</h2>
+          <p class="admin-help">
+            Apne dashboard ko is device par PIN se lock karo. Jab tak PIN set hai, admin
+            khulte hi lock screen aayegi. Ye ek device-level lock hai (tumhare browser me
+            hashed PIN) — casual access rokta hai. Asli suraksha GitHub token hi hai, jo
+            sirf tumhare browser me rehta hai aur publish ke alawa kahin nahi jaata.
+          </p>
+          <div class="admin-grid">
+            <label>
+              Set / change PIN (4–6 digits)
+              <input type="password" id="pinNew" inputmode="numeric" autocomplete="new-password" placeholder="4–6 digits" />
+            </label>
+            <label>
+              Confirm PIN
+              <input type="password" id="pinConfirm" inputmode="numeric" autocomplete="new-password" placeholder="Repeat PIN" />
+            </label>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-ghost" id="pinSaveBtn" type="button">Save PIN</button>
+            <button class="btn btn-ghost" id="pinRemoveBtn" type="button">Remove PIN</button>
+            <button class="btn btn-ghost" id="lockNowBtn" type="button">Lock now</button>
+          </div>
+          <p class="admin-help" id="pinStatus" role="status" aria-live="polite"></p>
+          <p class="admin-help">
+            PIN bhool gaye? Browser settings se is site ka data clear kar do — lock hat
+            jaayega (saath me GitHub token bhi hat jaayega, dobara paste kar lena).
+          </p>
         </section>
 
         <section class="admin-card" data-section="connect" hidden>

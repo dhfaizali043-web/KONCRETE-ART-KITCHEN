@@ -8,7 +8,8 @@ const LS = {
   token: 'kak_admin_token',
   repo: 'kak_admin_repo',
   branch: 'kak_admin_branch',
-  path: 'kak_admin_path'
+  path: 'kak_admin_path',
+  pin: 'kak_admin_pin_hash'
 }
 
 const $ = (id) => document.getElementById(id)
@@ -65,7 +66,17 @@ const els = {
   saveBtn: $('saveBtn'),
   addBtn: $('addBtn'),
   downloadBtn: $('downloadBtn'),
-  forgetBtn: $('forgetBtn')
+  forgetBtn: $('forgetBtn'),
+  adminLock: $('adminLock'),
+  adminLockForm: $('adminLockForm'),
+  adminPinInput: $('adminPinInput'),
+  adminLockError: $('adminLockError'),
+  pinNew: $('pinNew'),
+  pinConfirm: $('pinConfirm'),
+  pinSaveBtn: $('pinSaveBtn'),
+  pinRemoveBtn: $('pinRemoveBtn'),
+  lockNowBtn: $('lockNowBtn'),
+  pinStatus: $('pinStatus')
 }
 
 let sha = null
@@ -104,7 +115,7 @@ function fieldValue(input, key, fallback) {
   return saved !== null ? saved : fallback
 }
 
-function init() {
+function boot() {
   els.token.value = localStorage.getItem(LS.token) || ''
   els.repo.value = fieldValue(els.repo, 'repo', DEFAULTS.repo)
   els.branch.value = fieldValue(els.branch, 'branch', DEFAULTS.branch)
@@ -212,6 +223,16 @@ function init() {
   })
   const initial = (location.hash || '#dashboard').slice(1)
   showSection(document.querySelector(`[data-section="${initial}"]`) ? initial : 'dashboard')
+
+  els.pinSaveBtn?.addEventListener('click', savePin)
+  els.pinRemoveBtn?.addEventListener('click', removePin)
+  els.lockNowBtn?.addEventListener('click', () => {
+    if (!localStorage.getItem(LS.pin)) {
+      setPinStatus('Pehle PIN set karo, phir lock kar sakte ho.', 'warn')
+      return
+    }
+    showLock(true)
+  })
 
   updateRulesCode()
   loadRemote()
@@ -1001,6 +1022,99 @@ function escapeHtml(str) {
 
 function escapeAttr(str) {
   return escapeHtml(str)
+}
+
+/* ---------- device lock & PIN ---------- */
+async function hashPin(pin) {
+  const text = 'kak-admin::' + String(pin)
+  if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
+    const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
+    return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('')
+  }
+  let hash = 0
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) | 0
+  }
+  return 'f' + (hash >>> 0).toString(16)
+}
+
+function showLock(on) {
+  if (!els.adminLock) return
+  els.adminLock.hidden = !on
+  document.body.classList.toggle('admin-locked', on)
+  if (on) {
+    if (els.adminLockError) els.adminLockError.hidden = true
+    if (els.adminPinInput) {
+      els.adminPinInput.value = ''
+      setTimeout(() => els.adminPinInput.focus(), 40)
+    }
+  }
+}
+
+function setPinStatus(message, tone) {
+  if (!els.pinStatus) return
+  els.pinStatus.textContent = message
+  els.pinStatus.style.color = tone === 'error' ? '#a3352b' : ''
+}
+
+async function savePin() {
+  const pin = els.pinNew ? els.pinNew.value.trim() : ''
+  const confirm = els.pinConfirm ? els.pinConfirm.value.trim() : ''
+  if (!/^\d{4,6}$/.test(pin)) {
+    setPinStatus('PIN 4 se 6 digits ka hona chahiye.', 'error')
+    return
+  }
+  if (pin !== confirm) {
+    setPinStatus('Dono PIN match nahi kar rahe.', 'error')
+    return
+  }
+  localStorage.setItem(LS.pin, await hashPin(pin))
+  if (els.pinNew) els.pinNew.value = ''
+  if (els.pinConfirm) els.pinConfirm.value = ''
+  setPinStatus('PIN set ho gaya. Ab admin khulte hi lock lagega.')
+}
+
+async function removePin() {
+  if (!localStorage.getItem(LS.pin)) {
+    setPinStatus('Koi PIN set nahi hai.', 'warn')
+    return
+  }
+  localStorage.removeItem(LS.pin)
+  setPinStatus('PIN hata diya. Ab admin bina lock khulega.')
+}
+
+let booted = false
+
+function startBoot() {
+  if (booted) return
+  booted = true
+  boot()
+}
+
+async function init() {
+  if (els.adminLockForm) {
+    els.adminLockForm.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      const storedHash = localStorage.getItem(LS.pin)
+      const value = els.adminPinInput ? els.adminPinInput.value.trim() : ''
+      const hash = storedHash ? await hashPin(value) : ''
+      if (storedHash && hash === storedHash) {
+        showLock(false)
+        startBoot()
+      } else if (els.adminLockError) {
+        els.adminLockError.hidden = false
+        if (els.adminPinInput) {
+          els.adminPinInput.value = ''
+          els.adminPinInput.focus()
+        }
+      }
+    })
+  }
+  if (localStorage.getItem(LS.pin)) {
+    showLock(true)
+    return
+  }
+  startBoot()
 }
 
 init()
