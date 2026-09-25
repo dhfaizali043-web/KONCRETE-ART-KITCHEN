@@ -68,23 +68,10 @@
       "alertEmail": ""
     },
     "social": {
-      "instagram": "",
+      "instagram": "https://www.instagram.com/",
       "pinterest": "",
       "youtube": "",
       "x": ""
-    },
-    "images": {
-      "logoWhite": "brand/logo-white.png",
-      "logoBlack": "brand/logo-black.png",
-      "seal": "brand/kak-logo.jpg",
-      "hero": "brand/site/01-2-1790338946846.jpg",
-      "gallery1": "brand/nameplates/plate-01.png",
-      "gallery2": "brand/nameplates/plate-02.png",
-      "gallery3": "brand/site/01-3-1790339018890.jpg",
-      "gallery4": "brand/site/01-8-1790339041809.jpg",
-      "gallery5": "brand/site/whatsapp-image-2026-09-08-at-12-40-36-pm-1790339029589.jpeg",
-      "genie": "brand/genie.webp",
-      "genieAvatar": "brand/genie-avatar.webp"
     },
     "announcements": [
       "Made to order — crafted in our studio",
@@ -196,6 +183,22 @@
       "title": "Stay in the loop",
       "text": "New pieces, studio updates and custom ideas.",
       "email": ""
+    },
+    "heroBadge": {
+      "label": ""
+    },
+    "images": {
+      "logoWhite": "brand/logo-white.png",
+      "logoBlack": "brand/logo-black.png",
+      "seal": "brand/kak-logo.jpg",
+      "hero": "brand/site/01-2-1790338946846.jpg",
+      "gallery1": "brand/nameplates/plate-01.png",
+      "gallery2": "brand/nameplates/plate-02.png",
+      "gallery3": "brand/site/01-3-1790339018890.jpg",
+      "gallery4": "brand/site/01-8-1790339041809.jpg",
+      "gallery5": "brand/site/whatsapp-image-2026-09-08-at-12-40-36-pm-1790339029589.jpeg",
+      "genie": "brand/genie.webp",
+      "genieAvatar": "brand/genie-avatar.webp"
     }
   },
   "products": [
@@ -203,10 +206,19 @@
       "id": "shaikh-faizan-ali",
       "name": "Shaikh Faizan Ali",
       "description": "",
+      "bullets": [],
       "price": 0,
+      "oldPrice": 0,
+      "badge": "",
+      "rating": 0,
+      "ratingCount": 0,
+      "category": "name-plate",
+      "subcategory": "",
+      "images": [
+        "brand/products/01-5-1790329703317.jpg"
+      ],
       "image": "brand/products/01-5-1790329703317.jpg",
-      "available": true,
-      "category": "name-plate"
+      "available": true
     }
   ]
 }
