@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop — Koncrete Art Kitchen</title>
+    <title>Collection — Koncrete Art Kitchen</title>
     <meta
       name="description"
-      content="Order Koncrete Art Kitchen pieces. Browse the collection, add to cart, and send your order on WhatsApp."
+      content="Browse a Koncrete Art Kitchen category. Add pieces to cart and send your order on WhatsApp."
     />
     <meta name="theme-color" content="#161412" />
     <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
@@ -64,13 +64,12 @@
     </header>
 
     <main>
-      <section class="shop-hero is-light">
-        <p class="eyebrow">Collection · Est. 2024</p>
-        <h1>Shop</h1>
-        <p class="lede">
-          A selection of pieces from the studio. Add to cart and send your order on
-          WhatsApp — we confirm availability and delivery from there.
-        </p>
+      <section class="category-hero is-light">
+        <nav class="crumb" id="categoryCrumb" aria-label="Breadcrumb">
+          <a href="./index.html">Home</a> / <a href="./shop.html">Shop</a> / <span>Collection</span>
+        </nav>
+        <h1 id="categoryTitle">Collection</h1>
+        <p class="lede" id="categoryLede">Browse pieces made to order in our studio.</p>
       </section>
 
       <section class="shop">
@@ -167,6 +166,7 @@
     <script type="module" src="./src/storefront.js"></script>
     <script type="module" src="./src/auth.js"></script>
     <script type="module" src="./src/shop.js"></script>
+    <script type="module" src="./src/category.js"></script>
     <script type="module" src="./src/site-images.js"></script>
     <script type="module" src="./src/chat.js"></script>
   </body>

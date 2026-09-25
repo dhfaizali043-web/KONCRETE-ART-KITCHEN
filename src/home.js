@@ -36,7 +36,7 @@ function renderCategories(store, products) {
       const media = image
         ? `<img src="${F.escapeHtml(image)}" alt="" loading="lazy" />`
         : `<span class="sf-cat-mono">${F.escapeHtml((cat.name || '?').charAt(0))}</span>`
-      return `<a class="sf-cat" href="./shop.html?cat=${encodeURIComponent(cat.id)}">
+      return `<a class="sf-cat" href="${F.categoryHref(cat.id)}">
         <span class="sf-cat-img">${media}</span>
         <span class="sf-cat-name">${F.escapeHtml(cat.name)}</span>
       </a>`
@@ -123,17 +123,8 @@ function renderAnnouncements(store) {
   }
 }
 
-function renderCatNav(store) {
-  const nav = el('catNav')
-  if (!nav) return
-  const categories = Array.isArray(store.categories) ? store.categories : []
-  const links = [
-    '<a href="./shop.html">All</a>',
-    ...categories.map(
-      (c) => `<a href="./shop.html?cat=${encodeURIComponent(c.id)}">${F.escapeHtml(c.name)}</a>`
-    )
-  ]
-  nav.innerHTML = links.join('')
+function renderCatNav() {
+  F.renderCatNav()
 }
 
 function renderHero(store) {

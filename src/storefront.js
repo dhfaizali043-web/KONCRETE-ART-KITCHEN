@@ -85,6 +85,21 @@ function subcategoryName(categoryId, subId) {
   return found ? found.name : subId
 }
 
+function categoryHref(categoryId) {
+  return `./category.html?cat=${encodeURIComponent(categoryId)}`
+}
+
+function renderCatNav() {
+  const nav = document.getElementById('catNav')
+  if (!nav) return
+  const categories = (state.catalog.store && state.catalog.store.categories) || []
+  const links = ['<a href="./shop.html">All</a>']
+  categories.forEach((cat) => {
+    links.push(`<a href="${categoryHref(cat.id)}">${escapeHtml(cat.name)}</a>`)
+  })
+  nav.innerHTML = links.join('')
+}
+
 /* ---------- icons ---------- */
 const ICON_STAR =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>'
@@ -451,6 +466,8 @@ window.KAKFront = {
   categoryName,
   subcategories,
   subcategoryName,
+  categoryHref,
+  renderCatNav,
   starRow,
   searchProducts,
   addToCart,

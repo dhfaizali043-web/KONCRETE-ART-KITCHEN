@@ -87,6 +87,7 @@ function updateUrl() {
   if (filter.q) params.set('q', filter.q)
   const query = params.toString()
   history.replaceState(null, '', query ? `?${query}` : location.pathname)
+  window.dispatchEvent(new CustomEvent('kak:filter', { detail: { cat: filter.cat, sub: filter.sub } }))
 }
 
 /* ---------- cart drawer ---------- */
@@ -148,11 +149,12 @@ function bind() {
   chipsEl?.addEventListener('click', (event) => {
     const chip = event.target.closest('[data-cat]')
     if (!chip) return
-    filter.cat = chip.dataset.cat
-    filter.sub = 'all'
-    renderChips()
-    renderProducts()
-    updateUrl()
+    const id = chip.dataset.cat
+    if (id === 'all') {
+      if (document.getElementById('categoryTitle')) window.location.href = './shop.html'
+      return
+    }
+    window.location.href = F.categoryHref(id)
   })
 
   subChipsEl?.addEventListener('click', (event) => {
@@ -212,6 +214,7 @@ function readParams() {
 
 async function init() {
   await F.ready()
+  F.renderCatNav()
   readParams()
   renderChips()
   renderProducts()

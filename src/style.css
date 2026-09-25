@@ -3887,3 +3887,43 @@ body.no-scroll {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Category page hero ---------- */
+.category-hero {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.8rem 2rem 0.4rem;
+}
+
+.crumb {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.6rem;
+}
+
+.crumb a {
+  color: var(--ink-soft);
+}
+
+.crumb a:hover {
+  color: var(--rust);
+}
+
+.category-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  margin-bottom: 0.5rem;
+}
+
+.category-hero .lede {
+  color: var(--ink-soft);
+  max-width: 36rem;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .category-hero {
+    padding: 1.2rem 1.2rem 0.2rem;
+  }
+}
