@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Koncrete Art Kitchen — Sculpted name plates in light and form</title>
+    <title>Koncrete Art Kitchen — Custom name plates, made in-house</title>
     <meta
       name="description"
-      content="Koncrete Art Kitchen is a design-led studio making custom LED-backlit name plates. Premium decorative and architectural pieces — developed, 3D printed, moulded, and cast in-house."
+      content="Koncrete Art Kitchen is a design-led studio making custom name plates and wall pieces. Designed, modelled and made in-house. Order online with secure UPI, bank or card payment."
     />
     <meta name="author" content="Koncrete Art Kitchen" />
     <meta name="theme-color" content="#161412" />
@@ -15,10 +15,10 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Koncrete Art Kitchen" />
-    <meta property="og:title" content="Koncrete Art Kitchen — Sculpted name plates in light and form" />
+    <meta property="og:title" content="Koncrete Art Kitchen — Custom name plates, made in-house" />
     <meta
       property="og:description"
-      content="Custom LED-backlit name plates. Design, 3D printing, model finishing, mould making, and casting — all in-house."
+      content="Custom name plates and wall pieces, designed and made in-house. Order online — UPI, bank or card."
     />
     <meta property="og:url" content="https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/" />
     <meta property="og:image" content="https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/brand/nameplates/plate-04.png" />
@@ -26,7 +26,7 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Koncrete Art Kitchen" />
-    <meta name="twitter:description" content="Premium LED-backlit name plates, designed and manufactured in-house." />
+    <meta name="twitter:description" content="Premium name plates, designed and made in-house." />
     <meta name="twitter:image" content="https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/brand/nameplates/plate-04.png" />
 
     <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
@@ -50,72 +50,140 @@
       }
     </script>
   </head>
-  <body>
+  <body class="has-bottom-nav">
     <div class="grain" aria-hidden="true"></div>
 
-    <header class="site-header" id="header">
-      <a class="brand" href="#top" aria-label="Koncrete Art Kitchen home">
-        <img src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
-      </a>
-      <nav class="nav" id="nav" aria-label="Primary">
-        <a href="#atelier">Atelier</a>
-        <a href="#work">Work</a>
-        <a href="#craft">Craft</a>
-        <a href="#process">Process</a>
-        <a href="./shop.html">Shop</a>
-        <a href="#commission" class="nav-cta">Commission</a>
-      </nav>
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
+    <div class="announce-bar" id="announceBar">
+      <span id="announceText">Made to order — crafted in our studio</span>
+    </div>
+
+    <header class="site-header is-light" id="header">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="Koncrete Art Kitchen home">
+          <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
+        </a>
+        <nav class="nav" id="nav" aria-label="Primary">
+          <a href="#atelier">Atelier</a>
+          <a href="#work">Work</a>
+          <a href="./shop.html">Shop</a>
+          <a href="#commission">Commission</a>
+        </nav>
+        <div class="header-actions">
+          <button class="icon-btn" type="button" data-search-open aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.9 9.5l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+            <span class="icon-label">Search</span>
+          </button>
+          <button class="icon-btn" type="button" data-wish-open aria-label="Wishlist">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7l-1.4-1.3C5.4 14.7 2 11.6 2 7.9 2 5 4.2 2.8 7.1 2.8c1.6 0 3.2.8 4.2 2 1-1.2 2.6-2 4.2-2C18.4 2.8 20.6 5 20.6 7.9c0 3.7-3.4 6.8-8.6 11.5z"/></svg>
+            <span class="icon-label">Wishlist</span>
+            <span class="count" data-wish-count hidden>0</span>
+          </button>
+          <a class="icon-btn" href="./shop.html" aria-label="Cart">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h-2v2h1.2l1.7 8.3A2 2 0 009.9 16H18v-2H10.3l-.4-2H18a2 2 0 002-1.6L21.3 6H7.6L7 4zm1.5 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm9 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+            <span class="icon-label">Cart</span>
+            <span class="count" data-cart-count hidden>0</span>
+          </a>
+          <button class="icon-btn" type="button" id="accountBtn" aria-label="Account">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a4 4 0 100 8 4 4 0 000-8zm0 2a2 2 0 110 4 2 2 0 010-4zm0 8c-3.9 0-7 2.2-7 5v1h14v-1c0-2.8-3.1-5-7-5z"/></svg>
+            <span class="icon-label">Account</span>
+          </button>
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+      <div class="cat-nav" id="catNav" aria-label="Categories"></div>
     </header>
 
     <main id="top">
-      <section class="hero">
-        <p class="eyebrow">Est. 2024 · Design · Prototyping · Light</p>
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <h1>
-              <span>Koncrete</span>
-              <span>Art Kitchen</span>
-            </h1>
+      <section class="sf-hero">
+        <div class="sf-hero-banner">
+          <div class="sf-hero-copy">
+            <p class="eyebrow">Est. 2024 · Made in-house</p>
+            <h1>Elevate your entrance</h1>
             <p class="lede">
-              Threshold pieces in warm light. Custom circular name plates, designed
-              and made in-house, created for the face of a home.
+              Custom name plates and wall pieces, designed and made in our studio.
+              Tell us the name — we craft the rest.
             </p>
             <div class="hero-actions">
               <a class="btn btn-solid" href="./shop.html">Shop the collection</a>
               <a class="btn btn-ghost" href="#commission">Start a commission</a>
             </div>
+            <ul class="sf-trust">
+              <li>Made to order</li>
+              <li>Pan-India shipping</li>
+              <li>Secure payments</li>
+            </ul>
           </div>
-          <figure class="hero-plate">
+          <figure class="sf-hero-plate">
+            <span class="sf-hero-badge" id="heroBadge" hidden></span>
             <div class="halo"></div>
             <img
               src="./brand/nameplates/plate-04.png"
               alt="Round Koncrete Art Kitchen name plate with wave relief and LED halo"
             />
-            <figcaption>Studio mark · wave relief</figcaption>
           </figure>
         </div>
-        <p class="vert-label" aria-hidden="true">Sculpted for the threshold</p>
+        <div class="sf-dots" id="heroDots" aria-hidden="true"></div>
       </section>
 
-      <section class="strip" aria-label="Capabilities">
-        <div class="strip-track">
-          <span>Design-led</span>
-          <span>3D Modelling</span>
-          <span>Prototyping</span>
-          <span>Model Finishing</span>
-          <span>Mould Making</span>
-          <span>Casting</span>
-          <span>Design-led</span>
-          <span>3D Modelling</span>
-          <span>Prototyping</span>
-          <span>Model Finishing</span>
-          <span>Mould Making</span>
-          <span>Casting</span>
+      <section class="sf-categories" aria-label="Shop by category">
+        <div class="sf-section-head">
+          <h2>Shop by category</h2>
+          <a class="sf-link" href="./shop.html">View all</a>
         </div>
+        <div class="sf-cat-row" id="homeCategories"></div>
       </section>
+
+      <section class="sf-featured" aria-label="Featured products">
+        <div class="sf-section-head">
+          <h2>Signature pieces</h2>
+          <a class="sf-link" href="./shop.html">See all</a>
+        </div>
+        <div class="sf-rail" id="homeProducts"></div>
+      </section>
+
+      <section class="sf-promos" aria-label="Collections">
+        <article class="sf-promo sf-promo-a">
+          <h3>New arrivals</h3>
+          <p>Fresh textures and forms from the studio.</p>
+          <a class="btn btn-solid" href="./shop.html">Shop now</a>
+        </article>
+        <article class="sf-promo sf-promo-b">
+          <h3>Custom &amp; family</h3>
+          <p>A name plate made for your home.</p>
+          <a class="btn btn-solid" href="./shop.html?cat=custom">Shop now</a>
+        </article>
+        <article class="sf-promo sf-promo-c">
+          <h3>Gift ideas</h3>
+          <p>Thoughtful pieces for housewarmings.</p>
+          <a class="btn btn-solid" href="./shop.html">Shop now</a>
+        </article>
+      </section>
+
+      <section class="sf-reviews" aria-label="Customer reviews">
+        <div class="sf-section-head">
+          <h2>Loved by our customers</h2>
+          <span class="sf-avg" id="reviewAvg"></span>
+        </div>
+        <div class="sf-review-row" id="homeReviews"></div>
+      </section>
+
+      <section class="sf-newsletter" aria-label="Newsletter">
+        <div class="sf-news-inner">
+          <div>
+            <h2 id="newsTitle">Stay in the loop</h2>
+            <p id="newsText">New pieces, studio updates and custom ideas.</p>
+          </div>
+          <form class="sf-news-form" id="newsletterForm">
+            <input type="email" id="newsletterInput" placeholder="Enter your email address" required />
+            <button class="btn btn-solid" type="submit">Subscribe</button>
+          </form>
+        </div>
+        <p class="sf-news-status" id="newsletterStatus" hidden></p>
+      </section>
+
+      <section class="sf-features" id="homeFeatures" aria-label="Why shop with us"></section>
 
       <section class="atelier" id="atelier">
         <div class="section-index">01 — About</div>
@@ -300,13 +368,62 @@
     </main>
 
     <footer class="site-footer">
-      <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      <div class="footer-cols">
+        <div class="footer-brand">
+          <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+          <p>Design-led studio making custom name plates and wall pieces — designed and made in-house since 2024.</p>
+        </div>
+        <div>
+          <h3>Shop</h3>
+          <a href="./shop.html">All products</a>
+          <a href="./shop.html?cat=round">Round name plates</a>
+          <a href="./shop.html?cat=name-plate">Name plates</a>
+          <a href="./shop.html?cat=custom">Custom &amp; family</a>
+        </div>
+        <div>
+          <h3>Support</h3>
+          <a href="./shipping.html">Shipping</a>
+          <a href="./returns.html">Returns &amp; refunds</a>
+          <a href="./privacy.html">Privacy</a>
+          <a href="./terms.html">Terms</a>
+        </div>
+        <div>
+          <h3>Studio</h3>
+          <a href="#atelier">About</a>
+          <a href="#process">Process</a>
+          <a href="#commission">Commission</a>
+          <a href="./admin.html">Admin</a>
+        </div>
+      </div>
       <div class="footer-row">
         <p>Koncrete Art Kitchen · Est. 2024</p>
         <p>Design-led studio · Made in-house</p>
-        <p><a href="./shop.html">Shop</a> · <a href="./returns.html">Returns</a> · <a href="./shipping.html">Shipping</a> · <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> · <a href="./admin.html">Admin</a> · <a href="#top">Back to top</a></p>
+        <p><a href="#top">Back to top</a></p>
       </div>
     </footer>
+
+    <nav class="bottom-nav" aria-label="Mobile">
+      <a href="#top">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 8h-3v10h-5v-6h-2v6H6V11H3z"/></svg>
+        Home
+      </a>
+      <a href="./shop.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4H5v2h1l1.7 8.3A2 2 0 009.9 16H18v-2H10.3l-.4-2H18a2 2 0 002-1.6L21.3 6H7.6z"/></svg>
+        Shop
+      </a>
+      <button type="button" data-search-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.9 9.5l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+        Search
+      </button>
+      <button type="button" data-wish-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7l-1.4-1.3C5.4 14.7 2 11.6 2 7.9 2 5 4.2 2.8 7.1 2.8c1.6 0 3.2.8 4.2 2 1-1.2 2.6-2 4.2-2C18.4 2.8 20.6 5 20.6 7.9c0 3.7-3.4 6.8-8.6 11.5z"/></svg>
+        Wishlist
+      </button>
+      <a href="./shop.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a4 4 0 100 8 4 4 0 000-8zm0 8c-3.9 0-7 2.2-7 5v1h14v-1c0-2.8-3.1-5-7-5z"/></svg>
+        Account
+      </a>
+    </nav>
 
     <div class="lightbox" id="lightbox" hidden>
       <button class="lightbox-close" id="lightboxClose" aria-label="Close">Close</button>
@@ -314,8 +431,10 @@
       <p id="lightboxCap"></p>
     </div>
 
+    <script type="module" src="./src/storefront.js"></script>
     <script type="module" src="./src/auth.js"></script>
     <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/home.js"></script>
     <script type="module" src="./src/site-images.js"></script>
     <script type="module" src="./src/chat.js"></script>
   </body>

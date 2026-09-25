@@ -34,6 +34,14 @@ const els = {
   chatGreeting: $('chatGreeting'),
   chatQuick: $('chatQuick'),
   chatKnowledge: $('chatKnowledge'),
+  homeAnnouncements: $('homeAnnouncements'),
+  homeCategories: $('homeCategories'),
+  homeFeatures: $('homeFeatures'),
+  homeReviews: $('homeReviews'),
+  newsTitle: $('newsTitle'),
+  newsText: $('newsText'),
+  newsEmail: $('newsEmail'),
+  heroBadge: $('heroBadge'),
   authEnabled: $('authEnabled'),
   authOwners: $('authOwners'),
   rulesCode: $('rulesCode'),
@@ -106,12 +114,33 @@ function init() {
     setStatus('Downloaded catalog.json — upload it manually to ' + els.path.value.trim(), 'warn')
   })
   els.products.addEventListener('click', (event) => {
+    const addImage = event.target.closest('[data-image-add]')
+    if (addImage) {
+      const list = addImage.closest('.admin-product').querySelector('[data-image-list]')
+      addImageRow(list, '')
+      return
+    }
+    const removeImage = event.target.closest('[data-image-remove]')
+    if (removeImage) {
+      const list = removeImage.closest('[data-image-list]')
+      removeImage.closest('.admin-image-row').remove()
+      if (!list.querySelector('.admin-image-row')) addImageRow(list, '')
+      return
+    }
     const btn = event.target.closest('button[data-remove]')
     if (btn) btn.closest('.admin-product').remove()
   })
   els.products.addEventListener('input', (event) => {
-    const input = event.target.closest('[data-field="image"]')
-    if (input) setPreviewSrc(input.closest('.admin-product'), input.value.trim() ? resolveImage(input.value.trim()) : '')
+    const imageInput = event.target.closest('[data-field="image"]')
+    if (imageInput) {
+      const value = imageInput.value.trim()
+      setPreviewSrc(imageInput.closest('.admin-image-row'), value ? resolveImage(value) : '')
+    }
+    const nameInput = event.target.closest('[data-field="name"]')
+    if (nameInput) {
+      const title = nameInput.closest('.admin-product').querySelector('[data-product-title]')
+      if (title) title.textContent = nameInput.value.trim() || 'New product'
+    }
   })
   els.products.addEventListener('change', (event) => {
     const input = event.target.closest('[data-upload]')
@@ -239,6 +268,21 @@ function fillForm(data) {
   els.fbAppId.value = fb.appId || ''
   els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
   els.authOwners.value = (auth.owners || []).join(', ')
+  els.homeAnnouncements.value = (store.announcements || []).join('\n')
+  els.homeCategories.value = (store.categories || [])
+    .map((c) => `${c.id || ''} | ${c.name || ''}${c.image ? ' | ' + c.image : ''}`)
+    .join('\n')
+  els.homeFeatures.value = (store.features || [])
+    .map((f) => `${f.title || ''} | ${f.text || ''}`)
+    .join('\n')
+  els.homeReviews.value = (store.reviews || [])
+    .map((r) => `${r.name || ''} | ${r.location || ''} | ${r.rating || 5} | ${r.text || ''}`)
+    .join('\n')
+  const news = store.newsletter || {}
+  els.newsTitle.value = news.title || ''
+  els.newsText.value = news.text || ''
+  els.newsEmail.value = news.email || ''
+  els.heroBadge.value = (store.heroBadge && store.heroBadge.label) || ''
   updateRulesCode()
   renderSiteImages(store.images || {})
   els.products.innerHTML = ''
@@ -255,34 +299,61 @@ function setText(id, value) {
 function addProduct(product) {
   const el = document.createElement('div')
   el.className = 'admin-product'
-  const imagePath = product.image || ''
+  const bullets = Array.isArray(product.bullets) ? product.bullets : []
+  const images = Array.isArray(product.images) && product.images.length
+    ? product.images.slice()
+    : product.image
+      ? [product.image]
+      : ['']
   el.innerHTML = `
     <div class="admin-product-head">
-      <strong>${escapeHtml(product.name || 'New product')}</strong>
+      <strong data-product-title>${escapeHtml(product.name || 'New product')}</strong>
       <button type="button" class="admin-remove" data-remove>Remove</button>
     </div>
-    <div class="admin-image">
-      <img class="admin-image-preview" alt="" src="${imagePath ? escapeAttr(resolveImage(imagePath)) : ''}" ${
-        imagePath ? '' : 'hidden'
-      } />
-      <div class="admin-image-fields">
-        <label>Image path or URL <input data-field="image" value="${escapeAttr(imagePath)}" /></label>
-        <label class="admin-upload">Upload image from device
-          <input type="file" accept="image/*" data-upload />
-        </label>
-        <span class="admin-upload-status" data-upload-status></span>
+    <div class="admin-images">
+      <div class="admin-images-head">
+        <span>Images — pehli image main (thumbnail) hogi</span>
+        <button type="button" class="admin-remove" data-image-add>+ Add image</button>
       </div>
+      <div class="admin-image-list" data-image-list></div>
     </div>
     <div class="admin-grid">
       <label>Name <input data-field="name" value="${escapeAttr(product.name)}" /></label>
       <label>Price <input data-field="price" type="number" min="0" value="${escapeAttr(product.price ?? 0)}" /></label>
       <label>ID (optional) <input data-field="id" value="${escapeAttr(product.id)}" placeholder="auto from name" /></label>
+      <label>Category <select data-field="category">${categoryOptions(product.category)}</select></label>
+      <label>Badge (optional) <input data-field="badge" value="${escapeAttr(product.badge)}" placeholder="New / Best seller" /></label>
+      <label>Old price (optional) <input data-field="oldPrice" type="number" min="0" value="${escapeAttr(product.oldPrice ?? 0)}" /></label>
+      <label>Rating (0-5, optional) <input data-field="rating" type="number" min="0" max="5" step="0.1" value="${escapeAttr(product.rating ?? 0)}" /></label>
+      <label>Rating count (optional) <input data-field="ratingCount" type="number" min="0" value="${escapeAttr(product.ratingCount ?? 0)}" /></label>
       <label class="admin-wide">Description <textarea data-field="description" rows="2">${escapeHtml(product.description)}</textarea></label>
+      <label class="admin-wide">Bullet points / keywords <textarea data-field="bullets" rows="4" placeholder="Har line ek bullet hogi, e.g.&#10;Handmade in our studio&#10;Made to order">${escapeHtml(bullets.join('\n'))}</textarea></label>
       <label class="admin-check"><input data-field="available" type="checkbox" ${
         product.available === false ? '' : 'checked'
       } /> Available</label>
     </div>`
   els.products.appendChild(el)
+  const list = el.querySelector('[data-image-list]')
+  images.forEach((src) => addImageRow(list, src))
+}
+
+function addImageRow(list, src) {
+  const value = typeof src === 'string' ? src : ''
+  const row = document.createElement('div')
+  row.className = 'admin-image admin-image-row'
+  row.innerHTML = `
+    <img class="admin-image-preview" alt="" src="${value ? escapeAttr(resolveImage(value)) : ''}" ${
+      value ? '' : 'hidden'
+    } />
+    <div class="admin-image-fields">
+      <label>Image path or URL <input data-field="image" value="${escapeAttr(value)}" /></label>
+      <label class="admin-upload">Upload image from device
+        <input type="file" accept="image/*" data-upload />
+      </label>
+      <span class="admin-upload-status" data-upload-status></span>
+      <button type="button" class="admin-remove admin-image-remove" data-image-remove>Remove image</button>
+    </div>`
+  list.appendChild(row)
 }
 
 function renderSiteImages(images) {
@@ -333,13 +404,13 @@ function setUploadStatus(statusEl, message, kind) {
 }
 
 async function handleUpload(input) {
-  const card = input.closest('.admin-product')
-  const status = card.querySelector('[data-upload-status]')
-  const imageField = card.querySelector('[data-field="image"]')
+  const row = input.closest('.admin-image-row')
+  const status = row.querySelector('[data-upload-status]')
+  const imageField = row.querySelector('[data-field="image"]')
   const file = input.files && input.files[0]
   if (!file) return
 
-  setPreviewSrc(card, URL.createObjectURL(file))
+  setPreviewSrc(row, URL.createObjectURL(file))
   setUploadStatus(status, 'Uploading...', '')
 
   try {
@@ -435,12 +506,22 @@ function collect() {
     const name = get('name').value.trim()
     let id = get('id').value.trim()
     if (!id) id = slugify(name) || 'product-' + Math.random().toString(36).slice(2, 7)
+    const images = [...el.querySelectorAll('[data-image-list] [data-field="image"]')]
+      .map((input) => input.value.trim())
+      .filter(Boolean)
     return {
       id,
       name,
       description: get('description').value.trim(),
+      bullets: lines(get('bullets').value),
       price: Number(get('price').value) || 0,
-      image: get('image').value.trim(),
+      oldPrice: Number(get('oldPrice') ? get('oldPrice').value : 0) || 0,
+      badge: get('badge') ? get('badge').value.trim() : '',
+      rating: Number(get('rating') ? get('rating').value : 0) || 0,
+      ratingCount: Number(get('ratingCount') ? get('ratingCount').value : 0) || 0,
+      category: get('category') ? get('category').value.trim() : '',
+      images,
+      image: images[0] || '',
       available: get('available').checked
     }
   })
@@ -487,6 +568,36 @@ function collect() {
       orders: {
         alertEmail: els.orderAlertEmail.value.trim()
       },
+      announcements: lines(els.homeAnnouncements.value),
+      categories: lines(els.homeCategories.value)
+        .map((line) => {
+          const [id, name, image] = line.split('|').map((part) => (part || '').trim())
+          return { id, name: name || id, image: image || '' }
+        })
+        .filter((cat) => cat.id),
+      features: lines(els.homeFeatures.value)
+        .map((line) => {
+          const [title, ...rest] = line.split('|')
+          return { title: (title || '').trim(), text: rest.join('|').trim() }
+        })
+        .filter((f) => f.title),
+      reviews: lines(els.homeReviews.value)
+        .map((line) => {
+          const [name, location, rating, ...rest] = line.split('|')
+          return {
+            name: (name || '').trim(),
+            location: (location || '').trim(),
+            rating: Number(rating) || 5,
+            text: rest.join('|').trim()
+          }
+        })
+        .filter((r) => r.name),
+      newsletter: {
+        title: els.newsTitle.value.trim(),
+        text: els.newsText.value.trim(),
+        email: els.newsEmail.value.trim()
+      },
+      heroBadge: { label: els.heroBadge.value.trim() },
       images: { ...DEFAULT_IMAGES, ...currentImages }
     },
     products
@@ -602,6 +713,31 @@ function lines(value) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function parseCategories(value) {
+  return lines(value)
+    .map((line) => {
+      const [id, name, image] = line.split('|').map((part) => (part || '').trim())
+      return { id, name: name || id, image: image || '' }
+    })
+    .filter((cat) => cat.id)
+}
+
+function categoryOptions(selected) {
+  const list = parseCategories(els.homeCategories ? els.homeCategories.value : '')
+  if (selected && !list.some((cat) => cat.id === selected)) {
+    list.push({ id: selected, name: selected })
+  }
+  const options = ['<option value="">— none —</option>']
+  list.forEach((cat) => {
+    options.push(
+      `<option value="${escapeAttr(cat.id)}"${cat.id === selected ? ' selected' : ''}>${escapeHtml(
+        cat.name
+      )}</option>`
+    )
+  })
+  return options.join('')
 }
 
 function ownersList() {

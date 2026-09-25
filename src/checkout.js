@@ -46,7 +46,9 @@ function findProduct(id) {
 }
 
 function imgSrc(product) {
-  const src = product.image || ''
+  const list = Array.isArray(product.images) ? product.images.filter(Boolean) : []
+  const src = list[0] || product.image || ''
+  if (!src) return ''
   if (/^https?:/i.test(src)) return src
   return './' + src.replace(/^\.?\//, '')
 }

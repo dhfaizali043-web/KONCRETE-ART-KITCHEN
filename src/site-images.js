@@ -23,7 +23,14 @@ async function init() {
   if (!images) return
 
   if (images.logoWhite) {
-    document.querySelectorAll('.brand img, .footer-mark').forEach((el) => applyImage(el, images.logoWhite))
+    document
+      .querySelectorAll('.footer-mark, .site-header:not(.is-light) .brand img')
+      .forEach((el) => applyImage(el, images.logoWhite))
+  }
+  if (images.logoBlack) {
+    document
+      .querySelectorAll('.site-header.is-light .brand img')
+      .forEach((el) => applyImage(el, images.logoBlack))
   }
   if (images.logoBlack) {
     document

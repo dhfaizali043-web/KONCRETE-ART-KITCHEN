@@ -1,101 +1,66 @@
-const CART_KEY = 'kak_cart_v1'
-const CATALOG_URL = './data/catalog.json'
+/* Shop page: catalog grid with search, category filter, wishlist and cart. */
 
-let catalog = { store: {}, products: [] }
-let cart = loadCart()
+const F = window.KAKFront
 
 const grid = document.getElementById('productGrid')
+const emptyEl = document.getElementById('shopEmpty')
+const chipsEl = document.getElementById('shopChips')
+const searchEl = document.getElementById('shopSearch')
 const drawer = document.getElementById('cartDrawer')
 const overlay = document.getElementById('cartOverlay')
 const cartItemsEl = document.getElementById('cartItems')
 const cartTotalEl = document.getElementById('cartTotal')
-const cartCountEl = document.getElementById('cartCount')
-const openCartBtn = document.getElementById('openCart')
-const closeCartBtn = document.getElementById('closeCart')
 const cartEmptyEl = document.getElementById('cartEmpty')
-const toastEl = document.getElementById('toast')
+const openCartBtn = document.getElementById('openCart')
+const bottomCartBtn = document.getElementById('bottomCart')
+const closeCartBtn = document.getElementById('closeCart')
 
-function loadCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || []
-  } catch {
-    return []
-  }
+const filter = { cat: 'all', q: '' }
+
+function renderChips() {
+  if (!chipsEl) return
+  const categories = F.state.catalog.store.categories || []
+  const items = [{ id: 'all', name: 'All' }, ...categories]
+  chipsEl.innerHTML = items
+    .map(
+      (c) =>
+        `<button type="button" class="sf-chip${filter.cat === c.id ? ' active' : ''}" data-cat="${F.escapeHtml(
+          c.id
+        )}">${F.escapeHtml(c.name)}</button>`
+    )
+    .join('')
 }
 
-function saveCart() {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart))
+function haystack(p) {
+  const bullets = Array.isArray(p.bullets) ? p.bullets : []
+  return [p.name, p.description, F.categoryName(p.category), ...bullets].join(' ').toLowerCase()
 }
 
-function money(value) {
-  const code = catalog.store.currencyCode || 'INR'
-  const symbol = catalog.store.currencySymbol || '₹'
-  try {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: code,
-      maximumFractionDigits: 0
-    }).format(value)
-  } catch {
-    return `${symbol}${Number(value).toLocaleString('en-IN')}`
-  }
-}
-
-function imgSrc(product) {
-  const src = product.image || ''
-  if (/^https?:/i.test(src)) return src
-  return './' + src.replace(/^\.?\//, '')
-}
-
-function findProduct(id) {
-  return catalog.products.find((p) => p.id === id)
-}
-
-async function init() {
-  try {
-    const res = await fetch(CATALOG_URL + '?t=' + Date.now(), { cache: 'no-store' })
-    catalog = await res.json()
-  } catch {
-    catalog = { store: {}, products: [] }
-  }
-  renderProducts()
-  renderCart()
-  bindEvents()
+function matches(p) {
+  if (filter.cat !== 'all' && p.category !== filter.cat) return false
+  if (filter.q && !haystack(p).includes(filter.q.toLowerCase())) return false
+  return true
 }
 
 function renderProducts() {
   if (!grid) return
-  if (!catalog.products.length) {
-    grid.innerHTML = '<p class="shop-empty">No products yet. Add them from the Admin page.</p>'
-    return
-  }
-  grid.innerHTML = catalog.products
-    .map((p) => {
-      const price = Number(p.price) > 0 ? money(p.price) : 'Price on request'
-      const out = p.available === false
-      return `
-        <article class="product ${out ? 'is-out' : ''}">
-          <div class="product-media">
-            <img src="${imgSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" />
-            ${out ? '<span class="badge">Sold out</span>' : ''}
-          </div>
-          <div class="product-body">
-            <h3>${escapeHtml(p.name)}</h3>
-            <p class="product-desc">${escapeHtml(p.description || '')}</p>
-            <div class="product-foot">
-              <span class="price">${price}</span>
-              <button class="btn btn-solid add-btn" data-id="${escapeHtml(p.id)}" ${
-                out ? 'disabled' : ''
-              }>Add to cart</button>
-            </div>
-          </div>
-        </article>`
-    })
-    .join('')
+  const list = (F.state.catalog.products || []).filter(matches)
+  grid.innerHTML = list.map((p) => F.productCard(p, { bullets: true })).join('')
+  if (emptyEl) emptyEl.hidden = list.length > 0
 }
 
+function updateUrl() {
+  const params = new URLSearchParams()
+  if (filter.cat !== 'all') params.set('cat', filter.cat)
+  if (filter.q) params.set('q', filter.q)
+  const query = params.toString()
+  history.replaceState(null, '', query ? `?${query}` : location.pathname)
+}
+
+/* ---------- cart drawer ---------- */
 function renderCart() {
   if (!cartItemsEl) return
+  const cart = F.state.cart
   if (!cart.length) {
     cartItemsEl.innerHTML = ''
     if (cartEmptyEl) cartEmptyEl.hidden = false
@@ -103,88 +68,44 @@ function renderCart() {
     if (cartEmptyEl) cartEmptyEl.hidden = true
     cartItemsEl.innerHTML = cart
       .map((item) => {
-        const p = findProduct(item.id)
+        const p = F.findProduct(item.id)
         const name = p ? p.name : item.id
-        const image = p ? imgSrc(p) : ''
+        const image = p ? F.primaryImage(p) : ''
         const price = p ? Number(p.price) : 0
         return `
           <li class="cart-line">
-            <img src="${image}" alt="${escapeHtml(name)}" />
+            <img src="${F.escapeHtml(image)}" alt="${F.escapeHtml(name)}" />
             <div class="cart-line-info">
-              <strong>${escapeHtml(name)}</strong>
-              <span>${price > 0 ? money(price) : 'Price on request'}</span>
+              <strong>${F.escapeHtml(name)}</strong>
+              <span>${price > 0 ? F.money(price) : 'Price on request'}</span>
               <div class="qty">
-                <button data-act="dec" data-id="${escapeHtml(item.id)}" aria-label="Decrease">−</button>
+                <button type="button" data-line-dec="${F.escapeHtml(item.id)}" aria-label="Decrease">-</button>
                 <span>${item.qty}</span>
-                <button data-act="inc" data-id="${escapeHtml(item.id)}" aria-label="Increase">+</button>
+                <button type="button" data-line-inc="${F.escapeHtml(item.id)}" aria-label="Increase">+</button>
               </div>
             </div>
-            <button class="cart-remove" data-act="remove" data-id="${escapeHtml(item.id)}" aria-label="Remove">×</button>
+            <button type="button" class="cart-remove" data-line-remove="${F.escapeHtml(item.id)}" aria-label="Remove">x</button>
           </li>`
       })
       .join('')
   }
-  const total = cart.reduce((sum, item) => {
-    const p = findProduct(item.id)
-    return sum + (p ? Number(p.price) * item.qty : 0)
-  }, 0)
-  if (cartTotalEl) cartTotalEl.textContent = money(total)
-  const count = cart.reduce((n, item) => n + item.qty, 0)
-  if (cartCountEl) {
-    cartCountEl.textContent = String(count)
-    cartCountEl.hidden = count === 0
-  }
-}
-
-function addToCart(id) {
-  const existing = cart.find((item) => item.id === id)
-  if (existing) existing.qty += 1
-  else cart.push({ id, qty: 1 })
-  saveCart()
-  renderCart()
-  showToast('Added to cart')
-}
-
-function changeQty(id, delta) {
-  const item = cart.find((i) => i.id === id)
-  if (!item) return
-  item.qty += delta
-  if (item.qty <= 0) cart = cart.filter((i) => i.id !== id)
-  saveCart()
-  renderCart()
-}
-
-function removeItem(id) {
-  cart = cart.filter((i) => i.id !== id)
-  saveCart()
-  renderCart()
+  if (cartTotalEl) cartTotalEl.textContent = F.money(F.cartTotal())
 }
 
 function openCart() {
   drawer?.classList.add('open')
   overlay?.classList.add('show')
+  document.body.classList.add('no-scroll')
 }
 
 function closeCart() {
   drawer?.classList.remove('open')
   overlay?.classList.remove('show')
+  document.body.classList.remove('no-scroll')
 }
 
-function showToast(message) {
-  if (!toastEl) return
-  toastEl.textContent = message
-  toastEl.classList.add('show')
-  clearTimeout(showToast._t)
-  showToast._t = setTimeout(() => toastEl.classList.remove('show'), 2000)
-}
-
-function escapeHtml(str) {
-  return String(str ?? '').replace(/[&<>"']/g, (c) => {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-  })
-}
-
-function bindEvents() {
+/* ---------- events ---------- */
+function bind() {
   const menuBtn = document.getElementById('menuBtn')
   const nav = document.getElementById('nav')
   menuBtn?.addEventListener('click', () => {
@@ -192,24 +113,67 @@ function bindEvents() {
     menuBtn.setAttribute('aria-expanded', String(open))
   })
 
-  grid?.addEventListener('click', (event) => {
-    const btn = event.target.closest('.add-btn')
-    if (btn) addToCart(btn.dataset.id)
+  chipsEl?.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-cat]')
+    if (!chip) return
+    filter.cat = chip.dataset.cat
+    renderChips()
+    renderProducts()
+    updateUrl()
   })
+
+  searchEl?.addEventListener('input', () => {
+    filter.q = searchEl.value.trim()
+    renderProducts()
+    updateUrl()
+  })
+
   cartItemsEl?.addEventListener('click', (event) => {
-    const btn = event.target.closest('button[data-act]')
-    if (!btn) return
-    const { act, id } = btn.dataset
-    if (act === 'inc') changeQty(id, 1)
-    else if (act === 'dec') changeQty(id, -1)
-    else if (act === 'remove') removeItem(id)
+    const inc = event.target.closest('[data-line-inc]')
+    const dec = event.target.closest('[data-line-dec]')
+    const rem = event.target.closest('[data-line-remove]')
+    if (inc) {
+      const item = F.state.cart.find((i) => i.id === inc.dataset.lineInc)
+      if (item) F.setQty(item.id, item.qty + 1)
+    } else if (dec) {
+      const item = F.state.cart.find((i) => i.id === dec.dataset.lineDec)
+      if (item) F.setQty(item.id, item.qty - 1)
+    } else if (rem) {
+      F.removeFromCart(rem.dataset.lineRemove)
+    }
   })
+
   openCartBtn?.addEventListener('click', openCart)
+  bottomCartBtn?.addEventListener('click', openCart)
   closeCartBtn?.addEventListener('click', closeCart)
   overlay?.addEventListener('click', closeCart)
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeCart()
   })
+
+  const accountBtn = document.getElementById('accountBtn')
+  accountBtn?.addEventListener('click', () => {
+    const auth = window.KAKAuth
+    if (auth && typeof auth.open === 'function') auth.open()
+  })
+
+  window.addEventListener('kak:cart', renderCart)
+}
+
+function readParams() {
+  const params = new URLSearchParams(location.search)
+  filter.cat = params.get('cat') || 'all'
+  filter.q = params.get('q') || ''
+  if (searchEl && filter.q) searchEl.value = filter.q
+}
+
+async function init() {
+  await F.ready()
+  readParams()
+  renderChips()
+  renderProducts()
+  renderCart()
+  bind()
 }
 
 init()

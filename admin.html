@@ -30,6 +30,7 @@
         <nav class="admin-nav" id="adminNav" aria-label="Admin sections">
           <button type="button" data-go="dashboard">Dashboard</button>
           <button type="button" data-go="products">Shop / Products</button>
+          <button type="button" data-go="home">Homepage content</button>
           <button type="button" data-go="images">Site images</button>
           <button type="button" data-go="orders">Orders</button>
           <button type="button" data-go="payments">Payments</button>
@@ -71,6 +72,50 @@
           </p>
           <div id="products"></div>
           <button class="btn btn-ghost" id="addBtn" type="button">+ Add product</button>
+        </section>
+
+        <section class="admin-card" data-section="home" hidden>
+          <h2>Homepage content</h2>
+          <p class="admin-help">
+            These control the storefront sections on the home page: the announcement
+            bar, category circles, the "why shop with us" strip, customer reviews and
+            the newsletter. Reviews are placeholders — replace them with real customer
+            words before going live.
+          </p>
+          <div class="admin-grid">
+            <label class="admin-wide">
+              Announcement bar (one message per line)
+              <textarea id="homeAnnouncements" rows="3" placeholder="Made to order&#10;Pan-India shipping&#10;Secure payments"></textarea>
+            </label>
+            <label class="admin-wide">
+              Categories (one per line, format: id | Name | image path optional)
+              <textarea id="homeCategories" rows="4" placeholder="name-plate | Name Plates&#10;round | Round Name Plates"></textarea>
+            </label>
+            <label class="admin-wide">
+              "Why shop with us" (one per line: Title | text)
+              <textarea id="homeFeatures" rows="4" placeholder="Made to order | Every piece crafted in-house"></textarea>
+            </label>
+            <label class="admin-wide">
+              Customer reviews (one per line: Name | City | rating | text)
+              <textarea id="homeReviews" rows="5" placeholder="Avni R. | Mumbai | 5 | Beautiful finish."></textarea>
+            </label>
+            <label>
+              Newsletter title
+              <input type="text" id="newsTitle" placeholder="Stay in the loop" />
+            </label>
+            <label>
+              Newsletter text
+              <input type="text" id="newsText" placeholder="New pieces and studio updates." />
+            </label>
+            <label>
+              Newsletter email (signups are sent here; blank = order alert email)
+              <input type="email" id="newsEmail" placeholder="hello@yourdomain.com" />
+            </label>
+            <label>
+              Hero badge label (optional)
+              <input type="text" id="heroBadge" placeholder="Made to order" />
+            </label>
+          </div>
         </section>
 
         <section class="admin-card" data-section="images" hidden>

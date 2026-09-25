@@ -79,6 +79,76 @@
       "gallery5": "brand/site/whatsapp-image-2026-09-08-at-12-40-36-pm-1790339029589.jpeg",
       "genie": "brand/genie.webp",
       "genieAvatar": "brand/genie-avatar.webp"
+    },
+    "announcements": [
+      "Made to order — crafted in our studio",
+      "Pan-India shipping",
+      "Secure checkout — UPI, bank & card"
+    ],
+    "categories": [
+      {
+        "id": "name-plate",
+        "name": "Name Plates",
+        "image": ""
+      },
+      {
+        "id": "round",
+        "name": "Round Name Plates",
+        "image": ""
+      },
+      {
+        "id": "number",
+        "name": "Number Plates",
+        "image": ""
+      },
+      {
+        "id": "custom",
+        "name": "Custom & Family",
+        "image": ""
+      }
+    ],
+    "features": [
+      {
+        "title": "Made to order",
+        "text": "Every piece crafted in-house"
+      },
+      {
+        "title": "Pan-India shipping",
+        "text": "Tracked, secure delivery"
+      },
+      {
+        "title": "Secure payments",
+        "text": "UPI, bank transfer & card"
+      },
+      {
+        "title": "Order support",
+        "text": "We help you on WhatsApp"
+      }
+    ],
+    "reviews": [
+      {
+        "name": "Avni R.",
+        "location": "Mumbai",
+        "rating": 5,
+        "text": "The finish is beautiful and it looks even better in person. Placeholder review — replace from the Admin page."
+      },
+      {
+        "name": "Rohit K.",
+        "location": "Bengaluru",
+        "rating": 5,
+        "text": "Communication was smooth and the piece arrived well packed. Placeholder review — replace from the Admin page."
+      },
+      {
+        "name": "Meera S.",
+        "location": "Pune",
+        "rating": 5,
+        "text": "Exactly the look we wanted for our entrance. Placeholder review — replace from the Admin page."
+      }
+    ],
+    "newsletter": {
+      "title": "Stay in the loop",
+      "text": "New pieces, studio updates and custom ideas.",
+      "email": ""
     }
   },
   "products": [
@@ -88,7 +158,8 @@
       "description": "",
       "price": 0,
       "image": "brand/products/01-5-1790329703317.jpg",
-      "available": true
+      "available": true,
+      "category": "name-plate"
     }
   ]
 }
