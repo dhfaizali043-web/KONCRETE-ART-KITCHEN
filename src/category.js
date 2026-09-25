@@ -30,6 +30,17 @@ function update() {
       ? `Pieces in ${cat.name} — designed and made to order in our studio.`
       : 'Browse the full collection, made to order in our studio.'
   }
+  const artWrap = document.getElementById('categoryArt')
+  const artImg = document.getElementById('categoryImage')
+  if (artWrap && artImg) {
+    if (cat && cat.image) {
+      artImg.src = F.resolveImg(cat.image)
+      artImg.alt = cat.name
+      artWrap.hidden = false
+    } else {
+      artWrap.hidden = true
+    }
+  }
   document.title = `${name} — Koncrete Art Kitchen`
 }
 
