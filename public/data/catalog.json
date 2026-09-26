@@ -1,6 +1,6 @@
 {
   "store": {
-    "whatsapp": "910000000000",
+    "whatsapp": "9558865920",
     "currencySymbol": "₹",
     "currencyCode": "INR",
     "payments": {
@@ -71,7 +71,7 @@
       }
     },
     "orders": {
-      "alertEmail": ""
+      "alertEmail": "dhfaizali043@gmail.com"
     },
     "social": {
       "instagram": "https://www.instagram.com/koncrete_art_kitchen/",
@@ -79,7 +79,15 @@
       "youtube": "",
       "x": ""
     },
-    "addresses": [],
+    "addresses": [
+      {
+        "label": "KAK",
+        "lines": "FF SHOP NO 30 , Magnum Plaza,\nOpp. Vadiwala School, Behind Pratham Upvan, Sun Pharma road,Tandalja",
+        "phone": "+919558865920",
+        "mapsUrl": "",
+        "primary": true
+      }
+    ],
     "announcements": [
       "Made to order — crafted in our studio",
       "Pan-India shipping",
@@ -87,65 +95,10 @@
     ],
     "categories": [
       {
-        "id": "name-plate",
-        "name": "Name Plates",
+        "id": "CANDLE HOLDER",
+        "name": "CANDLE HOLDERS",
         "image": "",
-        "subcategories": [
-          {
-            "id": "round",
-            "name": "Round"
-          },
-          {
-            "id": "rectangle",
-            "name": "Rectangle"
-          },
-          {
-            "id": "number",
-            "name": "House Number"
-          },
-          {
-            "id": "led",
-            "name": "With LED Halo"
-          }
-        ]
-      },
-      {
-        "id": "wall-decor",
-        "name": "Wall Decor",
-        "image": "",
-        "subcategories": [
-          {
-            "id": "relief",
-            "name": "Relief Panels"
-          },
-          {
-            "id": "quotes",
-            "name": "Quote Pieces"
-          },
-          {
-            "id": "abstract",
-            "name": "Abstract Forms"
-          }
-        ]
-      },
-      {
-        "id": "custom",
-        "name": "Custom & Family",
-        "image": "",
-        "subcategories": [
-          {
-            "id": "family",
-            "name": "Family Name Plates"
-          },
-          {
-            "id": "gifting",
-            "name": "Gifting"
-          },
-          {
-            "id": "kids",
-            "name": "Kids Room"
-          }
-        ]
+        "subcategories": []
       }
     ],
     "features": [
@@ -208,12 +161,30 @@
         "Event & gifting agencies"
       ],
       "offerings": [
-        { "title": "Wholesale & bulk pricing", "text": "Tiered pricing for trade partners on repeat and volume orders, with dedicated support." },
-        { "title": "Corporate gifting", "text": "Branded name plates and decor for employees, clients and occasions — packed and ready to gift." },
-        { "title": "Private label (OEM)", "text": "Made under your brand with your packaging, labelling and design direction." },
-        { "title": "Contract manufacturing", "text": "We take your design from sample to bulk production in our in-house studio." },
-        { "title": "Custom branding", "text": "Logo, names, colours and layouts tailored to your brand guidelines." },
-        { "title": "Pan-India & export shipping", "text": "Careful packing with courier and freight options for domestic and export orders." }
+        {
+          "title": "Wholesale & bulk pricing",
+          "text": "Tiered pricing for trade partners on repeat and volume orders, with dedicated support."
+        },
+        {
+          "title": "Corporate gifting",
+          "text": "Branded name plates and decor for employees, clients and occasions — packed and ready to gift."
+        },
+        {
+          "title": "Private label (OEM)",
+          "text": "Made under your brand with your packaging, labelling and design direction."
+        },
+        {
+          "title": "Contract manufacturing",
+          "text": "We take your design from sample to bulk production in our in-house studio."
+        },
+        {
+          "title": "Custom branding",
+          "text": "Logo, names, colours and layouts tailored to your brand guidelines."
+        },
+        {
+          "title": "Pan-India & export shipping",
+          "text": "Careful packing with courier and freight options for domestic and export orders."
+        }
       ],
       "process": [
         "Share your requirement, quantity and timeline.",
@@ -262,7 +233,7 @@
         "brand/products/01-6-1790401384118.jpg"
       ],
       "image": "brand/products/01-6-1790401384118.jpg",
-      "available": true,
+      "available": false,
       "custom": {
         "enabled": true,
         "label": "",
