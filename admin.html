@@ -77,6 +77,7 @@
             <div class="admin-stat"><strong id="dashProducts">0</strong><span>Products</span></div>
             <div class="admin-stat"><strong id="dashOrders">&mdash;</strong><span>Orders</span></div>
             <div class="admin-stat"><strong id="dashLogin">&mdash;</strong><span>Customer login</span></div>
+            <div class="admin-stat"><strong id="dashSubscribers">0</strong><span>Subscribers (this device)</span></div>
           </div>
           <div class="admin-actions">
             <button class="btn btn-ghost" data-go="products" type="button">Manage products</button>
@@ -240,6 +241,10 @@ Another post title | 2026-09-05 | another-post | brand/site/example.jpg | A shor
             <label>
               Newsletter email (signups are sent here; blank = order alert email)
               <input type="email" id="newsEmail" placeholder="hello@yourdomain.com" />
+            </label>
+            <label class="admin-wide">
+              Newsletter subscribers saved in this browser
+              <button class="btn btn-ghost" id="exportSubsBtn" type="button">Download CSV</button>
             </label>
             <label>
               Hero badge label (optional)

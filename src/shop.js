@@ -10,6 +10,7 @@ const searchEl = document.getElementById('shopSearch')
 const sortEl = document.getElementById('shopSort')
 const minEl = document.getElementById('shopMin')
 const maxEl = document.getElementById('shopMax')
+const waCatalogBtn = document.getElementById('waCatalogBtn')
 const drawer = document.getElementById('cartDrawer')
 const overlay = document.getElementById('cartOverlay')
 const cartItemsEl = document.getElementById('cartItems')
@@ -20,6 +21,7 @@ const bottomCartBtn = document.getElementById('bottomCart')
 const closeCartBtn = document.getElementById('closeCart')
 
 const filter = { cat: 'all', sub: 'all', q: '', sort: 'featured', min: '', max: '' }
+let currentList = []
 
 function renderChips() {
   if (!chipsEl) return
@@ -105,6 +107,7 @@ function sortList(list) {
 function renderProducts() {
   if (!grid) return
   const list = sortList((F.state.catalog.products || []).filter(matches))
+  currentList = list
   grid.innerHTML = list.map((p) => F.productCard(p, { bullets: true })).join('')
   if (emptyEl) emptyEl.hidden = list.length > 0
 }
@@ -120,6 +123,34 @@ function updateUrl() {
   const query = params.toString()
   history.replaceState(null, '', query ? `?${query}` : location.pathname)
   window.dispatchEvent(new CustomEvent('kak:filter', { detail: { cat: filter.cat, sub: filter.sub } }))
+}
+
+function shareCatalog() {
+  const number = String((F.state.catalog.store || {}).whatsapp || '').replace(/[^\d]/g, '')
+  if (!number || number === '910000000000') {
+    F.toast('Set your WhatsApp number in Admin first')
+    return
+  }
+  const list = (currentList.length ? currentList : F.state.catalog.products || []).slice(0, 25)
+  if (!list.length) {
+    F.toast('No products to share yet')
+    return
+  }
+  const base = location.origin + location.pathname.replace(/[^/]*$/, '')
+  const lines = list.map((p) => {
+    const price = Number(p.price) > 0 ? ` — ${F.money(p.price)}` : ''
+    const url = `${base}product.html?id=${encodeURIComponent(p.id)}`
+    return `• ${p.name}${price}\n  ${url}`
+  })
+  const message = [
+    'Hello Koncrete Art Kitchen,',
+    'I am interested in these pieces and would like to know availability and pricing:',
+    '',
+    ...lines,
+    '',
+    'Thank you.'
+  ].join('\n')
+  window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank')
 }
 
 /* ---------- cart drawer ---------- */
@@ -223,6 +254,8 @@ function bind() {
   }
   minEl?.addEventListener('input', onPrice)
   maxEl?.addEventListener('input', onPrice)
+
+  waCatalogBtn?.addEventListener('click', shareCatalog)
 
   cartItemsEl?.addEventListener('click', (event) => {
     const inc = event.target.closest('[data-line-inc]')

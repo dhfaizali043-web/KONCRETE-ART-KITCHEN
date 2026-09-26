@@ -278,6 +278,8 @@ function boot() {
     showLock(true)
   })
 
+  document.getElementById('exportSubsBtn')?.addEventListener('click', exportSubscribers)
+
   updateRulesCode()
   loadRemote()
 }
@@ -439,6 +441,33 @@ function fillForm(data) {
   ;(data.products || []).forEach((product) => addProduct(product))
   setText('dashProducts', (data.products || []).length)
   setText('dashLogin', auth.enabled === true ? 'On' : 'Off')
+  setText('dashSubscribers', String(readSubscribers().length))
+}
+
+function readSubscribers() {
+  try {
+    return JSON.parse(localStorage.getItem('kak_subscribers_v1')) || []
+  } catch {
+    return []
+  }
+}
+
+function exportSubscribers() {
+  const list = readSubscribers()
+  if (!list.length) {
+    alert('No newsletter subscribers have been saved in this browser yet.')
+    return
+  }
+  const csv = 'email\n' + list.join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'koncrete-subscribers.csv'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
 function setText(id, value) {

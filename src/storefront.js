@@ -255,6 +255,12 @@ function toggleWish(id) {
   toast(isWished(id) ? 'Saved to wishlist' : 'Removed from wishlist')
 }
 
+function clearWishlist() {
+  if (!state.wishlist.length) return
+  state.wishlist = []
+  persistWish()
+}
+
 /* ---------- header counts ---------- */
 function syncCounts() {
   document.querySelectorAll('[data-cart-count]').forEach((el) => {
@@ -461,6 +467,36 @@ function closeWishlist() {
   document.body.classList.remove('no-scroll')
 }
 
+/* ---------- recently viewed ---------- */
+const RECENT_KEY = 'kak_recent_v1'
+
+function recentIds() {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY)) || []
+  } catch {
+    return []
+  }
+}
+
+function recordRecent(id) {
+  if (!id) return
+  const list = recentIds().filter((item) => item !== id)
+  list.unshift(id)
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 12)))
+  } catch {
+    /* storage optional */
+  }
+}
+
+function recentProducts(limit = 4, excludeId = '') {
+  return recentIds()
+    .filter((id) => id !== excludeId)
+    .map((id) => findProduct(id))
+    .filter(Boolean)
+    .slice(0, limit)
+}
+
 /* ---------- global bindings ---------- */
 function bindGlobal() {
   document.addEventListener('click', (event) => {
@@ -490,7 +526,7 @@ function bindGlobal() {
     }
     if (event.target.closest('[data-wish-open]')) {
       event.preventDefault()
-      openWishlist()
+      window.location.href = './wishlist.html'
       return
     }
     if (event.target.closest('[data-wish-close]')) {
@@ -535,6 +571,9 @@ window.KAKFront = {
   addToCart,
   isSoldOut,
   stockLimit,
+  recentIds,
+  recordRecent,
+  recentProducts,
   setQty,
   changeQty,
   cartKey,
@@ -543,6 +582,7 @@ window.KAKFront = {
   cartCount,
   cartTotal,
   toggleWish,
+  clearWishlist,
   isWished,
   wishCount,
   openSearch,

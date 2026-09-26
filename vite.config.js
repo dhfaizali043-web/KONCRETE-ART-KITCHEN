@@ -111,6 +111,7 @@ export default defineConfig({
         track: entry('./track.html'),
         blog: entry('./blog.html'),
         post: entry('./post.html'),
+        wishlist: entry('./wishlist.html'),
         notfound: entry('./404.html')
       }
     }

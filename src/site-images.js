@@ -195,7 +195,8 @@ function addFooterLinks() {
   const extras = [
     { label: 'FAQ', href: './faq.html' },
     { label: 'Journal', href: './blog.html' },
-    { label: 'Track order', href: './track.html' }
+    { label: 'Track order', href: './track.html' },
+    { label: 'Wishlist', href: './wishlist.html' }
   ]
   extras.forEach((link) => {
     if (row.querySelector(`a[href="${link.href}"]`)) return

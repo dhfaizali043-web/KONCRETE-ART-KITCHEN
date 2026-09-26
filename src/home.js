@@ -286,6 +286,7 @@ function setupNewsletter(store) {
       status.hidden = false
       status.textContent = 'Subscribing...'
     }
+    saveSubscriber(email)
     fetch('https://formsubmit.co/ajax/' + encodeURIComponent(to), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -303,6 +304,18 @@ function setupNewsletter(store) {
         if (status) status.textContent = 'Could not subscribe right now. Please try again later.'
       })
   })
+}
+
+function saveSubscriber(email) {
+  const value = String(email || '').trim().toLowerCase()
+  if (!value) return
+  try {
+    const list = JSON.parse(localStorage.getItem('kak_subscribers_v1')) || []
+    if (!list.includes(value)) list.unshift(value)
+    localStorage.setItem('kak_subscribers_v1', JSON.stringify(list.slice(0, 500)))
+  } catch {
+    /* storage optional */
+  }
 }
 
 function setupAccount() {

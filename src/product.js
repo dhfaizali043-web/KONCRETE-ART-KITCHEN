@@ -506,10 +506,17 @@ function bind(product) {
   const gallery = byId('pdGallery')
   gallery?.addEventListener('click', (event) => {
     const thumb = event.target.closest('[data-psrc]')
-    if (!thumb) return
-    const main = byId('pdMainImage')
-    if (main) main.src = thumb.dataset.psrc
-    gallery.querySelectorAll('.pd-thumb').forEach((t) => t.classList.toggle('active', t === thumb))
+    if (thumb) {
+      const main = byId('pdMainImage')
+      if (main) main.src = thumb.dataset.psrc
+      gallery.querySelectorAll('.pd-thumb').forEach((t) => t.classList.toggle('active', t === thumb))
+      return
+    }
+    if (event.target.closest('#pdMainImage') || event.target.closest('.pd-main')) {
+      const thumbs = [...gallery.querySelectorAll('.pd-thumb')]
+      const index = thumbs.findIndex((t) => t.classList.contains('active'))
+      openLightbox(index < 0 ? 0 : index)
+    }
   })
 
   const info = byId('productDetail')
@@ -535,6 +542,83 @@ function bind(product) {
   })
 }
 
+/* ---------- image lightbox ---------- */
+let lightboxImages = []
+let lightboxIndex = 0
+
+function openLightbox(index) {
+  lightboxImages = F.productImages(current || {}).map((src) => F.resolveImg(src)).filter(Boolean)
+  if (!lightboxImages.length) return
+  lightboxIndex = Math.max(0, Math.min(index || 0, lightboxImages.length - 1))
+  let box = byId('pdLightbox')
+  if (!box) {
+    box = document.createElement('div')
+    box.id = 'pdLightbox'
+    box.className = 'pd-lightbox'
+    box.innerHTML = `
+      <button type="button" class="pd-lb-close" aria-label="Close">Close</button>
+      <button type="button" class="pd-lb-nav prev" data-lb="-1" aria-label="Previous image">&#8249;</button>
+      <img id="pdLbImage" alt="" />
+      <button type="button" class="pd-lb-nav next" data-lb="1" aria-label="Next image">&#8250;</button>
+      <div class="pd-lb-hint">Tap the image to zoom</div>`
+    document.body.appendChild(box)
+    box.addEventListener('click', (event) => {
+      if (event.target.closest('.pd-lb-close')) return closeLightbox()
+      const nav = event.target.closest('[data-lb]')
+      if (nav) return stepLightbox(Number(nav.dataset.lb))
+      if (event.target.closest('#pdLbImage')) return event.target.closest('#pdLbImage').classList.toggle('zoomed')
+      if (event.target === box) closeLightbox()
+    })
+    document.addEventListener('keydown', (event) => {
+      const el = byId('pdLightbox')
+      if (!el || el.hidden) return
+      if (event.key === 'Escape') closeLightbox()
+      else if (event.key === 'ArrowLeft') stepLightbox(-1)
+      else if (event.key === 'ArrowRight') stepLightbox(1)
+    })
+  }
+  updateLightbox()
+  box.hidden = false
+  document.body.classList.add('no-scroll')
+}
+
+function updateLightbox() {
+  const img = byId('pdLbImage')
+  if (!img) return
+  img.src = lightboxImages[lightboxIndex] || ''
+  img.classList.remove('zoomed')
+  const multi = lightboxImages.length > 1
+  document.querySelectorAll('.pd-lb-nav').forEach((btn) => {
+    btn.hidden = !multi
+  })
+}
+
+function stepLightbox(delta) {
+  if (lightboxImages.length < 2) return
+  lightboxIndex = (lightboxIndex + delta + lightboxImages.length) % lightboxImages.length
+  updateLightbox()
+}
+
+function closeLightbox() {
+  const box = byId('pdLightbox')
+  if (box) box.hidden = true
+  document.body.classList.remove('no-scroll')
+}
+
+/* ---------- recently viewed ---------- */
+function renderRecent(product) {
+  const wrap = byId('pdRecentWrap')
+  const grid = byId('pdRecent')
+  if (!wrap || !grid) return
+  const list = F.recentProducts(4, product.id)
+  if (!list.length) {
+    wrap.hidden = true
+    return
+  }
+  grid.innerHTML = list.map((p) => F.productCard(p)).join('')
+  wrap.hidden = false
+}
+
 async function init() {
   await F.ready()
   const id = new URLSearchParams(location.search).get('id') || ''
@@ -556,6 +640,8 @@ async function init() {
   renderRelated(current)
   bind(current)
   injectSchema(current)
+  F.recordRecent(current.id)
+  renderRecent(current)
 }
 
 init()
