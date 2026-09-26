@@ -221,10 +221,19 @@
       "category": "name-plate",
       "subcategory": "",
       "images": [
-        "brand/products/01-5-1790329703317.jpg"
+        "brand/products/01-6-1790401384118.jpg"
       ],
-      "image": "brand/products/01-5-1790329703317.jpg",
-      "available": true
+      "image": "brand/products/01-6-1790401384118.jpg",
+      "available": true,
+      "custom": {
+        "enabled": true,
+        "label": "",
+        "placeholder": "",
+        "note": "",
+        "maxLength": 60,
+        "required": false
+      },
+      "reviews": []
     }
   ]
 }
