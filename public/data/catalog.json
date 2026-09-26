@@ -125,6 +125,26 @@
         "text": "We help you on WhatsApp"
       }
     ],
+    "reviews": [
+      {
+        "name": "Avni R.",
+        "location": "Mumbai",
+        "rating": 5,
+        "text": "The finish is beautiful and it looks even better in person. Placeholder review — replace from the Admin page."
+      },
+      {
+        "name": "Rohit K.",
+        "location": "Bengaluru",
+        "rating": 5,
+        "text": "Communication was smooth and the piece arrived well packed. Placeholder review — replace from the Admin page."
+      },
+      {
+        "name": "Meera S.",
+        "location": "Pune",
+        "rating": 5,
+        "text": "Exactly the look we wanted for our entrance. Placeholder review — replace from the Admin page."
+      }
+    ],
     "faq": [
       {
         "q": "Do you ship across India?",
@@ -154,39 +174,19 @@
     "posts": [
       {
         "title": "How a custom name plate comes together",
-        "slug": "how-a-custom-name-plate-comes-together",
         "date": "2026-08-12",
+        "slug": "how-a-custom-name-plate-comes-together",
         "image": "",
         "excerpt": "From your first message to the final finish, here is what happens inside the studio when you commission a personalised piece.",
         "body": "Every commission starts with a conversation. You share the name, the size you have in mind, a rough idea of the look and where the piece will be placed. From there we develop a design direction and share a preview with you before anything is made.\n\nOnce you are happy with the direction, production begins in the studio. Each piece is made to order, so nothing is mass produced. We keep you updated on WhatsApp as the work moves forward.\n\nBefore dispatch, every piece is checked and packed with care so it reaches you in the same condition it left the studio. If you would like to commission something, the best place to start is a message on WhatsApp."
       },
       {
         "title": "Choosing a piece for your entrance",
-        "slug": "choosing-a-piece-for-your-entrance",
         "date": "2026-09-05",
+        "slug": "choosing-a-piece-for-your-entrance",
         "image": "",
         "excerpt": "A few simple things to think about before you order for your main door or hallway.",
         "body": "Your entrance is the first thing guests notice, so it is worth taking a moment to plan the piece. Start with the size of the wall or door and the viewing distance. A piece that reads clearly from the street is different from one seen up close in a hallway.\n\nThink about the mood you want. A calm, minimal look suits modern homes, while a warmer, more decorative style can work beautifully with traditional interiors. It also helps to consider the lighting around the entrance, as it changes how a piece looks through the day.\n\nWhen you order, tell us where the piece will go and share a photo if you can. That context helps us guide you to a design that fits the space."
-      }
-    ],
-    "reviews": [
-      {
-        "name": "Avni R.",
-        "location": "Mumbai",
-        "rating": 5,
-        "text": "The finish is beautiful and it looks even better in person. Placeholder review — replace from the Admin page."
-      },
-      {
-        "name": "Rohit K.",
-        "location": "Bengaluru",
-        "rating": 5,
-        "text": "Communication was smooth and the piece arrived well packed. Placeholder review — replace from the Admin page."
-      },
-      {
-        "name": "Meera S.",
-        "location": "Pune",
-        "rating": 5,
-        "text": "Exactly the look we wanted for our entrance. Placeholder review — replace from the Admin page."
       }
     ],
     "newsletter": {
@@ -274,6 +274,7 @@
       "bullets": [],
       "price": 0,
       "oldPrice": 0,
+      "stock": 0,
       "badge": "",
       "rating": 0,
       "ratingCount": 0,
@@ -284,7 +285,6 @@
       ],
       "image": "brand/products/01-6-1790401384118.jpg",
       "available": false,
-      "stock": 0,
       "custom": {
         "enabled": true,
         "label": "",
