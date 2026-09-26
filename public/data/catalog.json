@@ -194,6 +194,43 @@
     "heroBadge": {
       "label": ""
     },
+    "b2b": {
+      "enabled": true,
+      "eyebrow": "For business",
+      "title": "Wholesale, corporate gifting & private label",
+      "intro": "We design and manufacture custom name plates and decor in-house. Partner with us for bulk orders, corporate gifting, private label and contract manufacturing — pan-India and export ready.",
+      "audiences": [
+        "Retailers & resellers",
+        "Interior designers & architects",
+        "Corporate gifting & bulk orders",
+        "Cafes, hotels & offices",
+        "Exporters & importers",
+        "Event & gifting agencies"
+      ],
+      "offerings": [
+        { "title": "Wholesale & bulk pricing", "text": "Tiered pricing for trade partners on repeat and volume orders, with dedicated support." },
+        { "title": "Corporate gifting", "text": "Branded name plates and decor for employees, clients and occasions — packed and ready to gift." },
+        { "title": "Private label (OEM)", "text": "Made under your brand with your packaging, labelling and design direction." },
+        { "title": "Contract manufacturing", "text": "We take your design from sample to bulk production in our in-house studio." },
+        { "title": "Custom branding", "text": "Logo, names, colours and layouts tailored to your brand guidelines." },
+        { "title": "Pan-India & export shipping", "text": "Careful packing with courier and freight options for domestic and export orders." }
+      ],
+      "process": [
+        "Share your requirement, quantity and timeline.",
+        "We propose options, pricing and a sample.",
+        "Sample approval and order confirmation.",
+        "Bulk production in our studio.",
+        "Quality check, packing and dispatch."
+      ],
+      "terms": [
+        "Minimum order quantity (MOQ): shared on enquiry, based on the product.",
+        "Lead time: depends on quantity and customisation — confirmed with your quote.",
+        "Payment terms: advance with order; balance before dispatch (discussed per order).",
+        "Custom branding and packaging: available on request.",
+        "Samples: available, charges depend on the design."
+      ],
+      "note": "Share your requirement and we will get back with pricing, lead time and samples."
+    },
     "images": {
       "logoWhite": "brand/logo-white.png",
       "logoBlack": "brand/logo-black.png",

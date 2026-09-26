@@ -52,6 +52,7 @@
           <button type="button" data-go="products">Shop / Products</button>
           <button type="button" data-go="categories">Categories</button>
           <button type="button" data-go="home">Homepage content</button>
+          <button type="button" data-go="b2b">B2B &amp; wholesale</button>
           <button type="button" data-go="images">Site images</button>
           <button type="button" data-go="orders">Orders</button>
           <button type="button" data-go="payments">Payments</button>
@@ -229,6 +230,49 @@
             <label>
               Hero badge label (optional)
               <input type="text" id="heroBadge" placeholder="Made to order" />
+            </label>
+          </div>
+        </section>
+
+        <section class="admin-card" data-section="b2b" hidden>
+          <h2>B2B &amp; wholesale</h2>
+          <p class="admin-help">
+            This controls the <strong>B2B / wholesale</strong> page (linked from the top
+            menu and footer). Use it for trade, corporate gifting, private label and
+            contract-manufacturing enquiries. All text here is yours to edit.
+          </p>
+          <div class="admin-grid">
+            <label>
+              Small label
+              <input type="text" id="b2bEyebrow" placeholder="For business" />
+            </label>
+            <label>
+              Page title
+              <input type="text" id="b2bTitle" placeholder="Wholesale, corporate gifting & private label" />
+            </label>
+            <label class="admin-wide">
+              Intro paragraph
+              <textarea id="b2bIntro" rows="3" placeholder="Who you are and what you offer to businesses."></textarea>
+            </label>
+            <label class="admin-wide">
+              Who you work with (one per line)
+              <textarea id="b2bAudiences" rows="4" placeholder="Retailers & resellers&#10;Interior designers & architects"></textarea>
+            </label>
+            <label class="admin-wide">
+              What you offer (one per line: Title | text)
+              <textarea id="b2bOfferings" rows="5" placeholder="Wholesale pricing | Tiered pricing for trade partners."></textarea>
+            </label>
+            <label class="admin-wide">
+              Process steps (one per line, in order)
+              <textarea id="b2bProcess" rows="5" placeholder="Share your requirement&#10;Sample approval"></textarea>
+            </label>
+            <label class="admin-wide">
+              Terms at a glance (one per line)
+              <textarea id="b2bTerms" rows="5" placeholder="Minimum order quantity: shared on enquiry."></textarea>
+            </label>
+            <label class="admin-wide">
+              Enquiry note (shown above the form)
+              <input type="text" id="b2bNote" placeholder="Share your requirement and we will get back." />
             </label>
           </div>
         </section>

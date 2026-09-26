@@ -3209,6 +3209,28 @@ body.no-scroll {
   color: var(--ink-soft);
 }
 
+.sf-review-photo {
+  display: block;
+  margin-top: auto;
+}
+
+.sf-review-photo img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+.sf-review-share {
+  margin-top: 1.2rem;
+}
+
+.sf-review-form {
+  max-width: 620px;
+  margin-top: 1.2rem;
+}
+
 /* ---------- newsletter ---------- */
 .sf-newsletter {
   background: var(--char);
@@ -5134,4 +5156,229 @@ body.admin-locked {
 
 .admin-custom .admin-images-head {
   margin-bottom: 0.5rem;
+}
+
+/* ---------- dark page shell (contact, orders, b2b) ---------- */
+body.page-dark {
+  background: var(--char);
+  color: var(--paper);
+}
+
+/* ---------- B2B / wholesale page ---------- */
+.b2b-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 6vw 5rem;
+}
+
+.b2b-hero {
+  padding: 6rem 0 2.5rem;
+}
+
+.b2b-hero h1 {
+  font-family: var(--serif, 'Cinzel', serif);
+  font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+  letter-spacing: 0.03em;
+  margin: 0.6rem 0 1rem;
+}
+
+.b2b-hero .lede {
+  max-width: 60ch;
+  color: rgba(241, 235, 224, 0.72);
+  line-height: 1.7;
+}
+
+.b2b-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+
+.b2b-section {
+  margin-top: 3.5rem;
+}
+
+.b2b-section-head {
+  margin-bottom: 1.4rem;
+}
+
+.b2b-section-head h2 {
+  font-family: var(--serif, 'Cinzel', serif);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  margin: 0.5rem 0 0;
+}
+
+.b2b-note {
+  color: rgba(241, 235, 224, 0.68);
+  max-width: 60ch;
+  margin-top: 0.7rem;
+}
+
+.b2b-chips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.b2b-chips li {
+  border: 1px solid rgba(241, 235, 224, 0.2);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.84rem;
+  color: rgba(241, 235, 224, 0.85);
+}
+
+.b2b-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.b2b-card {
+  border: 1px solid rgba(241, 235, 224, 0.14);
+  border-radius: 14px;
+  padding: 1.3rem;
+  background: rgba(241, 235, 224, 0.03);
+}
+
+.b2b-card h3 {
+  font-family: var(--serif, 'Cinzel', serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+}
+
+.b2b-card p {
+  margin: 0;
+  color: rgba(241, 235, 224, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.b2b-steps {
+  list-style: none;
+  counter-reset: b2b;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.b2b-steps li {
+  counter-increment: b2b;
+  position: relative;
+  padding: 0.9rem 1rem 0.9rem 3.2rem;
+  border: 1px solid rgba(241, 235, 224, 0.14);
+  border-radius: 12px;
+  background: rgba(241, 235, 224, 0.03);
+  color: rgba(241, 235, 224, 0.85);
+}
+
+.b2b-steps li::before {
+  content: counter(b2b, decimal-leading-zero);
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--serif, 'Cinzel', serif);
+  color: var(--halo);
+  font-size: 0.95rem;
+}
+
+.b2b-terms {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.b2b-terms li {
+  position: relative;
+  padding-left: 1.4rem;
+  color: rgba(241, 235, 224, 0.75);
+  line-height: 1.6;
+}
+
+.b2b-terms li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  background: var(--halo);
+}
+
+.b2b-enquiry {
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
+}
+
+.b2b-form {
+  border: 1px solid rgba(241, 235, 224, 0.14);
+  border-radius: 14px;
+  padding: 1.6rem;
+  background: rgba(241, 235, 224, 0.03);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.b2b-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.b2b-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(241, 235, 224, 0.62);
+}
+
+.b2b-form input,
+.b2b-form select,
+.b2b-form textarea {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(241, 235, 224, 0.18);
+  border-radius: 8px;
+  background: rgba(20, 18, 16, 0.5);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.92rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.b2b-form select option {
+  color: var(--ink);
+}
+
+.b2b-form input:focus,
+.b2b-form select:focus,
+.b2b-form textarea:focus {
+  outline: none;
+  border-color: var(--halo);
+}
+
+.b2b-form .btn {
+  justify-self: start;
+}
+
+@media (max-width: 720px) {
+  .b2b-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .b2b-hero {
+    padding-top: 5rem;
+  }
 }

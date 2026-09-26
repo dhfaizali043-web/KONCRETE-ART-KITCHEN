@@ -66,6 +66,7 @@
           <a href="#atelier">Atelier</a>
           <a href="#work">Work</a>
           <a href="./shop.html">Shop</a>
+          <a href="./b2b.html">B2B</a>
           <a href="#commission">Commission</a>
         </nav>
         <div class="header-actions">
@@ -167,6 +168,38 @@
           <span class="sf-avg" id="reviewAvg"></span>
         </div>
         <div class="sf-review-row" id="homeReviews"></div>
+        <div class="sf-review-share">
+          <button type="button" class="btn btn-solid" id="writeTestimonialBtn">
+            Share your experience
+          </button>
+        </div>
+        <form class="rv-form sf-review-form" id="testimonialForm" hidden>
+          <h3>Share your experience</h3>
+          <div class="rv-pick">
+            <span>Your rating</span>
+            <div class="rv-stars-input" id="tstStars" role="radiogroup" aria-label="Your rating">
+              <button type="button" data-star="1" aria-label="1 star" aria-pressed="false">★</button>
+              <button type="button" data-star="2" aria-label="2 star" aria-pressed="false">★</button>
+              <button type="button" data-star="3" aria-label="3 star" aria-pressed="false">★</button>
+              <button type="button" data-star="4" aria-label="4 star" aria-pressed="false">★</button>
+              <button type="button" data-star="5" aria-label="5 star" aria-pressed="false">★</button>
+            </div>
+          </div>
+          <label>Your name<input type="text" id="tstName" maxlength="40" placeholder="Your name" /></label>
+          <label>City (optional)<input type="text" id="tstLocation" maxlength="40" placeholder="Mumbai" /></label>
+          <label>Your review<textarea id="tstText" rows="3" maxlength="500" placeholder="What did you order and how was it?"></textarea></label>
+          <label class="rv-file">Photo (optional)
+            <input type="file" id="tstPhoto" accept="image/*" />
+          </label>
+          <p class="rv-note" id="tstNote">
+            On submit, your review opens on WhatsApp — attach your photo there.
+            The studio checks it and publishes it on the site.
+          </p>
+          <div class="rv-actions">
+            <button type="submit" class="btn btn-solid">Submit review</button>
+            <button type="button" class="btn pd-write" id="testimonialCancel">Cancel</button>
+          </div>
+        </form>
       </section>
 
       <section class="sf-newsletter" aria-label="Newsletter">
@@ -392,6 +425,7 @@
         </div>
         <div>
           <h3>Studio</h3>
+          <a href="./b2b.html">B2B &amp; wholesale</a>
           <a href="#atelier">About</a>
           <a href="#process">Process</a>
           <a href="#commission">Commission</a>

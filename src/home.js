@@ -78,7 +78,10 @@ function renderReviews(store) {
   if (!target) return
   const reviews = Array.isArray(store.reviews) ? store.reviews : []
   if (!reviews.length) {
-    target.closest('.sf-reviews').hidden = true
+    const avgEl = el('reviewAvg')
+    if (avgEl) avgEl.innerHTML = ''
+    target.innerHTML =
+      '<p class="rv-empty">No reviews yet — be the first to share your experience.</p>'
     return
   }
   const avg = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length
@@ -87,17 +90,117 @@ function renderReviews(store) {
     avgEl.innerHTML = `${F.starRow(avg)}<span>${avg.toFixed(1)} average</span>`
   }
   target.innerHTML = reviews
-    .map(
-      (r) => `<article class="sf-review">
+    .map((r) => {
+      const photo = r.photo ? resolveImg(r.photo) : ''
+      return `<article class="sf-review">
         <div class="sf-review-top">
           <span class="sf-avatar">${F.escapeHtml((r.name || '?').charAt(0))}</span>
           <div><strong>${F.escapeHtml(r.name || 'Customer')}</strong><em>${F.escapeHtml(r.location || '')}</em></div>
         </div>
         ${F.starRow(r.rating || 5)}
         <p>${F.escapeHtml(r.text || '')}</p>
+        ${
+          photo
+            ? `<a class="sf-review-photo" href="${F.escapeHtml(photo)}" target="_blank" rel="noopener"><img src="${F.escapeHtml(photo)}" alt="Customer photo" loading="lazy" /></a>`
+            : ''
+        }
       </article>`
-    )
+    })
     .join('')
+}
+
+let testimonialRating = 0
+
+function setupTestimonials(store) {
+  const btn = el('writeTestimonialBtn')
+  const form = el('testimonialForm')
+  if (!btn || !form) return
+  const starsWrap = el('tstStars')
+
+  btn.addEventListener('click', () => {
+    form.hidden = false
+    const name = el('tstName')
+    if (name) name.focus()
+  })
+
+  const cancel = el('testimonialCancel')
+  if (cancel) cancel.addEventListener('click', () => (form.hidden = true))
+
+  if (starsWrap) {
+    starsWrap.addEventListener('click', (event) => {
+      const b = event.target.closest('[data-star]')
+      if (!b) return
+      testimonialRating = Number(b.dataset.star) || 0
+      starsWrap.querySelectorAll('[data-star]').forEach((s) => {
+        const on = Number(s.dataset.star) <= testimonialRating
+        s.classList.toggle('active', on)
+        s.setAttribute('aria-pressed', on ? 'true' : 'false')
+      })
+    })
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault()
+    if (testimonialRating < 1) {
+      F.toast('Please choose a star rating first')
+      return
+    }
+    const name = (el('tstName')?.value || '').trim()
+    const location = (el('tstLocation')?.value || '').trim()
+    const text = (el('tstText')?.value || '').trim()
+    if (!text) {
+      F.toast('Please write your review')
+      return
+    }
+    const stars = '★'.repeat(testimonialRating) + '☆'.repeat(5 - testimonialRating)
+    const message = [
+      'New customer review — Koncrete Art Kitchen',
+      '',
+      `Rating: ${stars} (${testimonialRating}/5)`,
+      `Name: ${name || 'Anonymous'}`,
+      location ? `City: ${location}` : '',
+      `Review: ${text}`,
+      '',
+      'I am sending my photo in this chat.'
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    const whatsapp = String(store.whatsapp || '').replace(/[^\d]/g, '')
+    const email = (store.orders && store.orders.alertEmail) || ''
+
+    if (whatsapp.length >= 10 && whatsapp !== '910000000000') {
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, '_blank')
+      F.toast('Thank you! Send the review on WhatsApp.')
+    } else if (email) {
+      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: 'New customer review — Koncrete Art Kitchen',
+          Name: name || 'Anonymous',
+          City: location,
+          Rating: `${testimonialRating}/5`,
+          Review: text
+        })
+      })
+        .then(() => F.toast('Thank you! Your review has been sent.'))
+        .catch(() => F.toast('Could not send right now. Please try again later.'))
+    } else {
+      F.toast('Reviews are not set up yet — add WhatsApp or email in Admin.')
+      return
+    }
+
+    form.reset()
+    testimonialRating = 0
+    if (starsWrap) {
+      starsWrap.querySelectorAll('[data-star]').forEach((s) => {
+        s.classList.remove('active')
+        s.setAttribute('aria-pressed', 'false')
+      })
+    }
+    form.hidden = true
+  })
 }
 
 function renderAnnouncements(store) {
@@ -206,6 +309,7 @@ async function init() {
   renderFeatured(products)
   renderFeatures(store)
   renderReviews(store)
+  setupTestimonials(store)
   setupNewsletter(store)
   setupAccount()
   F.syncCounts()

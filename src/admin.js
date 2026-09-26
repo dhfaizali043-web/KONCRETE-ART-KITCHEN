@@ -43,6 +43,14 @@ const els = {
   chatQuick: $('chatQuick'),
   chatAbout: $('chatAbout'),
   chatKnowledge: $('chatKnowledge'),
+  b2bEyebrow: $('b2bEyebrow'),
+  b2bTitle: $('b2bTitle'),
+  b2bIntro: $('b2bIntro'),
+  b2bAudiences: $('b2bAudiences'),
+  b2bOfferings: $('b2bOfferings'),
+  b2bProcess: $('b2bProcess'),
+  b2bTerms: $('b2bTerms'),
+  b2bNote: $('b2bNote'),
   homeAnnouncements: $('homeAnnouncements'),
   homeFeatures: $('homeFeatures'),
   homeReviews: $('homeReviews'),
@@ -356,6 +364,19 @@ function fillForm(data) {
   els.chatGreeting.value = chat.greeting || ''
   els.chatQuick.value = (chat.quickReplies || []).join('\n')
   els.chatAbout.value = chat.about || ''
+  const b2b = store.b2b || {}
+  if (els.b2bEyebrow) els.b2bEyebrow.value = b2b.eyebrow || ''
+  if (els.b2bTitle) els.b2bTitle.value = b2b.title || ''
+  if (els.b2bIntro) els.b2bIntro.value = b2b.intro || ''
+  if (els.b2bAudiences) els.b2bAudiences.value = (b2b.audiences || []).join('\n')
+  if (els.b2bOfferings) {
+    els.b2bOfferings.value = (b2b.offerings || [])
+      .map((o) => `${o.title || ''} | ${o.text || ''}`)
+      .join('\n')
+  }
+  if (els.b2bProcess) els.b2bProcess.value = (b2b.process || []).join('\n')
+  if (els.b2bTerms) els.b2bTerms.value = (b2b.terms || []).join('\n')
+  if (els.b2bNote) els.b2bNote.value = b2b.note || ''
   els.chatKnowledge.value = (chat.knowledge || [])
     .map((entry) => `${entry.q || entry.question || ''} | ${entry.a || entry.answer || ''}`)
     .join('\n')
@@ -971,6 +992,24 @@ function collect() {
         email: els.newsEmail.value.trim()
       },
       heroBadge: { label: els.heroBadge.value.trim() },
+      b2b: {
+        enabled: true,
+        eyebrow: els.b2bEyebrow ? els.b2bEyebrow.value.trim() : '',
+        title: els.b2bTitle ? els.b2bTitle.value.trim() : '',
+        intro: els.b2bIntro ? els.b2bIntro.value.trim() : '',
+        audiences: els.b2bAudiences ? lines(els.b2bAudiences.value) : [],
+        offerings: els.b2bOfferings
+          ? lines(els.b2bOfferings.value)
+              .map((line) => {
+                const [title, ...rest] = line.split('|')
+                return { title: (title || '').trim(), text: rest.join('|').trim() }
+              })
+              .filter((o) => o.title || o.text)
+          : [],
+        process: els.b2bProcess ? lines(els.b2bProcess.value) : [],
+        terms: els.b2bTerms ? lines(els.b2bTerms.value) : [],
+        note: els.b2bNote ? els.b2bNote.value.trim() : ''
+      },
       images: { ...DEFAULT_IMAGES, ...currentImages }
     },
     products
