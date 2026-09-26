@@ -96,7 +96,14 @@ const els = {
   pinSaveBtn: $('pinSaveBtn'),
   pinRemoveBtn: $('pinRemoveBtn'),
   lockNowBtn: $('lockNowBtn'),
-  pinStatus: $('pinStatus')
+  pinStatus: $('pinStatus'),
+  adminGate: $('adminGate'),
+  gateGoogleBtn: $('gateGoogleBtn'),
+  gateMsg: $('gateMsg'),
+  gateUser: $('gateUser'),
+  gateSignoutBtn: $('gateSignoutBtn'),
+  adminWho: $('adminWho'),
+  adminSignoutBtn: $('adminSignoutBtn')
 }
 
 let sha = null
@@ -1438,6 +1445,119 @@ async function removePin() {
   setPinStatus('PIN removed. The admin will open without a lock.')
 }
 
+/* ---------- Google owner gate ---------- */
+let gateOwners = []
+
+async function fetchStoreConfig() {
+  try {
+    const res = await fetch('./data/catalog.json?t=' + Date.now(), { cache: 'no-store' })
+    if (!res.ok) return {}
+    return (await res.json()).store || {}
+  } catch {
+    return {}
+  }
+}
+
+function showGate(on) {
+  if (!els.adminGate) return
+  els.adminGate.hidden = !on
+  document.body.classList.toggle('admin-locked', on)
+}
+
+function setGateMsg(message, tone) {
+  if (!els.gateMsg) return
+  els.gateMsg.textContent = message || ''
+  els.gateMsg.hidden = !message
+  els.gateMsg.style.color = tone === 'ok' ? '#3a7d44' : tone === 'error' ? '#a3352b' : ''
+}
+
+function setSignedInUi(user) {
+  const email = user && user.email ? user.email : ''
+  if (els.gateUser) {
+    els.gateUser.hidden = !email
+    els.gateUser.textContent = email ? 'Signed in as ' + email : ''
+  }
+  if (els.gateSignoutBtn) els.gateSignoutBtn.hidden = !user
+  if (els.adminWho) els.adminWho.textContent = email
+  if (els.adminSignoutBtn) els.adminSignoutBtn.hidden = !email
+}
+
+async function signInWithGoogle() {
+  if (!window.KAKAuth) return
+  setGateMsg('Opening Google…')
+  try {
+    await window.KAKAuth.signInWithGoogle()
+  } catch (error) {
+    const code = (error && error.code) || ''
+    const map = {
+      'auth/unauthorized-domain': 'Add this site in Firebase → Authentication → Authorized domains.',
+      'auth/popup-blocked': 'Popup blocked. Allow popups and try again.',
+      'auth/operation-not-allowed': 'Enable Google sign-in in Firebase → Authentication → Sign-in method.',
+      'auth/popup-closed-by-user': 'Sign-in cancelled.',
+      'auth/cancelled-popup-request': 'Sign-in cancelled.'
+    }
+    setGateMsg(map[code] || (error && error.message) || 'Could not sign in. Try again.', 'error')
+  }
+}
+
+async function initAuthGate() {
+  if (!window.KAKAuth || !els.adminGate) return false
+  try {
+    await window.KAKAuth.ready
+  } catch {
+    /* fall back to PIN if accounts are unavailable */
+  }
+  const store = await fetchStoreConfig()
+  const auth = store.auth || {}
+  const owners = (auth.owners || []).map((email) => String(email).trim().toLowerCase()).filter(Boolean)
+  if (!auth.enabled || !window.KAKAuth.enabled || !owners.length) return false
+
+  gateOwners = owners
+  showGate(true)
+  setSignedInUi(window.KAKAuth.currentUser())
+
+  const apply = (user) => {
+    setSignedInUi(user)
+    if (!user) {
+      setGateMsg('Please sign in with your Google account to continue.')
+      return
+    }
+    const email = String(user.email || '').toLowerCase()
+    if (gateOwners.indexOf(email) !== -1) {
+      setGateMsg('Welcome back.', 'ok')
+      showGate(false)
+      startBoot()
+    } else {
+      setGateMsg('This account is not authorised. Sign in with an owner email.', 'error')
+    }
+  }
+
+  window.KAKAuth.onAuthChange(apply)
+  if (els.gateGoogleBtn) els.gateGoogleBtn.addEventListener('click', signInWithGoogle)
+  if (els.gateSignoutBtn) {
+    els.gateSignoutBtn.addEventListener('click', async () => {
+      try {
+        await window.KAKAuth.signOutUser()
+      } catch {
+        /* ignore */
+      }
+      setGateMsg('Signed out. Sign in with an owner account.')
+    })
+  }
+  if (els.adminSignoutBtn) {
+    els.adminSignoutBtn.addEventListener('click', async () => {
+      try {
+        await window.KAKAuth.signOutUser()
+      } catch {
+        /* ignore */
+      }
+      showGate(true)
+    })
+  }
+  apply(window.KAKAuth.currentUser())
+  return true
+}
+
 let booted = false
 
 function startBoot() {
@@ -1464,6 +1584,12 @@ async function init() {
         }
       }
     })
+  }
+  try {
+    const gated = await initAuthGate()
+    if (gated) return
+  } catch {
+    /* fall back to the PIN lock */
   }
   if (localStorage.getItem(LS.pin)) {
     showLock(true)

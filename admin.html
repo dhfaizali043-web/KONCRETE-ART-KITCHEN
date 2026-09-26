@@ -37,11 +37,31 @@
       </form>
     </div>
 
+    <div class="admin-lock" id="adminGate" hidden>
+      <div class="admin-lock-card">
+        <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
+        <h1>Admin sign-in</h1>
+        <p>Only authorised owner accounts can open the dashboard. Sign in with your Google account.</p>
+        <button class="btn btn-solid" type="button" id="gateGoogleBtn">Continue with Google</button>
+        <p class="admin-lock-error" id="gateMsg" role="status" aria-live="polite"></p>
+        <p class="gate-user" id="gateUser" hidden></p>
+        <button class="gate-link" type="button" id="gateSignoutBtn" hidden>Sign out / switch account</button>
+        <p class="admin-lock-hint">
+          Owner emails are managed in <strong>Customer accounts</strong> &rarr; Owner email(s). Add this
+          site to Firebase &rarr; Authentication &rarr; Authorized domains.
+        </p>
+      </div>
+    </div>
+
     <header class="admin-header">
       <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
         <img src="./brand/logo-black.png" alt="Koncrete Art Kitchen" />
       </a>
-      <p><a href="./shop.html">View shop</a></p>
+      <p class="admin-header-actions">
+        <span class="admin-who" id="adminWho"></span>
+        <button class="btn btn-ghost" type="button" id="adminSignoutBtn" hidden>Sign out</button>
+        <a href="./shop.html">View shop</a>
+      </p>
     </header>
 
     <div class="admin-shell">
@@ -489,6 +509,13 @@ Another post title | 2026-09-05 | another-post | brand/site/example.jpg | A shor
               <input type="text" id="fbAppId" placeholder="1:000000000000:web:..." />
             </label>
           </div>
+          <p class="admin-help">
+            <strong>Owner emails also lock this admin page.</strong> Once accounts are enabled
+            and at least one owner email is saved, the whole dashboard asks you to sign in with
+            Google using one of those emails before it opens. Enable <em>Google</em> under
+            Authentication &rarr; Sign-in method and add this site under &rarr; Authorized
+            domains. If no owner email is set, the PIN lock is used instead.
+          </p>
         </section>
 
         <section class="admin-card" data-section="store" hidden>
@@ -564,10 +591,19 @@ Another post title | 2026-09-05 | another-post | brand/site/example.jpg | A shor
         <section class="admin-card" data-section="security" hidden>
           <h2>Security &amp; privacy</h2>
           <p class="admin-help">
-            Lock your dashboard on this device with a PIN. While a PIN is set, the admin
-            shows a lock screen when opened. This is a device-level lock (the hashed PIN is
-            in your browser) — it stops casual access. Your real protection is the GitHub
-            token, which stays only in your browser and never leaves except for publishing.
+            <strong>Google owner sign-in (strongest).</strong> When customer accounts are
+            enabled and you have added at least one <strong>owner email</strong> under
+            <em>Customer accounts</em>, the dashboard requires signing in with Google using
+            one of those owner emails before it opens. Combined with the Firestore rules,
+            this also protects order data. Enable <em>Google</em> in Firebase &rarr;
+            Authentication &rarr; Sign-in method, and add this site under &rarr;
+            Authorized domains.
+          </p>
+          <p class="admin-help">
+            <strong>PIN lock (device-level).</strong> If Google sign-in is not set up, you
+            can still lock the dashboard on this device with a PIN. The hashed PIN lives in
+            your browser, so it only stops casual access on that device. Either way, your
+            real publishing protection is the GitHub token, which stays only in this browser.
           </p>
           <div class="admin-grid">
             <label>
