@@ -41,6 +41,7 @@ const els = {
   chatApiUrl: $('chatApiUrl'),
   chatGreeting: $('chatGreeting'),
   chatQuick: $('chatQuick'),
+  chatAbout: $('chatAbout'),
   chatKnowledge: $('chatKnowledge'),
   homeAnnouncements: $('homeAnnouncements'),
   homeFeatures: $('homeFeatures'),
@@ -354,6 +355,7 @@ function fillForm(data) {
   els.chatApiUrl.value = chat.apiUrl || ''
   els.chatGreeting.value = chat.greeting || ''
   els.chatQuick.value = (chat.quickReplies || []).join('\n')
+  els.chatAbout.value = chat.about || ''
   els.chatKnowledge.value = (chat.knowledge || [])
     .map((entry) => `${entry.q || entry.question || ''} | ${entry.a || entry.answer || ''}`)
     .join('\n')
@@ -913,6 +915,7 @@ function collect() {
         name: els.chatName.value.trim() || 'Studio Genie',
         apiUrl: els.chatApiUrl.value.trim(),
         greeting: els.chatGreeting.value.trim(),
+        about: els.chatAbout ? els.chatAbout.value.trim() : '',
         quickReplies: lines(els.chatQuick.value),
         knowledge: lines(els.chatKnowledge.value)
           .map((line) => {

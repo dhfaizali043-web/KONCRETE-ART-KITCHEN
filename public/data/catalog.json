@@ -23,6 +23,7 @@
       "name": "Studio Genie",
       "apiUrl": "",
       "greeting": "Hello! I am Studio Genie from Koncrete Art Kitchen. Ask me about products, prices, ordering or payments.",
+      "about": "Koncrete Art Kitchen is a design-led studio founded in 2024. We design and make everything in-house. We ship pan-India. Orders are confirmed on WhatsApp. Custom designs are welcome.",
       "quickReplies": [
         "Products",
         "Price",

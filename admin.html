@@ -314,8 +314,16 @@
           <h2>Chat assistant</h2>
           <p class="admin-help">
             The chat bubble shown on the website answers customer questions using your
-            products, prices, payment details and the knowledge base below. One entry per
-            line in the format <strong>Question | Answer</strong>.
+            products, prices, payment and shipping details, your studio address, the
+            <strong>business information</strong> below and the knowledge base.
+          </p>
+          <p class="admin-help">
+            <strong>Real AI (optional):</strong> to use a real AI (Gemini / GPT / DeepSeek),
+            deploy the included Cloudflare Worker and paste its URL in <em>AI API endpoint</em>.
+            Put the AI provider's API key as a <strong>secret on the Worker</strong>
+            (<code>USER_LLM_API_KEY</code>) — never paste the key here or in the public site.
+            Leave the endpoint empty to use the built-in assistant, which answers from the
+            same information below without any key.
           </p>
           <div class="admin-grid">
             <label>
@@ -333,6 +341,10 @@
             <label class="admin-wide">
               Quick replies (one per line)
               <textarea id="chatQuick" rows="3" placeholder="Products&#10;Price&#10;How to order"></textarea>
+            </label>
+            <label class="admin-wide">
+              About your studio / business information (free text the assistant uses to answer)
+              <textarea id="chatAbout" rows="6" placeholder="Koncrete Art Kitchen is a design-led studio founded in 2024. We make custom LED-backlit name plates in-house. We ship pan-India. Orders are confirmed on WhatsApp. Custom designs welcome."></textarea>
             </label>
             <label class="admin-wide">
               Knowledge base (Question | Answer, one per line)

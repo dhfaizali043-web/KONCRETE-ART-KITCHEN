@@ -226,30 +226,68 @@ function systemPrompt() {
   const store = catalog.store || {}
   const chat = store.chat || {}
   const pay = store.payments || {}
+  const ship = store.shipping || {}
   const products = catalog.products || []
+  const categories = store.categories || []
+  const addresses = store.addresses || []
 
   const productLines = products.map(
     (p) => `- ${p.name}: ${Number(p.price) > 0 ? money(p.price) : 'price on request'}`
   )
+
+  const categoryLines = categories
+    .map((c) => {
+      const subs = (c.subcategories || []).map((s) => s.name).filter(Boolean)
+      return `- ${c.name}${subs.length ? ' (' + subs.join(', ') + ')' : ''}`
+    })
+    .filter(Boolean)
 
   const methods = []
   if (pay.upiId && pay.upiId !== 'yourname@upi') methods.push('UPI')
   if (pay.razorpayLink) methods.push('card and netbanking via Razorpay')
   if (pay.bank && (pay.bank.accountNumber || pay.bank.ifsc)) methods.push('bank transfer')
 
+  const shippingLine = ship.enabled
+    ? `Shipping: flat ₹${Number(ship.flatRate) || 0} per order${
+        Number(ship.freeThreshold) > 0 ? `, free above ₹${Number(ship.freeThreshold)}` : ''
+      }.`
+    : ''
+
+  const addressLines = addresses
+    .map((a) => {
+      const parts = [a.label, ...(Array.isArray(a.lines) ? a.lines : [])]
+        .map((x) => String(x || '').trim())
+        .filter(Boolean)
+      return parts.length ? `- ${parts.join(', ')}${a.phone ? ' | ' + a.phone : ''}` : ''
+    })
+    .filter(Boolean)
+
+  const knowledgeLines = (Array.isArray(chat.knowledge) ? chat.knowledge : [])
+    .map((entry) => {
+      const q = String(entry.q || entry.question || '').trim()
+      const a = String(entry.a || entry.answer || '').trim()
+      return q && a ? `Q: ${q}\nA: ${a}` : ''
+    })
+    .filter(Boolean)
+
   return [
     'You are the customer support assistant for Koncrete Art Kitchen, a design-led studio (Est. 2024) that makes custom LED-backlit name plates.',
     'Reply in the same language the customer uses (Hindi, Roman Hindi/Urdu, or English). Keep replies short, warm and helpful (2 to 4 sentences).',
-    'Never invent prices, delivery times, warranties, discounts, or product materials. If you are unsure, ask the customer to contact the studio on WhatsApp.',
+    'Use ONLY the business information provided below. Never invent prices, delivery times, warranties, discounts, materials or specifications. If you are unsure, ask the customer to contact the studio on WhatsApp.',
     'Do not mention product materials or technical specifications.',
     'Only answer questions about Koncrete Art Kitchen, its products, ordering, payments, delivery and custom work. Politely decline anything unrelated, and never produce harmful, political or off-topic content.',
     'To order: choose a product on the shop page, add to cart, open checkout, choose a payment method, then confirm the order on WhatsApp.',
     'Shop page: ./shop.html. Checkout page: ./checkout.html.',
     chat.greeting ? 'Brand greeting style: ' + chat.greeting : '',
+    String(chat.about || '').trim() ? 'About the studio (from the owner):\n' + String(chat.about).trim() : '',
     products.length ? 'Products and prices:\n' + productLines.join('\n') : '',
+    categoryLines.length ? 'Categories:\n' + categoryLines.join('\n') : '',
     methods.length
       ? 'Accepted payment methods: ' + methods.join(', ') + '. Direct customers to the checkout page for details.'
-      : 'Do not state payment methods; direct customers to the checkout page.'
+      : 'Do not state payment methods; direct customers to the checkout page.',
+    shippingLine,
+    addressLines.length ? 'Studio address(es):\n' + addressLines.join('\n') : '',
+    knowledgeLines.length ? 'Owner knowledge base:\n' + knowledgeLines.join('\n') : ''
   ]
     .filter(Boolean)
     .join('\n')
