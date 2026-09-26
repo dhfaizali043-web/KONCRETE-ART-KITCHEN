@@ -18,5 +18,15 @@ jobs:
           workingDirectory: worker
           secrets: |
             USER_LLM_API_KEY
+            SOCIAL_PUBLISH_KEY
+            IG_USER_ID
+            IG_ACCESS_TOKEN
+            PINTEREST_TOKEN
+            PINTEREST_BOARD_ID
         env:
           USER_LLM_API_KEY: ${{ secrets.USER_LLM_API_KEY }}
+          SOCIAL_PUBLISH_KEY: ${{ secrets.SOCIAL_PUBLISH_KEY }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PINTEREST_TOKEN: ${{ secrets.PINTEREST_TOKEN }}
+          PINTEREST_BOARD_ID: ${{ secrets.PINTEREST_BOARD_ID }}

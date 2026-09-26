@@ -77,6 +77,7 @@
           <button type="button" data-go="orders">Orders</button>
           <button type="button" data-go="payments">Payments</button>
           <button type="button" data-go="chat">Chat assistant</button>
+          <button type="button" data-go="social">Social auto-post</button>
           <button type="button" data-go="accounts">Customer accounts</button>
           <button type="button" data-go="store">Store settings</button>
           <button type="button" data-go="addresses">Addresses</button>
@@ -456,6 +457,65 @@ Another post title | 2026-09-05 | another-post | brand/site/example.jpg | A shor
               <textarea id="chatKnowledge" rows="5" placeholder="Do you ship across India? | Yes, we ship across India by courier."></textarea>
             </label>
           </div>
+        </section>
+
+        <section class="admin-card" data-section="social" hidden>
+          <h2>Social auto-post</h2>
+          <p class="admin-help">
+            When you click <strong>Save &amp; publish</strong>, new products can be posted to
+            <strong>Instagram</strong> (Business/Creator account) and <strong>Pinterest</strong>
+            automatically. This uses the same Cloudflare Worker as the chat — deploy it once and
+            add the social secrets there (<em>IG_USER_ID</em>, <em>IG_ACCESS_TOKEN</em>,
+            <em>PINTEREST_TOKEN</em>, <em>PINTEREST_BOARD_ID</em>, <em>SOCIAL_PUBLISH_KEY</em>).
+          </p>
+          <p class="admin-help">
+            The <strong>publish key</strong> below is stored only in this browser (like the GitHub
+            token) and is never published with the site.
+          </p>
+          <div class="admin-grid">
+            <label class="admin-check">
+              <input type="checkbox" id="socialAuto" />
+              Auto-post new products on publish
+            </label>
+            <label class="admin-check">
+              <input type="checkbox" id="socialIg" />
+              Post to Instagram
+            </label>
+            <label class="admin-check">
+              <input type="checkbox" id="socialPin" />
+              Post to Pinterest
+            </label>
+          </div>
+          <div class="admin-grid">
+            <label class="admin-wide">
+              Worker publish URL (blank = use the chat URL + /api/social/publish)
+              <input type="text" id="socialApiUrl" placeholder="https://kak-ai-proxy.xxx.workers.dev/api/social/publish" />
+            </label>
+            <label>
+              Social publish key (this browser only)
+              <input type="password" id="socialKey" autocomplete="off" placeholder="X-Social-Key" />
+            </label>
+            <label>
+              Pinterest board id
+              <input type="text" id="socialBoard" placeholder="123456789012345678" />
+            </label>
+            <label>
+              Site URL (for product links)
+              <input type="text" id="socialSiteUrl" placeholder="https://yourdomain.com" />
+            </label>
+            <label class="admin-wide">
+              Caption template — placeholders: {name} {price} {link} {description}
+              <textarea id="socialCaption" rows="4" placeholder="{name}&#10;&#10;{description}&#10;&#10;Price: {price}&#10;Order: {link}"></textarea>
+            </label>
+            <label class="admin-wide">
+              Hashtags (space separated, added at the end)
+              <input type="text" id="socialHashtags" placeholder="#nameplate #gifting #homedecor" />
+            </label>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-ghost" id="socialRetryBtn" type="button">Post pending products now</button>
+          </div>
+          <p class="admin-help" id="socialStatus" role="status" aria-live="polite"></p>
         </section>
 
         <section class="admin-card" data-section="accounts" hidden>

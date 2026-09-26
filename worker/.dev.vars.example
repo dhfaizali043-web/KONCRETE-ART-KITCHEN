@@ -7,3 +7,10 @@ USER_LLM_API_KEY=your-api-key-here
 
 # Optional: override the API base URL (OpenAI-compatible providers only)
 # USER_LLM_BASE_URL=https://api.deepseek.com/v1
+
+# Social auto-post (optional). Used by POST /api/social/publish.
+# SOCIAL_PUBLISH_KEY=change-me
+# IG_USER_ID=17841400000000000
+# IG_ACCESS_TOKEN=your-long-lived-instagram-token
+# PINTEREST_TOKEN=your-pinterest-access-token
+# PINTEREST_BOARD_ID=123456789012345678

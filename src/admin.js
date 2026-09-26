@@ -9,7 +9,8 @@ const LS = {
   repo: 'kak_admin_repo',
   branch: 'kak_admin_branch',
   path: 'kak_admin_path',
-  pin: 'kak_admin_pin_hash'
+  pin: 'kak_admin_pin_hash',
+  socialKey: 'kak_social_key'
 }
 
 const $ = (id) => document.getElementById(id)
@@ -47,6 +48,17 @@ const els = {
   chatQuick: $('chatQuick'),
   chatAbout: $('chatAbout'),
   chatKnowledge: $('chatKnowledge'),
+  socialAuto: $('socialAuto'),
+  socialIg: $('socialIg'),
+  socialPin: $('socialPin'),
+  socialApiUrl: $('socialApiUrl'),
+  socialKey: $('socialKey'),
+  socialBoard: $('socialBoard'),
+  socialSiteUrl: $('socialSiteUrl'),
+  socialCaption: $('socialCaption'),
+  socialHashtags: $('socialHashtags'),
+  socialRetryBtn: $('socialRetryBtn'),
+  socialStatus: $('socialStatus'),
   b2bEyebrow: $('b2bEyebrow'),
   b2bTitle: $('b2bTitle'),
   b2bIntro: $('b2bIntro'),
@@ -150,6 +162,12 @@ function boot() {
 
   els.loadBtn.addEventListener('click', loadRemote)
   els.saveBtn.addEventListener('click', save)
+  els.socialRetryBtn?.addEventListener('click', retrySocialPosts)
+  els.socialKey?.addEventListener('change', () => {
+    const value = els.socialKey.value.trim()
+    if (value) localStorage.setItem(LS.socialKey, value)
+    else localStorage.removeItem(LS.socialKey)
+  })
   els.addBtn.addEventListener('click', () => addProduct({}))
   els.forgetBtn.addEventListener('click', forgetToken)
   els.downloadBtn?.addEventListener('click', () => {
@@ -423,6 +441,16 @@ function fillForm(data) {
   if (els.socialPinterest) els.socialPinterest.value = social.pinterest || ''
   if (els.socialYoutube) els.socialYoutube.value = social.youtube || ''
   if (els.socialX) els.socialX.value = social.x || ''
+  const socialPost = store.socialPost || {}
+  if (els.socialAuto) els.socialAuto.checked = socialPost.enabled === true
+  if (els.socialIg) els.socialIg.checked = socialPost.instagram === true
+  if (els.socialPin) els.socialPin.checked = socialPost.pinterest === true
+  if (els.socialApiUrl) els.socialApiUrl.value = socialPost.apiUrl || ''
+  if (els.socialBoard) els.socialBoard.value = socialPost.boardId || ''
+  if (els.socialSiteUrl) els.socialSiteUrl.value = socialPost.siteUrl || ''
+  if (els.socialCaption) els.socialCaption.value = socialPost.caption || ''
+  if (els.socialHashtags) els.socialHashtags.value = socialPost.hashtags || ''
+  if (els.socialKey) els.socialKey.value = localStorage.getItem(LS.socialKey) || ''
   els.authOwners.value = (auth.owners || []).join(', ')
   els.homeAnnouncements.value = (store.announcements || []).join('\n')
   renderCategoriesAdmin(store.categories || [])
@@ -485,6 +513,7 @@ function setText(id, value) {
 function addProduct(product) {
   const el = document.createElement('div')
   el.className = 'admin-product'
+  el.dataset.postedAt = product.socialPostedAt || ''
   const bullets = Array.isArray(product.bullets) ? product.bullets : []
   const custom = product.custom || {}
   const images = Array.isArray(product.images) && product.images.length
@@ -495,6 +524,9 @@ function addProduct(product) {
   el.innerHTML = `
     <div class="admin-product-head">
       <strong data-product-title>${escapeHtml(product.name || 'New product')}</strong>
+      <span class="admin-posted" data-posted-status>${escapeHtml(
+        product.socialPostedAt ? 'Posted ' + product.socialPostedAt : ''
+      )}</span>
       <button type="button" class="admin-remove" data-remove>Remove</button>
     </div>
     <div class="admin-images">
@@ -527,6 +559,9 @@ function addProduct(product) {
       <label class="admin-check"><input data-field="available" type="checkbox" ${
         product.available === false ? '' : 'checked'
       } /> Available</label>
+      <label class="admin-check"><input data-field="share" type="checkbox" ${
+        product.share === false ? '' : 'checked'
+      } /> Post to Instagram &amp; Pinterest</label>
     </div>
     <div class="admin-custom">
       <div class="admin-images-head">
@@ -936,42 +971,46 @@ function collectReviews(productEl) {
     .filter(Boolean)
 }
 
+function collectProduct(el) {
+  const get = (field) => el.querySelector(`[data-field="${field}"]`)
+  const name = get('name').value.trim()
+  let id = get('id').value.trim()
+  if (!id) id = slugify(name) || 'product-' + Math.random().toString(36).slice(2, 7)
+  const images = [...el.querySelectorAll('[data-image-list] [data-field="image"]')]
+    .map((input) => input.value.trim())
+    .filter(Boolean)
+  return {
+    id,
+    name,
+    description: get('description').value.trim(),
+    bullets: lines(get('bullets').value),
+    price: Number(get('price').value) || 0,
+    oldPrice: Number(get('oldPrice') ? get('oldPrice').value : 0) || 0,
+    stock: get('stock') && get('stock').value.trim() !== '' ? Number(get('stock').value) || 0 : '',
+    badge: get('badge') ? get('badge').value.trim() : '',
+    rating: Number(get('rating') ? get('rating').value : 0) || 0,
+    ratingCount: Number(get('ratingCount') ? get('ratingCount').value : 0) || 0,
+    category: get('category') ? get('category').value.trim() : '',
+    subcategory: get('subcategory') ? get('subcategory').value.trim() : '',
+    images,
+    image: images[0] || '',
+    available: get('available').checked,
+    share: get('share') ? get('share').checked : true,
+    socialPostedAt: el.dataset.postedAt || '',
+    custom: {
+      enabled: get('custom-enabled') ? get('custom-enabled').checked : false,
+      label: get('custom-label') ? get('custom-label').value.trim() : '',
+      placeholder: get('custom-placeholder') ? get('custom-placeholder').value.trim() : '',
+      note: get('custom-note') ? get('custom-note').value.trim() : '',
+      maxLength: Number(get('custom-max') ? get('custom-max').value : 0) || 60,
+      required: get('custom-required') ? get('custom-required').checked : false
+    },
+    reviews: collectReviews(el)
+  }
+}
+
 function collect() {
-  const products = [...els.products.querySelectorAll('.admin-product')].map((el) => {
-    const get = (field) => el.querySelector(`[data-field="${field}"]`)
-    const name = get('name').value.trim()
-    let id = get('id').value.trim()
-    if (!id) id = slugify(name) || 'product-' + Math.random().toString(36).slice(2, 7)
-    const images = [...el.querySelectorAll('[data-image-list] [data-field="image"]')]
-      .map((input) => input.value.trim())
-      .filter(Boolean)
-    return {
-      id,
-      name,
-      description: get('description').value.trim(),
-      bullets: lines(get('bullets').value),
-      price: Number(get('price').value) || 0,
-      oldPrice: Number(get('oldPrice') ? get('oldPrice').value : 0) || 0,
-      stock: get('stock') && get('stock').value.trim() !== '' ? Number(get('stock').value) || 0 : '',
-      badge: get('badge') ? get('badge').value.trim() : '',
-      rating: Number(get('rating') ? get('rating').value : 0) || 0,
-      ratingCount: Number(get('ratingCount') ? get('ratingCount').value : 0) || 0,
-      category: get('category') ? get('category').value.trim() : '',
-      subcategory: get('subcategory') ? get('subcategory').value.trim() : '',
-      images,
-      image: images[0] || '',
-      available: get('available').checked,
-      custom: {
-        enabled: get('custom-enabled') ? get('custom-enabled').checked : false,
-        label: get('custom-label') ? get('custom-label').value.trim() : '',
-        placeholder: get('custom-placeholder') ? get('custom-placeholder').value.trim() : '',
-        note: get('custom-note') ? get('custom-note').value.trim() : '',
-        maxLength: Number(get('custom-max') ? get('custom-max').value : 0) || 60,
-        required: get('custom-required') ? get('custom-required').checked : false
-      },
-      reviews: collectReviews(el)
-    }
-  })
+  const products = [...els.products.querySelectorAll('.admin-product')].map(collectProduct)
   return {
     store: {
       whatsapp: els.whatsapp.value.trim(),
@@ -1026,6 +1065,16 @@ function collect() {
             return { q: (q || '').trim(), a: rest.join('|').trim() }
           })
           .filter((entry) => entry.q && entry.a)
+      },
+      socialPost: {
+        enabled: els.socialAuto ? els.socialAuto.checked : false,
+        instagram: els.socialIg ? els.socialIg.checked : false,
+        pinterest: els.socialPin ? els.socialPin.checked : false,
+        apiUrl: els.socialApiUrl ? els.socialApiUrl.value.trim() : '',
+        boardId: els.socialBoard ? els.socialBoard.value.trim() : '',
+        siteUrl: els.socialSiteUrl ? els.socialSiteUrl.value.trim() : '',
+        caption: els.socialCaption ? els.socialCaption.value.trim() : '',
+        hashtags: els.socialHashtags ? els.socialHashtags.value.trim() : ''
       },
       auth: {
         enabled: els.authEnabled.checked,
@@ -1109,6 +1158,147 @@ function collect() {
   }
 }
 
+/* ---------- social auto-post ---------- */
+function socialConfig() {
+  return {
+    enabled: els.socialAuto ? els.socialAuto.checked : false,
+    instagram: els.socialIg ? els.socialIg.checked : false,
+    pinterest: els.socialPin ? els.socialPin.checked : false,
+    apiUrl: els.socialApiUrl ? els.socialApiUrl.value.trim() : '',
+    key: els.socialKey ? els.socialKey.value.trim() : '',
+    boardId: els.socialBoard ? els.socialBoard.value.trim() : '',
+    siteUrl: els.socialSiteUrl ? els.socialSiteUrl.value.trim() : '',
+    caption: els.socialCaption ? els.socialCaption.value.trim() : '',
+    hashtags: els.socialHashtags ? els.socialHashtags.value.trim() : ''
+  }
+}
+
+function setSocialStatus(message, tone) {
+  if (!els.socialStatus) return
+  els.socialStatus.textContent = message || ''
+  els.socialStatus.style.color = tone === 'error' ? '#a3352b' : tone === 'ok' ? '#3a7d44' : ''
+}
+
+function resolveSocialEndpoint(cfg) {
+  if (cfg.apiUrl) return cfg.apiUrl
+  const chat = els.chatApiUrl ? els.chatApiUrl.value.trim() : ''
+  if (chat) return chat.replace(/\/api\/chat\/?$/, '') + '/api/social/publish'
+  return ''
+}
+
+function siteBase(cfg) {
+  if (cfg.siteUrl) return cfg.siteUrl.replace(/\/+$/, '')
+  return location.origin + location.pathname.replace(/[^/]*$/, '').replace(/\/+$/, '')
+}
+
+function rawImageUrl(config, value) {
+  const path = String(value || '').trim()
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path)) return path
+  const clean = path.replace(/^\.?\//, '').replace(/^public\//, '')
+  return `https://raw.githubusercontent.com/${config.repo}/${config.branch}/public/${clean}`
+}
+
+function buildCaption(cfg, store, product, link) {
+  const template = cfg.caption || '{name}\n\n{description}\n\nPrice: {price}\nOrder: {link}'
+  const price = Number(product.price) > 0 ? (store.currencySymbol || '₹') + product.price : ''
+  const text = template
+    .replace(/\{name\}/g, product.name || '')
+    .replace(/\{price\}/g, price)
+    .replace(/\{link\}/g, link)
+    .replace(/\{description\}/g, product.description || '')
+    .trim()
+  return cfg.hashtags ? text + '\n\n' + cfg.hashtags : text
+}
+
+async function postToSocial(config, store, product, cfg) {
+  const endpoint = resolveSocialEndpoint(cfg)
+  if (!endpoint) throw new Error('Add the Worker publish URL in Social auto-post.')
+  const targets = []
+  if (cfg.instagram) targets.push('instagram')
+  if (cfg.pinterest) targets.push('pinterest')
+  const link = siteBase(cfg) + '/product.html?id=' + encodeURIComponent(product.id)
+  const images = (product.images && product.images.length ? product.images : [product.image])
+    .map((value) => rawImageUrl(config, value))
+    .filter(Boolean)
+  if (!images.length) throw new Error('This product has no image to post.')
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Social-Key': cfg.key },
+    body: JSON.stringify({
+      targets,
+      title: product.name,
+      link,
+      images,
+      caption: buildCaption(cfg, store, product, link),
+      boardId: cfg.boardId
+    })
+  })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok || json.ok === false) {
+    const parts = Object.entries(json.results || {})
+      .filter(([, value]) => value && value.ok === false)
+      .map(([name, value]) => name + ': ' + value.error)
+    throw new Error(parts.join('; ') || json.error || 'Social post failed (HTTP ' + res.status + ')')
+  }
+  return json
+}
+
+async function autoPostProducts(config, data, manual) {
+  const cfg = socialConfig()
+  if (!cfg.enabled || (!cfg.instagram && !cfg.pinterest)) return
+  if (!cfg.key) {
+    setSocialStatus('Social publish key is missing — add it in Social auto-post.', 'error')
+    return
+  }
+  const pending = [...els.products.querySelectorAll('.admin-product')].filter((el) => {
+    const share = el.querySelector('[data-field="share"]')
+    const on = share ? share.checked : true
+    return on && !el.dataset.postedAt && collectProduct(el).name
+  })
+  if (!pending.length) {
+    if (manual) setSocialStatus('No pending products to post.')
+    return
+  }
+  setSocialStatus('Posting ' + pending.length + ' product(s) to social…')
+  let posted = 0
+  const errors = []
+  for (const el of pending) {
+    const product = collectProduct(el)
+    try {
+      await postToSocial(config, data.store, product, cfg)
+      el.dataset.postedAt = new Date().toISOString().slice(0, 10)
+      const status = el.querySelector('[data-posted-status]')
+      if (status) status.textContent = 'Posted ' + el.dataset.postedAt
+      posted += 1
+    } catch (error) {
+      errors.push(product.name + ': ' + error.message)
+    }
+  }
+  if (posted) {
+    try {
+      await putFile(config, JSON.stringify(collect(), null, 2) + '\n')
+    } catch (error) {
+      errors.push('saving status: ' + error.message)
+    }
+  }
+  const summary = posted ? 'Posted ' + posted + ' product(s).' : 'Nothing posted.'
+  setSocialStatus(summary + (errors.length ? ' ' + errors.join('; ') : ''), errors.length ? 'error' : 'ok')
+}
+
+async function retrySocialPosts() {
+  const config = getConfig()
+  if (!config.token) {
+    setSocialStatus('Connect GitHub first in "GitHub & publish".', 'error')
+    return
+  }
+  try {
+    await autoPostProducts(config, collect(), true)
+  } catch (error) {
+    setSocialStatus('Social post failed: ' + error.message, 'error')
+  }
+}
+
 async function save() {
   const config = getConfig()
   const data = collect()
@@ -1135,6 +1325,11 @@ async function save() {
     const commit = await putFile(config, content)
     setGithubState(true, `Connected to ${config.repo} (${config.branch}).`)
     setStatus('Published — the live shop updates in about a minute.' + (commit ? ' Commit ' + commit.slice(0, 7) : ''))
+    try {
+      await autoPostProducts(config, data)
+    } catch (error) {
+      setSocialStatus('Social post failed: ' + error.message, 'error')
+    }
   } catch (error) {
     setStatus('Publish failed: ' + error.message, 'error')
   }

@@ -9,7 +9,20 @@ export default {
     const url = new URL(request.url)
 
     if (url.pathname === '/' || url.pathname === '/health') {
-      return json({ ok: true, provider: providerOf(env), model: modelOf(env, providerOf(env)) }, 200, cors)
+      return json(
+        {
+          ok: true,
+          provider: providerOf(env),
+          model: modelOf(env, providerOf(env)),
+          social: socialStatus(env)
+        },
+        200,
+        cors
+      )
+    }
+
+    if (url.pathname === '/api/social/publish') {
+      return handleSocial(request, env, cors)
     }
 
     if (url.pathname !== '/api/chat') {
@@ -57,6 +70,150 @@ export default {
   }
 }
 
+/* ---------- Social auto-post (Instagram + Pinterest) ---------- */
+
+function socialStatus(env) {
+  return {
+    instagram: Boolean(env.IG_USER_ID && env.IG_ACCESS_TOKEN),
+    pinterest: Boolean(env.PINTEREST_TOKEN && env.PINTEREST_BOARD_ID)
+  }
+}
+
+async function handleSocial(request, env, cors) {
+  if (request.method !== 'POST') {
+    return json({ error: 'Method not allowed' }, 405, cors)
+  }
+
+  const key = request.headers.get('x-social-key') || ''
+  if (!env.SOCIAL_PUBLISH_KEY || key !== env.SOCIAL_PUBLISH_KEY) {
+    return json({ error: 'Unauthorized' }, 401, cors)
+  }
+
+  const length = Number(request.headers.get('Content-Length') || 0)
+  if (length > 100000) {
+    return json({ error: 'Request too large' }, 413, cors)
+  }
+
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return json({ error: 'Invalid JSON body' }, 400, cors)
+  }
+
+  const caption = String(body.caption || '').slice(0, 2200)
+  const title = String(body.title || '').slice(0, 100)
+  const link = String(body.link || '')
+  const images = (Array.isArray(body.images) ? body.images : [])
+    .map((item) => String(item))
+    .filter((item) => /^https:\/\//i.test(item))
+    .slice(0, 10)
+  const targets = (Array.isArray(body.targets) ? body.targets : ['instagram', 'pinterest'])
+    .map((item) => String(item).toLowerCase())
+  const boardId = String(body.boardId || env.PINTEREST_BOARD_ID || '').trim()
+
+  if (!images.length) {
+    return json({ error: 'At least one public https image URL is required.' }, 400, cors)
+  }
+
+  const results = {}
+  if (targets.includes('instagram')) {
+    try {
+      results.instagram = { ok: true, id: await publishInstagram(env, images, caption) }
+    } catch (error) {
+      results.instagram = { ok: false, error: String((error && error.message) || error) }
+    }
+  }
+  if (targets.includes('pinterest')) {
+    try {
+      results.pinterest = {
+        ok: true,
+        id: await publishPinterest(env, images[0], title, caption, link, boardId)
+      }
+    } catch (error) {
+      results.pinterest = { ok: false, error: String((error && error.message) || error) }
+    }
+  }
+
+  const anyOk = Object.values(results).some((item) => item && item.ok)
+  return json({ ok: anyOk, results }, anyOk ? 200 : 502, cors)
+}
+
+async function publishInstagram(env, images, caption) {
+  if (!env.IG_USER_ID || !env.IG_ACCESS_TOKEN) {
+    throw new Error('Instagram is not configured on the server.')
+  }
+  const base = 'https://graph.facebook.com/v21.0/' + env.IG_USER_ID
+  const token = env.IG_ACCESS_TOKEN
+
+  const createContainer = async (params) => {
+    const res = await fetch(base + '/media', {
+      method: 'POST',
+      body: new URLSearchParams({ ...params, access_token: token })
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error((data.error && data.error.message) || 'Instagram container failed')
+    }
+    return data.id
+  }
+
+  let creationId
+  if (images.length === 1) {
+    creationId = await createContainer({ image_url: images[0], caption })
+  } else {
+    const children = []
+    for (const url of images.slice(0, 10)) {
+      children.push(await createContainer({ image_url: url, is_carousel_item: 'true' }))
+    }
+    creationId = await createContainer({
+      media_type: 'CAROUSEL',
+      children: children.join(','),
+      caption
+    })
+  }
+
+  const res = await fetch(base + '/media_publish', {
+    method: 'POST',
+    body: new URLSearchParams({ creation_id: creationId, access_token: token })
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error((data.error && data.error.message) || 'Instagram publish failed')
+  }
+  return data.id
+}
+
+async function publishPinterest(env, imageUrl, title, description, link, boardId) {
+  if (!env.PINTEREST_TOKEN) {
+    throw new Error('Pinterest is not configured on the server.')
+  }
+  if (!boardId) {
+    throw new Error('Pinterest board id is missing.')
+  }
+  const payload = {
+    board_id: boardId,
+    title: title || '',
+    description: description || '',
+    media_source: { source_type: 'image_url', url: imageUrl }
+  }
+  if (link) payload.link = link
+
+  const res = await fetch('https://api.pinterest.com/v5/pins', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + env.PINTEREST_TOKEN,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(data.message || (data.error && data.error.message) || 'Pinterest publish failed')
+  }
+  return data.id
+}
+
 function corsHeaders(env, request) {
   const configured = (env.ALLOWED_ORIGIN || 'https://dhfaizali043-web.github.io').split(',')
   const allowed = configured.map((item) => item.trim()).filter(Boolean)
@@ -67,7 +224,7 @@ function corsHeaders(env, request) {
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Social-Key',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin'
   }

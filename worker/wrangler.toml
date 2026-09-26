@@ -6,3 +6,8 @@ vars = { ALLOWED_ORIGIN = "https://dhfaizali043-web.github.io", USER_LLM_PROVIDE
 
 # Secrets (do NOT put these in this file). Set them with:
 #   wrangler secret put USER_LLM_API_KEY
+#   wrangler secret put SOCIAL_PUBLISH_KEY     # shared key the admin sends as X-Social-Key
+#   wrangler secret put IG_USER_ID             # Instagram Business account id (numeric)
+#   wrangler secret put IG_ACCESS_TOKEN        # long-lived Facebook/Instagram token
+#   wrangler secret put PINTEREST_TOKEN        # Pinterest API access token
+#   wrangler secret put PINTEREST_BOARD_ID     # default board id for new pins

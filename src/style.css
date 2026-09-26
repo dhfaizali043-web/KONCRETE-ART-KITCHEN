@@ -1186,6 +1186,13 @@ h2 {
   margin-bottom: 0.8rem;
 }
 
+.admin-posted {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--rust);
+  text-transform: uppercase;
+}
+
 .admin-remove {
   background: transparent;
   border: 0;
