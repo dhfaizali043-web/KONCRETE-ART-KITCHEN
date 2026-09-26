@@ -47,7 +47,7 @@ function renderCategories(store, products) {
 function renderFeatured(products) {
   const target = el('homeProducts')
   if (!target) return
-  const list = products.filter((p) => p.available !== false).slice(0, 8)
+  const list = products.filter((p) => !F.isSoldOut(p)).slice(0, 8)
   if (!list.length) {
     target.parentElement.hidden = true
     return

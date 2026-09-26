@@ -351,7 +351,29 @@
               Free shipping above (₹)
               <input type="number" id="shipFree" min="0" step="1" placeholder="0" />
             </label>
+            <label class="admin-wide">
+              Shipping by PIN code (optional) — one per line: <code>prefix | rate</code>
+              <textarea id="shipZonesInput" rows="3" placeholder="11 | 99&#10;40 | 149&#10;56 | 199"></textarea>
+            </label>
           </div>
+          <p class="admin-help">
+            If a customer's PIN code starts with one of these prefixes, that rate is used
+            instead of the flat fee. Free-shipping-above still applies first. Use the
+            longest matching prefix for areas inside a region.
+          </p>
+
+          <h3 class="admin-subhead">Discount codes</h3>
+          <p class="admin-help">
+            One code per line in this format:
+            <code>CODE | percent or flat | value | minimum order</code>.
+            Example: <code>WELCOME10 | percent | 10 | 0</code> (10% off, no minimum) or
+            <code>FLAT200 | flat | 200 | 2000</code> (₹200 off above ₹2000). Codes are
+            case-insensitive.
+          </p>
+          <label class="admin-wide">
+            Discount codes
+            <textarea id="couponsInput" rows="4" placeholder="WELCOME10 | percent | 10 | 0&#10;FLAT200 | flat | 200 | 2000"></textarea>
+          </label>
         </section>
 
         <section class="admin-card" data-section="chat" hidden>

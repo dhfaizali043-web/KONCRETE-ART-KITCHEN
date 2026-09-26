@@ -69,7 +69,7 @@ function renderGallery(product) {
 }
 
 function renderInfo(product) {
-  const out = product.available === false
+  const out = F.isSoldOut(product)
   const price = Number(product.price) > 0 ? F.money(product.price) : 'Price on request'
   const oldPrice =
     Number(product.oldPrice) > 0 && Number(product.oldPrice) > Number(product.price)
@@ -160,7 +160,7 @@ function renderRelated(product) {
     .filter(
       (p) =>
         p.id !== product.id &&
-        p.available !== false &&
+        !F.isSoldOut(p) &&
         p.category &&
         p.category === product.category
     )
@@ -188,7 +188,7 @@ function injectSchema(product) {
       priceCurrency: 'INR',
       price: Number(product.price),
       availability:
-        product.available === false
+        F.isSoldOut(product)
           ? 'https://schema.org/OutOfStock'
           : 'https://schema.org/InStock'
     }
@@ -516,7 +516,8 @@ function bind(product) {
   info?.addEventListener('click', (event) => {
     const step = event.target.closest('[data-pqty]')
     if (step) {
-      qty = Math.max(1, Math.min(99, qty + Number(step.dataset.pqty)))
+      const limit = F.stockLimit(product) ?? 99
+      qty = Math.max(1, Math.min(Math.max(1, limit), qty + Number(step.dataset.pqty)))
       const val = byId('pdQtyVal')
       if (val) val.textContent = String(qty)
       return

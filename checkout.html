@@ -43,6 +43,7 @@
             <div class="admin-grid">
               <label>Name <input type="text" id="custName" placeholder="Full name" /></label>
               <label>Phone <input type="tel" id="custPhone" placeholder="Phone number" /></label>
+              <label>PIN code <input type="text" id="custPin" inputmode="numeric" maxlength="6" placeholder="Delivery PIN code" /></label>
               <label class="admin-wide">Delivery address
                 <textarea id="custAddress" rows="2" placeholder="House, street, city, PIN"></textarea>
               </label>
@@ -100,10 +101,22 @@
         <aside class="checkout-summary">
           <h2>Order summary</h2>
           <ul class="summary-items" id="summaryItems"></ul>
+          <div class="coupon-box">
+            <label for="couponInput">Discount code</label>
+            <div class="coupon-row">
+              <input type="text" id="couponInput" placeholder="Enter code" autocomplete="off" />
+              <button class="btn btn-ghost" id="couponApply" type="button">Apply</button>
+            </div>
+            <p class="coupon-msg" id="couponMsg" hidden></p>
+          </div>
           <div class="summary-lines">
             <div class="summary-line-row">
               <span>Subtotal</span>
               <strong id="summarySubtotal">₹0</strong>
+            </div>
+            <div class="summary-line-row" id="summaryDiscountRow" hidden>
+              <span>Discount <b id="summaryCouponCode"></b></span>
+              <strong id="summaryDiscount">-₹0</strong>
             </div>
             <div class="summary-line-row" id="summaryShipRow" hidden>
               <span>Shipping</span>

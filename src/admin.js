@@ -37,6 +37,8 @@ const els = {
   shipEnabled: $('shipEnabled'),
   shipFlat: $('shipFlat'),
   shipFree: $('shipFree'),
+  shipZonesInput: $('shipZonesInput'),
+  couponsInput: $('couponsInput'),
   chatName: $('chatName'),
   chatApiUrl: $('chatApiUrl'),
   chatGreeting: $('chatGreeting'),
@@ -358,6 +360,16 @@ function fillForm(data) {
   if (els.shipEnabled) els.shipEnabled.checked = !!ship.enabled
   if (els.shipFlat) els.shipFlat.value = Number(ship.flatRate) || 0
   if (els.shipFree) els.shipFree.value = Number(ship.freeThreshold) || 0
+  if (els.shipZonesInput) {
+    els.shipZonesInput.value = (ship.zones || [])
+      .map((z) => `${z.pinPrefix || ''} | ${z.rate ?? 0}`)
+      .join('\n')
+  }
+  if (els.couponsInput) {
+    els.couponsInput.value = (store.coupons || [])
+      .map((c) => `${c.code || ''} | ${c.type || 'percent'} | ${c.value ?? 0} | ${c.minOrder ?? 0}`)
+      .join('\n')
+  }
   const chat = store.chat || {}
   els.chatName.value = chat.name || ''
   els.chatApiUrl.value = chat.apiUrl || ''
@@ -460,6 +472,7 @@ function addProduct(product) {
       <label>Subcategory <select data-field="subcategory">${subcategoryOptions(product.category, product.subcategory)}</select></label>
       <label>Badge (optional) <input data-field="badge" value="${escapeAttr(product.badge)}" placeholder="New / Best seller" /></label>
       <label>Old price (optional) <input data-field="oldPrice" type="number" min="0" value="${escapeAttr(product.oldPrice ?? 0)}" /></label>
+      <label>Stock (optional) <input data-field="stock" type="number" min="0" placeholder="blank = unlimited" value="${escapeAttr(product.stock ?? '')}" /></label>
       <label>Rating (0-5, optional) <input data-field="rating" type="number" min="0" max="5" step="0.1" value="${escapeAttr(product.rating ?? 0)}" /></label>
       <label>Rating count (optional) <input data-field="ratingCount" type="number" min="0" value="${escapeAttr(product.ratingCount ?? 0)}" /></label>
       <label class="admin-wide">Description <textarea data-field="description" rows="2">${escapeHtml(product.description)}</textarea></label>
@@ -892,6 +905,7 @@ function collect() {
       bullets: lines(get('bullets').value),
       price: Number(get('price').value) || 0,
       oldPrice: Number(get('oldPrice') ? get('oldPrice').value : 0) || 0,
+      stock: get('stock') && get('stock').value.trim() !== '' ? Number(get('stock').value) || 0 : '',
       badge: get('badge') ? get('badge').value.trim() : '',
       rating: Number(get('rating') ? get('rating').value : 0) || 0,
       ratingCount: Number(get('ratingCount') ? get('ratingCount').value : 0) || 0,
@@ -930,8 +944,29 @@ function collect() {
       shipping: {
         enabled: els.shipEnabled ? els.shipEnabled.checked : false,
         flatRate: els.shipFlat ? Number(els.shipFlat.value) || 0 : 0,
-        freeThreshold: els.shipFree ? Number(els.shipFree.value) || 0 : 0
+        freeThreshold: els.shipFree ? Number(els.shipFree.value) || 0 : 0,
+        zones: lines(els.shipZonesInput ? els.shipZonesInput.value : '')
+          .map((line) => {
+            const [prefix, rate] = line.split('|')
+            return {
+              pinPrefix: (prefix || '').replace(/\D/g, ''),
+              rate: Number((rate || '').trim()) || 0
+            }
+          })
+          .filter((zone) => zone.pinPrefix)
       },
+      coupons: lines(els.couponsInput ? els.couponsInput.value : '')
+        .map((line) => {
+          const [code, type, value, minOrder] = line.split('|')
+          return {
+            code: (code || '').trim().toUpperCase(),
+            type: (type || 'percent').trim().toLowerCase() === 'flat' ? 'flat' : 'percent',
+            value: Number((value || '').trim()) || 0,
+            minOrder: Number((minOrder || '').trim()) || 0,
+            active: true
+          }
+        })
+        .filter((coupon) => coupon.code && coupon.value > 0),
       chat: {
         name: els.chatName.value.trim() || 'Studio Genie',
         apiUrl: els.chatApiUrl.value.trim(),

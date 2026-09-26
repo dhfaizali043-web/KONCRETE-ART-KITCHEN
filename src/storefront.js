@@ -169,13 +169,39 @@ function persistCart() {
 }
 
 function addToCart(id, qty = 1, custom = '') {
+  const product = findProduct(id)
+  if (isSoldOut(product)) {
+    toast('This item is sold out')
+    return
+  }
   const value = String(custom || '').trim()
   const key = lineKey(id, value)
   const existing = state.cart.find((item) => cartKey(item) === key)
-  if (existing) existing.qty += qty
-  else state.cart.push({ id, qty, custom: value })
+  const max = stockLimit(product)
+  if (existing) {
+    existing.qty = max !== null ? Math.min(existing.qty + qty, max) : existing.qty + qty
+  } else {
+    state.cart.push({ id, qty: max !== null ? Math.min(qty, max) : qty, custom: value })
+  }
   persistCart()
   toast('Added to cart')
+}
+
+function isSoldOut(p) {
+  if (!p) return true
+  if (p.available === false) return true
+  const stock = p.stock
+  if (stock === '' || stock === null || stock === undefined) return false
+  const n = Number(stock)
+  return !Number.isNaN(n) && n <= 0
+}
+
+function stockLimit(p) {
+  if (!p) return null
+  const stock = p.stock
+  if (stock === '' || stock === null || stock === undefined) return null
+  const n = Number(stock)
+  return Number.isNaN(n) ? null : Math.max(0, Math.floor(n))
 }
 
 function cartKey(item) {
@@ -263,7 +289,7 @@ function toast(message) {
 /* ---------- product card ---------- */
 function productCard(p, options = {}) {
   const id = escapeHtml(p.id)
-  const out = p.available === false
+  const out = isSoldOut(p)
   const images = productImages(p)
   const main = primaryImage(p)
   const price = Number(p.price) > 0 ? money(p.price) : 'Price on request'
@@ -507,6 +533,8 @@ window.KAKFront = {
   starRow,
   searchProducts,
   addToCart,
+  isSoldOut,
+  stockLimit,
   setQty,
   changeQty,
   cartKey,

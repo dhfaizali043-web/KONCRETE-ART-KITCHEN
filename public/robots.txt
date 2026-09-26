@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/sitemap.xml

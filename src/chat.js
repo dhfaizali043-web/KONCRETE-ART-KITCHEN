@@ -546,6 +546,25 @@ async function init() {
     GENIE_FULL = assetPath(imgs.genie)
     document.querySelectorAll('.chat-welcome img').forEach((el) => (el.src = GENIE_FULL))
   }
+  buildWhatsAppFloat()
+}
+
+function buildWhatsAppFloat() {
+  const number = String(catalog.store.whatsapp || '').replace(/[^\d]/g, '')
+  if (!number || number === '910000000000') return
+  if (document.getElementById('waFloat')) return
+  const link = document.createElement('a')
+  link.id = 'waFloat'
+  link.className = 'wa-float'
+  link.href = `https://wa.me/${number}?text=${encodeURIComponent(
+    'Hello Koncrete Art Kitchen, I have a question.'
+  )}`
+  link.target = '_blank'
+  link.rel = 'noopener'
+  link.setAttribute('aria-label', 'Chat on WhatsApp')
+  link.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.14c-.24.68-1.4 1.3-1.94 1.35-.54.05-1.05.24-3.53-.73-2.98-1.17-4.87-4.24-5.02-4.44-.15-.2-1.2-1.6-1.2-3.05s.76-2.16 1.03-2.46c.27-.3.59-.37.79-.37.2 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.83 2.04.9 2.19.07.15.12.32.02.52-.1.2-.15.32-.29.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.65-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.71.81 2 .96.3.15.5.22.57.34.07.12.07.71-.17 1.39z"/></svg><span>WhatsApp</span>'
+  document.body.appendChild(link)
 }
 
 init()

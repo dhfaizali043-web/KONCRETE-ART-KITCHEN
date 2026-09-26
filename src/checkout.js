@@ -4,12 +4,19 @@ const CATALOG_URL = './data/catalog.json'
 let catalog = { store: {}, products: [] }
 let cart = loadCart()
 let currentMethod = 'upi'
+let activeCoupon = null
 
 const summaryItemsEl = document.getElementById('summaryItems')
 const summaryTotalEl = document.getElementById('summaryTotal')
 const summarySubtotalEl = document.getElementById('summarySubtotal')
 const summaryShipEl = document.getElementById('summaryShip')
 const summaryShipRowEl = document.getElementById('summaryShipRow')
+const summaryDiscountEl = document.getElementById('summaryDiscount')
+const summaryDiscountRowEl = document.getElementById('summaryDiscountRow')
+const summaryCouponCodeEl = document.getElementById('summaryCouponCode')
+const couponInputEl = document.getElementById('couponInput')
+const couponApplyBtn = document.getElementById('couponApply')
+const couponMsgEl = document.getElementById('couponMsg')
 const upiIdEl = document.getElementById('upiId')
 const upiAmountEl = document.getElementById('upiAmount')
 const upiPayBtn = document.getElementById('upiPayBtn')
@@ -70,11 +77,47 @@ function shippingQuote() {
   const flat = Number(ship.flatRate) || 0
   const freeAbove = Number(ship.freeThreshold) || 0
   if (freeAbove > 0 && subtotal >= freeAbove) return { amount: 0, label: 'Free' }
+  const pin = (document.getElementById('custPin')?.value || '').replace(/\D/g, '')
+  const zones = Array.isArray(ship.zones) ? ship.zones : []
+  let zoneRate = null
+  let bestLen = 0
+  zones.forEach((zone) => {
+    const prefix = String(zone.pinPrefix || '').replace(/\D/g, '')
+    if (prefix && pin.startsWith(prefix) && prefix.length > bestLen) {
+      bestLen = prefix.length
+      zoneRate = Number(zone.rate)
+    }
+  })
+  if (zoneRate !== null && !Number.isNaN(zoneRate)) {
+    return { amount: zoneRate, label: zoneRate > 0 ? money(zoneRate) : 'Free' }
+  }
   return { amount: flat, label: flat > 0 ? money(flat) : 'Free' }
 }
 
+function findCoupon(code) {
+  const coupons = Array.isArray(catalog.store.coupons) ? catalog.store.coupons : []
+  const key = String(code || '').trim().toUpperCase()
+  if (!key) return null
+  return (
+    coupons.find(
+      (c) => String(c.code || '').trim().toUpperCase() === key && c.active !== false
+    ) || null
+  )
+}
+
+function couponDiscount() {
+  if (!activeCoupon) return 0
+  const subtotal = total()
+  const minOrder = Number(activeCoupon.minOrder) || 0
+  if (minOrder > 0 && subtotal < minOrder) return 0
+  const value = Number(activeCoupon.value) || 0
+  const type = String(activeCoupon.type || 'percent').toLowerCase()
+  const amount = type === 'flat' ? value : (subtotal * value) / 100
+  return Math.max(0, Math.min(Math.round(amount), subtotal))
+}
+
 function grandTotal() {
-  return total() + shippingQuote().amount
+  return Math.max(0, total() - couponDiscount() + shippingQuote().amount)
 }
 
 async function init() {
@@ -185,7 +228,11 @@ function renderSummary() {
     })
     .join('')
   const quote = shippingQuote()
+  const discount = couponDiscount()
   if (summarySubtotalEl) summarySubtotalEl.textContent = money(total())
+  if (summaryDiscountEl) summaryDiscountEl.textContent = '-' + money(discount)
+  if (summaryCouponCodeEl) summaryCouponCodeEl.textContent = activeCoupon ? `(${activeCoupon.code})` : ''
+  if (summaryDiscountRowEl) summaryDiscountRowEl.hidden = discount <= 0
   if (summaryShipEl) summaryShipEl.textContent = quote.label
   if (summaryShipRowEl) summaryShipRowEl.hidden = !(catalog.store.shipping || {}).enabled
   summaryTotalEl.textContent = money(grandTotal())
@@ -284,16 +331,69 @@ function bindEvents() {
   })
 
   confirmBtn?.addEventListener('click', confirmOrder)
+
+  couponApplyBtn?.addEventListener('click', applyCoupon)
+  couponInputEl?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      applyCoupon()
+    }
+  })
+  document.getElementById('custPin')?.addEventListener('input', () => {
+    if ((catalog.store.shipping || {}).enabled) {
+      renderSummary()
+      renderPayments()
+    }
+  })
 }
 
 function methodLabel() {
   return { upi: 'UPI', bank: 'Bank transfer', card: 'Card / Netbanking' }[currentMethod]
 }
 
+function setCouponMsg(text, ok) {
+  if (!couponMsgEl) return
+  couponMsgEl.hidden = false
+  couponMsgEl.textContent = text
+  couponMsgEl.classList.toggle('ok', !!ok)
+}
+
+function applyCoupon() {
+  const code = couponInputEl?.value.trim()
+  if (!code) {
+    setCouponMsg('Enter a code to apply.', false)
+    return
+  }
+  const found = findCoupon(code)
+  if (!found) {
+    activeCoupon = null
+    setCouponMsg('This code is not valid.', false)
+    renderSummary()
+    renderPayments()
+    return
+  }
+  const minOrder = Number(found.minOrder) || 0
+  if (minOrder > 0 && total() < minOrder) {
+    activeCoupon = null
+    setCouponMsg(`Add ${money(minOrder)} or more to use this code.`, false)
+    renderSummary()
+    renderPayments()
+    return
+  }
+  activeCoupon = { ...found, code: String(found.code).trim().toUpperCase() }
+  const label = String(found.type || 'percent').toLowerCase() === 'flat'
+    ? money(couponDiscount())
+    : `${Number(found.value) || 0}% off`
+  setCouponMsg(`Code applied — ${label}.`, true)
+  renderSummary()
+  renderPayments()
+}
+
 function confirmOrder() {
   if (!cart.length) return
   const name = document.getElementById('custName').value.trim()
   const phone = document.getElementById('custPhone').value.trim()
+  const pin = (document.getElementById('custPin')?.value || '').trim()
   const address = document.getElementById('custAddress').value.trim()
   const note = document.getElementById('custNote').value.trim()
 
@@ -308,12 +408,15 @@ function confirmOrder() {
     '',
     ...lines,
     '',
-    `Total: ${money(grandTotal())}`,
+    `Subtotal: ${money(total())}`,
+    couponDiscount() > 0 ? `Discount: -${money(couponDiscount())} (${activeCoupon.code})` : '',
     (catalog.store.shipping || {}).enabled ? `Shipping: ${shippingQuote().label}` : '',
+    `Total: ${money(grandTotal())}`,
     `Payment: ${methodLabel()}`,
     '',
     `Name: ${name || '—'}`,
     `Phone: ${phone || '—'}`,
+    `PIN: ${pin || '—'}`,
     `Address: ${address || '—'}`,
     note ? `Note: ${note}` : '',
     '',
@@ -328,13 +431,24 @@ function confirmOrder() {
     return
   }
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank')
-  const order = buildOrder({ name, phone, address, note })
+  const order = buildOrder({ name, phone, pin, address, note })
   saveOrderToAccount(order)
   sendOrderAlert(order)
 }
 
-function buildOrder({ name, phone, address, note }) {
+function orderRef() {
+  const stamp = Date.now().toString(36).toUpperCase()
+  const rand = Math.random().toString(36).slice(2, 5).toUpperCase()
+  return `KAK-${stamp}${rand}`
+}
+
+function buildOrder({ name, phone, pin, address, note }) {
+  const discount = couponDiscount()
+  const quote = shippingQuote()
   return {
+    ref: orderRef(),
+    status: 'New',
+    createdAt: new Date().toISOString(),
     items: cart.map((item) => {
       const p = findProduct(item.id)
       return {
@@ -345,16 +459,32 @@ function buildOrder({ name, phone, address, note }) {
         custom: item.custom || ''
       }
     }),
+    subtotal: money(total()),
+    discount: discount > 0 ? money(discount) : '',
+    coupon: activeCoupon ? activeCoupon.code : '',
+    shipping: (catalog.store.shipping || {}).enabled ? quote.label : '',
     total: money(grandTotal()),
     method: methodLabel(),
     name,
     phone,
+    pin,
     address,
     note
   }
 }
 
+function saveLocalOrder(order) {
+  try {
+    const list = JSON.parse(localStorage.getItem('kak_orders_local_v1')) || []
+    list.unshift(order)
+    localStorage.setItem('kak_orders_local_v1', JSON.stringify(list.slice(0, 20)))
+  } catch {
+    /* storage optional */
+  }
+}
+
 function saveOrderToAccount(order) {
+  saveLocalOrder(order)
   const auth = window.KAKAuth
   if (!auth || !auth.enabled || !auth.currentUser()) return
   auth.saveOrder(order).catch(() => {})
@@ -368,15 +498,19 @@ function sendOrderAlert(order) {
     .map((item) => `- ${item.name} x ${item.qty} = ${money(item.price * item.qty)}`)
     .join('\n')
   const message = [
-    'New order — Koncrete Art Kitchen',
+    `Order ref: ${order.ref || '-'} — Koncrete Art Kitchen`,
     '',
     lines,
     '',
+    `Subtotal: ${order.subtotal || '-'}`,
+    order.discount ? `Discount: -${order.discount} ${order.coupon ? '(' + order.coupon + ')' : ''}` : '',
+    order.shipping ? `Shipping: ${order.shipping}` : '',
     `Total: ${order.total}`,
     `Payment: ${order.method}`,
     '',
     `Name: ${order.name || '-'}`,
     `Phone: ${order.phone || '-'}`,
+    `PIN: ${order.pin || '-'}`,
     `Address: ${order.address || '-'}`,
     order.note ? `Note: ${order.note}` : ''
   ]
@@ -386,7 +520,7 @@ function sendOrderAlert(order) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
-      _subject: 'New order — Koncrete Art Kitchen',
+      _subject: `New order ${order.ref || ''} — Koncrete Art Kitchen`,
       name: order.name || 'Customer',
       message
     })

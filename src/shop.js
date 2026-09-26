@@ -7,6 +7,9 @@ const emptyEl = document.getElementById('shopEmpty')
 const chipsEl = document.getElementById('shopChips')
 const subChipsEl = document.getElementById('shopSubChips')
 const searchEl = document.getElementById('shopSearch')
+const sortEl = document.getElementById('shopSort')
+const minEl = document.getElementById('shopMin')
+const maxEl = document.getElementById('shopMax')
 const drawer = document.getElementById('cartDrawer')
 const overlay = document.getElementById('cartOverlay')
 const cartItemsEl = document.getElementById('cartItems')
@@ -16,7 +19,7 @@ const openCartBtn = document.getElementById('openCart')
 const bottomCartBtn = document.getElementById('bottomCart')
 const closeCartBtn = document.getElementById('closeCart')
 
-const filter = { cat: 'all', sub: 'all', q: '' }
+const filter = { cat: 'all', sub: 'all', q: '', sort: 'featured', min: '', max: '' }
 
 function renderChips() {
   if (!chipsEl) return
@@ -70,12 +73,38 @@ function matches(p) {
   if (filter.cat !== 'all' && p.category !== filter.cat) return false
   if (filter.sub !== 'all' && p.subcategory !== filter.sub) return false
   if (filter.q && !haystack(p).includes(filter.q.toLowerCase())) return false
+  const price = Number(p.price) || 0
+  const min = filter.min === '' ? null : Number(filter.min)
+  const max = filter.max === '' ? null : Number(filter.max)
+  if (min !== null && !Number.isNaN(min) && price < min) return false
+  if (max !== null && !Number.isNaN(max) && price > max) return false
   return true
+}
+
+function sortList(list) {
+  const sorted = list.slice()
+  const price = (p) => Number(p.price) || 0
+  switch (filter.sort) {
+    case 'price-asc':
+      return sorted.sort((a, b) => price(a) - price(b))
+    case 'price-desc':
+      return sorted.sort((a, b) => price(b) - price(a))
+    case 'rating':
+      return sorted.sort((a, b) => {
+        const ra = F.productRating(a).average || 0
+        const rb = F.productRating(b).average || 0
+        return rb - ra
+      })
+    case 'name':
+      return sorted.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
+    default:
+      return sorted
+  }
 }
 
 function renderProducts() {
   if (!grid) return
-  const list = (F.state.catalog.products || []).filter(matches)
+  const list = sortList((F.state.catalog.products || []).filter(matches))
   grid.innerHTML = list.map((p) => F.productCard(p, { bullets: true })).join('')
   if (emptyEl) emptyEl.hidden = list.length > 0
 }
@@ -85,6 +114,9 @@ function updateUrl() {
   if (filter.cat !== 'all') params.set('cat', filter.cat)
   if (filter.sub !== 'all') params.set('sub', filter.sub)
   if (filter.q) params.set('q', filter.q)
+  if (filter.sort && filter.sort !== 'featured') params.set('sort', filter.sort)
+  if (filter.min !== '') params.set('min', filter.min)
+  if (filter.max !== '') params.set('max', filter.max)
   const query = params.toString()
   history.replaceState(null, '', query ? `?${query}` : location.pathname)
   window.dispatchEvent(new CustomEvent('kak:filter', { detail: { cat: filter.cat, sub: filter.sub } }))
@@ -177,6 +209,21 @@ function bind() {
     updateUrl()
   })
 
+  sortEl?.addEventListener('change', () => {
+    filter.sort = sortEl.value
+    renderProducts()
+    updateUrl()
+  })
+
+  const onPrice = () => {
+    filter.min = minEl?.value ?? ''
+    filter.max = maxEl?.value ?? ''
+    renderProducts()
+    updateUrl()
+  }
+  minEl?.addEventListener('input', onPrice)
+  maxEl?.addEventListener('input', onPrice)
+
   cartItemsEl?.addEventListener('click', (event) => {
     const inc = event.target.closest('[data-line-inc]')
     const dec = event.target.closest('[data-line-dec]')
@@ -212,7 +259,13 @@ function readParams() {
   filter.cat = params.get('cat') || 'all'
   filter.sub = params.get('sub') || 'all'
   filter.q = params.get('q') || ''
+  filter.sort = params.get('sort') || 'featured'
+  filter.min = params.get('min') || ''
+  filter.max = params.get('max') || ''
   if (searchEl && filter.q) searchEl.value = filter.q
+  if (sortEl) sortEl.value = filter.sort
+  if (minEl && filter.min) minEl.value = filter.min
+  if (maxEl && filter.max) maxEl.value = filter.max
 }
 
 async function init() {

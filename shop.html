@@ -82,6 +82,23 @@
             <input type="search" id="shopSearch" placeholder="Search products..." autocomplete="off" />
           </label>
         </div>
+        <div class="shop-filters">
+          <label class="shop-sort">
+            <span>Sort</span>
+            <select id="shopSort">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="rating">Top rated</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </label>
+          <label class="shop-price">
+            <span>Price ₹</span>
+            <input type="number" id="shopMin" min="0" step="1" placeholder="Min" />
+            <input type="number" id="shopMax" min="0" step="1" placeholder="Max" />
+          </label>
+        </div>
         <div class="sf-subchips" id="shopSubChips" hidden></div>
         <div class="product-grid" id="productGrid"></div>
         <p class="shop-empty" id="shopEmpty" hidden>No products matched your search.</p>

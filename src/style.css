@@ -1490,6 +1490,52 @@ h2 {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.36), 0 0 30px rgba(126, 176, 230, 0.85);
 }
 
+.wa-float {
+  position: fixed;
+  left: 1.4rem;
+  bottom: 1.4rem;
+  z-index: 89;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #25d366;
+  color: #062e14;
+  font-weight: 600;
+  font-size: 0.86rem;
+  text-decoration: none;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.wa-float:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.36);
+}
+
+.wa-float svg {
+  width: 22px;
+  height: 22px;
+  fill: #062e14;
+}
+
+@media (max-width: 600px) {
+  .wa-float {
+    left: 1rem;
+    bottom: 1rem;
+    padding: 0.7rem;
+  }
+
+  .wa-float span {
+    display: none;
+  }
+
+  body.has-bottom-nav .wa-float {
+    bottom: 5.4rem;
+  }
+}
+
 .chat-launcher-img {
   width: 100%;
   height: 100%;
@@ -3637,6 +3683,46 @@ body.no-scroll {
   width: 100%;
 }
 
+.shop-filters {
+  max-width: 1240px;
+  margin: 0 auto 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.shop-sort,
+.shop-price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.shop-sort select,
+.shop-price input {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ink);
+  font: 400 0.86rem Outfit, sans-serif;
+  padding: 0.45rem 0.6rem;
+  outline: none;
+}
+
+.shop-price input {
+  width: 84px;
+}
+
+.shop-sort select:focus,
+.shop-price input:focus {
+  border-color: var(--rust);
+}
+
 .shop-hero.is-light {
   background: var(--paper);
   color: var(--ink);
@@ -4956,6 +5042,69 @@ body.admin-locked {
   color: rgba(241, 235, 224, 0.72);
 }
 
+.summary-line-row b {
+  font-weight: 500;
+  color: rgba(241, 235, 224, 0.6);
+}
+
+/* ---------- coupon box (checkout) ---------- */
+.coupon-box {
+  margin: 0.9rem 0 0.2rem;
+}
+
+.coupon-box > label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(241, 235, 224, 0.55);
+  margin-bottom: 0.4rem;
+}
+
+.coupon-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.coupon-row input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(241, 235, 224, 0.08);
+  border: 1px solid rgba(241, 235, 224, 0.22);
+  border-radius: 4px;
+  color: var(--paper);
+  padding: 0.6rem 0.7rem;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coupon-row input::placeholder {
+  color: rgba(241, 235, 224, 0.4);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.coupon-row input:focus {
+  outline: none;
+  border-color: var(--halo);
+}
+
+.coupon-row .btn {
+  white-space: nowrap;
+  padding: 0.6rem 0.9rem;
+}
+
+.coupon-msg {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--rust);
+}
+
+.coupon-msg.ok {
+  color: var(--halo);
+}
+
 /* ---------- order history ---------- */
 .orders-page {
   max-width: 860px;
@@ -5381,4 +5530,32 @@ body.page-dark {
   .b2b-hero {
     padding-top: 5rem;
   }
+}
+
+/* ---------- 404 ---------- */
+.notfound-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 7rem 6vw 6rem;
+  text-align: center;
+}
+
+.notfound-page h1 {
+  font-family: var(--serif, 'Cinzel', serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin: 0.6rem 0 1rem;
+}
+
+.notfound-page .lede {
+  color: rgba(241, 235, 224, 0.72);
+  max-width: 52ch;
+  margin: 0 auto 1.8rem;
+  line-height: 1.7;
+}
+
+.notfound-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
 }

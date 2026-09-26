@@ -17,8 +17,10 @@
     "shipping": {
       "enabled": false,
       "flatRate": 0,
-      "freeThreshold": 0
+      "freeThreshold": 0,
+      "zones": []
     },
+    "coupons": [],
     "chat": {
       "name": "Studio Genie",
       "apiUrl": "",
@@ -234,6 +236,7 @@
       ],
       "image": "brand/products/01-6-1790401384118.jpg",
       "available": false,
+      "stock": 0,
       "custom": {
         "enabled": true,
         "label": "",

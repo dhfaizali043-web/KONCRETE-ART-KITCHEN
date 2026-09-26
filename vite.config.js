@@ -20,7 +20,8 @@ export default defineConfig({
         shipping: entry('./shipping.html'),
         privacy: entry('./privacy.html'),
         terms: entry('./terms.html'),
-        admin: entry('./admin.html')
+        admin: entry('./admin.html'),
+        notfound: entry('./404.html')
       }
     }
   },
