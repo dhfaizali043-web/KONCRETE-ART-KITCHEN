@@ -151,6 +151,11 @@ function bindForm(store) {
     const email = (store.orders && store.orders.alertEmail) || ''
     const whatsappOk = number.length >= 10 && number !== '910000000000'
 
+    if (!whatsappOk && !email) {
+      showStatus(status, 'Contact details are not set yet. Add them in the admin panel.', true)
+      return
+    }
+
     if (whatsappOk) {
       window.open(
         `https://wa.me/${number}?text=${encodeURIComponent(
@@ -159,31 +164,54 @@ function bindForm(store) {
         '_blank',
         'noopener'
       )
+    }
+
+    const emailTask = email
+      ? fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: 'New B2B enquiry — Koncrete Art Kitchen',
+            'Type of requirement': get('interest'),
+            Name: get('name'),
+            Company: get('company'),
+            Phone: get('phone'),
+            Email: get('email'),
+            City: get('city'),
+            Quantity: get('quantity'),
+            Details: get('message')
+          })
+        })
+          .then(() => true)
+          .catch(() => false)
+      : null
+
+    form.reset()
+
+    if (whatsappOk && email) {
+      showStatus(status, 'Opening WhatsApp and emailing your enquiry…')
+      emailTask.then((ok) =>
+        showStatus(
+          status,
+          ok
+            ? 'Thank you — your enquiry has been sent on WhatsApp and email.'
+            : 'WhatsApp opened, but email could not be sent. Please complete the message on WhatsApp.',
+          !ok
+        )
+      )
+    } else if (whatsappOk) {
       showStatus(status, 'Opening WhatsApp — send the enquiry.')
-      form.reset()
-    } else if (email) {
-      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          _subject: 'New B2B enquiry — Koncrete Art Kitchen',
-          'Type of requirement': get('interest'),
-          Name: get('name'),
-          Company: get('company'),
-          Phone: get('phone'),
-          Email: get('email'),
-          City: get('city'),
-          Quantity: get('quantity'),
-          Details: get('message')
-        })
-      })
-        .then(() => {
-          showStatus(status, 'Thank you — your enquiry has been sent.')
-          form.reset()
-        })
-        .catch(() => showStatus(status, 'Could not send right now. Please try again later.', true))
     } else {
-      showStatus(status, 'Contact details are not set yet. Add them in the admin panel.', true)
+      showStatus(status, 'Sending your enquiry…')
+      emailTask.then((ok) =>
+        showStatus(
+          status,
+          ok
+            ? 'Thank you — your enquiry has been sent by email.'
+            : 'Could not send right now. Please try again later.',
+          !ok
+        )
+      )
     }
   })
 }

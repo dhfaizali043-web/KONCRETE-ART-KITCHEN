@@ -353,8 +353,10 @@ function submitReview(product) {
     return
   }
   const number = String((F.state.catalog.store || {}).whatsapp || '').replace(/[^\d]/g, '')
-  if (!number || number === '910000000000') {
-    F.toast('Set your WhatsApp number in Admin first')
+  const email = ((F.state.catalog.store || {}).orders || {}).alertEmail || ''
+  const whatsappOk = Boolean(number) && number !== '910000000000'
+  if (!whatsappOk && !email) {
+    F.toast('Set your WhatsApp number or email in Admin first')
     return
   }
   const stars = '★'.repeat(selectedRating) + '☆'.repeat(5 - selectedRating)
@@ -369,7 +371,40 @@ function submitReview(product) {
     '',
     'I am sending my product/unboxing photo in this chat.'
   ].join('\n')
-  window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank')
+  if (whatsappOk) {
+    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank')
+  }
+
+  const emailTask = email
+    ? fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `New product review — ${product.name}`,
+          Product: product.name,
+          Link: location.href,
+          Rating: `${selectedRating}/5`,
+          Name: name || 'Anonymous',
+          Review: text
+        })
+      })
+        .then(() => true)
+        .catch(() => false)
+    : null
+
+  if (whatsappOk && email) {
+    F.toast('Thank you! Send the review on WhatsApp — we got your email too.')
+    emailTask.then((ok) => {
+      if (!ok) F.toast('Review opened on WhatsApp, but email failed.')
+    })
+  } else if (whatsappOk) {
+    F.toast('Thank you! Send the review on WhatsApp.')
+  } else {
+    F.toast('Sending your review…')
+    emailTask.then((ok) => {
+      F.toast(ok ? 'Thank you! Your review has been sent.' : 'Could not send right now. Please try again later.')
+    })
+  }
 
   const form = byId('reviewForm')
   if (form) form.hidden = true
@@ -385,7 +420,6 @@ function submitReview(product) {
       b.setAttribute('aria-pressed', 'false')
     })
   }
-  F.toast('Thank you! Send the review on WhatsApp.')
 }
 
 function bindReviews(product) {

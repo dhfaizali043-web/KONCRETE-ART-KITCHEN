@@ -168,27 +168,45 @@ function setupTestimonials(store) {
 
     const whatsapp = String(store.whatsapp || '').replace(/[^\d]/g, '')
     const email = (store.orders && store.orders.alertEmail) || ''
+    const whatsappOk = whatsapp.length >= 10 && whatsapp !== '910000000000'
 
-    if (whatsapp.length >= 10 && whatsapp !== '910000000000') {
-      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, '_blank')
-      F.toast('Thank you! Send the review on WhatsApp.')
-    } else if (email) {
-      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          _subject: 'New customer review — Koncrete Art Kitchen',
-          Name: name || 'Anonymous',
-          City: location,
-          Rating: `${testimonialRating}/5`,
-          Review: text
-        })
-      })
-        .then(() => F.toast('Thank you! Your review has been sent.'))
-        .catch(() => F.toast('Could not send right now. Please try again later.'))
-    } else {
+    if (!whatsappOk && !email) {
       F.toast('Reviews are not set up yet — add WhatsApp or email in Admin.')
       return
+    }
+
+    if (whatsappOk) {
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, '_blank')
+    }
+
+    const emailTask = email
+      ? fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: 'New customer review — Koncrete Art Kitchen',
+            Name: name || 'Anonymous',
+            City: location,
+            Rating: `${testimonialRating}/5`,
+            Review: text
+          })
+        })
+          .then(() => true)
+          .catch(() => false)
+      : null
+
+    if (whatsappOk && email) {
+      F.toast('Thank you! Send the review on WhatsApp — we got your email too.')
+      emailTask.then((ok) => {
+        if (!ok) F.toast('Review opened on WhatsApp, but email failed.')
+      })
+    } else if (whatsappOk) {
+      F.toast('Thank you! Send the review on WhatsApp.')
+    } else {
+      F.toast('Sending your review…')
+      emailTask.then((ok) => {
+        F.toast(ok ? 'Thank you! Your review has been sent.' : 'Could not send right now. Please try again later.')
+      })
     }
 
     form.reset()

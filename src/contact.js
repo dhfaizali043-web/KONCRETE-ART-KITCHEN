@@ -112,24 +112,65 @@ function bindForm(store) {
 
     const whatsapp = digitsOnly(store.whatsapp)
     const email = (store.orders && store.orders.alertEmail) || ''
+    const whatsappOk = whatsapp.length >= 10
 
-    if (whatsapp.length >= 10) {
+    if (!whatsappOk && !email) {
+      showStatus(
+        status,
+        'Contact details are not set yet. Add them in the admin panel.',
+        true
+      )
+      return
+    }
+
+    if (whatsappOk) {
       window.open(
         `https://wa.me/${whatsapp}?text=${encodeURIComponent(body)}`,
         '_blank',
         'noopener'
       )
+    }
+
+    const emailTask = email
+      ? fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: `Website enquiry — ${name}`,
+            Name: name,
+            Phone: phone,
+            Message: message
+          })
+        })
+          .then(() => true)
+          .catch(() => false)
+      : null
+
+    form.reset()
+
+    if (whatsappOk && email) {
+      showStatus(status, 'Opening WhatsApp and emailing your message…')
+      emailTask.then((ok) =>
+        showStatus(
+          status,
+          ok
+            ? 'Thank you — your message has been sent on WhatsApp and email.'
+            : 'WhatsApp opened, but email could not be sent. Please complete the message on WhatsApp.',
+          !ok
+        )
+      )
+    } else if (whatsappOk) {
       showStatus(status, 'Opening WhatsApp — send the message.')
-    } else if (email) {
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-        `Website enquiry — ${name}`
-      )}&body=${encodeURIComponent(body)}`
-      showStatus(status, 'Opening your mail app.')
     } else {
-      showStatus(
-        status,
-        'WhatsApp number is not set. Add it in the admin panel.',
-        true
+      showStatus(status, 'Sending your message…')
+      emailTask.then((ok) =>
+        showStatus(
+          status,
+          ok
+            ? 'Thank you — your message has been sent by email.'
+            : 'Could not send right now. Please try again later.',
+          !ok
+        )
       )
     }
   })
