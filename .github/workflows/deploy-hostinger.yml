@@ -1,0 +1,67 @@
+name: Deploy to Hostinger (FTP)
+
+# Builds the site and uploads dist/ to Hostinger over FTP on every push to main.
+# Admin "Save & publish" commits to this repo, so the site stays up to date automatically.
+#
+# Required repository secrets (Settings > Secrets and variables > Actions):
+#   FTP_SERVER      Hostinger FTP host, e.g. ftp.yourdomain.com or the server IP
+#   FTP_USERNAME    Hostinger FTP username
+#   FTP_PASSWORD    Hostinger FTP password
+#   FTP_SERVER_DIR  Optional. Remote folder, e.g. /public_html/ (default: /public_html/)
+#
+# Tip: if your plan supports FTPS, change protocol below to ftps.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: hostinger
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check FTP secrets
+        id: check
+        run: |
+          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::FTP secrets are not set. Add FTP_SERVER, FTP_USERNAME and FTP_PASSWORD in Settings > Secrets and variables > Actions to enable Hostinger deploys."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.check.outputs.configured == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.check.outputs.configured == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.configured == 'true'
+        run: npm ci
+
+      - name: Build
+        if: steps.check.outputs.configured == 'true'
+        run: npm run build
+
+      - name: Upload dist to Hostinger
+        if: steps.check.outputs.configured == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
+          local-dir: ./dist/
+          protocol: ftp
+          port: 21
+          dangerous-clean-slate: false
