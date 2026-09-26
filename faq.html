@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ — Koncrete Art Kitchen</title>
+    <meta
+      name="description"
+      content="Answers to common questions about ordering, customisation, shipping, payments, returns and wholesale at Koncrete Art Kitchen."
+    />
+    <meta name="theme-color" content="#161412" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://dhfaizali043-web.github.io/KONCRETE-ART-KITCHEN/faq.html" />
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-header" id="header">
+      <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
+        <img src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      </a>
+      <nav class="nav" id="nav" aria-label="Primary">
+        <a href="./shop.html">Shop</a>
+        <a href="./b2b.html">B2B</a>
+        <a href="./index.html#commission">Commission</a>
+        <a href="./contact.html">Contact</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main class="policy-wrap">
+      <div class="section-index">Support</div>
+      <h1>Frequently asked questions</h1>
+      <p class="policy-updated">Everything you need to know before ordering.</p>
+
+      <div class="faq-list" id="faqList"></div>
+      <p class="faq-loading" id="faqEmpty" hidden>
+        Our FAQ is being updated. Please message us on WhatsApp or use the chat assistant.
+      </p>
+
+      <div class="policy-card">
+        <h2>Still have a question?</h2>
+        <p>
+          Message us on WhatsApp or send an enquiry from the
+          <a href="./contact.html">Contact page</a>. You can also ask the chat assistant
+          at the bottom of the screen.
+        </p>
+        <p>
+          <a class="btn btn-solid" href="./shop.html">Back to shop</a>
+        </p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      <div class="footer-row">
+        <p>Koncrete Art Kitchen · Est. 2024</p>
+        <p>Design-led studio · Made in-house</p>
+        <p>
+          <a href="./shop.html">Shop</a> · <a href="./faq.html">FAQ</a> ·
+          <a href="./returns.html">Returns</a> · <a href="./shipping.html">Shipping</a> ·
+          <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> ·
+          <a href="./contact.html">Contact</a> · <a href="./index.html">Home</a>
+        </p>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/storefront.js"></script>
+    <script type="module" src="./src/auth.js"></script>
+    <script type="module" src="./src/faq.js"></script>
+    <script type="module" src="./src/site-images.js"></script>
+    <script type="module" src="./src/chat.js"></script>
+  </body>
+</html>

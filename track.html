@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track your order — Koncrete Art Kitchen</title>
+    <meta
+      name="description"
+      content="Track your Koncrete Art Kitchen order status using your order reference or account."
+    />
+    <meta name="theme-color" content="#161412" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body class="page-dark">
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-header" id="header">
+      <a class="brand" href="./index.html" aria-label="Koncrete Art Kitchen home">
+        <img src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      </a>
+      <nav class="nav" id="nav" aria-label="Primary">
+        <a href="./shop.html">Shop</a>
+        <a href="./orders.html">My orders</a>
+        <a href="./contact.html">Contact</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main class="track-wrap">
+      <div class="section-index">Order tracking</div>
+      <h1>Track your order</h1>
+      <p class="lede">
+        Enter the order reference we sent you (it looks like <b>KAK-XXXXXXX</b>), or open
+        your account to see all your orders.
+      </p>
+
+      <form class="track-form" id="trackForm">
+        <input
+          type="text"
+          id="trackRef"
+          placeholder="Order reference, e.g. KAK-ABC123"
+          autocomplete="off"
+        />
+        <button class="btn btn-solid" type="submit">Track</button>
+      </form>
+
+      <p class="track-msg" id="trackMsg" hidden></p>
+      <div class="track-results" id="trackResults"></div>
+    </main>
+
+    <footer class="site-footer">
+      <img class="footer-mark" src="./brand/logo-white.png" alt="Koncrete Art Kitchen" />
+      <div class="footer-row">
+        <p>Koncrete Art Kitchen · Est. 2024</p>
+        <p>Design-led studio · Made in-house</p>
+        <p>
+          <a href="./shop.html">Shop</a> · <a href="./faq.html">FAQ</a> ·
+          <a href="./returns.html">Returns</a> · <a href="./shipping.html">Shipping</a> ·
+          <a href="./contact.html">Contact</a> · <a href="./index.html">Home</a>
+        </p>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/storefront.js"></script>
+    <script type="module" src="./src/auth.js"></script>
+    <script type="module" src="./src/track.js"></script>
+    <script type="module" src="./src/invoice.js"></script>
+    <script type="module" src="./src/site-images.js"></script>
+    <script type="module" src="./src/chat.js"></script>
+  </body>
+</html>

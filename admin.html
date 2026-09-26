@@ -215,6 +215,20 @@
               Customer reviews (one per line: Name | City | rating | text)
               <textarea id="homeReviews" rows="5" placeholder="Avni R. | Mumbai | 5 | Beautiful finish."></textarea>
             </label>
+            <label class="admin-wide">
+              FAQ (one per line: Question | Answer)
+              <textarea id="homeFaq" rows="6" placeholder="Do you ship across India? | Yes, we ship pan-India by courier."></textarea>
+            </label>
+            <label class="admin-wide">
+              Journal posts. First line: Title | date (YYYY-MM-DD) | slug | image path | short excerpt.
+              Following lines are the post body. Separate posts with a line containing three dashes.
+              <textarea id="homePosts" rows="8" placeholder="How a custom name plate comes together | 2026-08-12 | how-a-custom-name-plate-comes-together | | From first message to final finish.
+
+Every commission starts with a conversation...
+
+---
+Another post title | 2026-09-05 | another-post | brand/site/example.jpg | A short summary."></textarea>
+            </label>
             <label>
               Newsletter title
               <input type="text" id="newsTitle" placeholder="Stay in the loop" />
@@ -490,6 +504,14 @@
             <label class="admin-wide">
               Order alert email (new orders are emailed here; leave blank to disable)
               <input type="email" id="orderAlertEmail" placeholder="orders@yourdomain.com" />
+            </label>
+            <label>
+              Google Analytics ID (optional)
+              <input type="text" id="gaId" placeholder="G-XXXXXXXXXX" />
+            </label>
+            <label>
+              Meta Pixel ID (optional)
+              <input type="text" id="metaPixel" placeholder="1234567890" />
             </label>
           </div>
           <p class="admin-help">

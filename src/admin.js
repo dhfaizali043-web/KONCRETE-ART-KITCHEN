@@ -23,6 +23,8 @@ const els = {
   currencySymbol: $('currencySymbol'),
   currencyCode: $('currencyCode'),
   orderAlertEmail: $('orderAlertEmail'),
+  gaId: $('gaId'),
+  metaPixel: $('metaPixel'),
   socialInstagram: $('socialInstagram'),
   socialPinterest: $('socialPinterest'),
   socialYoutube: $('socialYoutube'),
@@ -56,6 +58,8 @@ const els = {
   homeAnnouncements: $('homeAnnouncements'),
   homeFeatures: $('homeFeatures'),
   homeReviews: $('homeReviews'),
+  homeFaq: $('homeFaq'),
+  homePosts: $('homePosts'),
   newsTitle: $('newsTitle'),
   newsText: $('newsText'),
   newsEmail: $('newsEmail'),
@@ -402,6 +406,9 @@ function fillForm(data) {
   els.fbSenderId.value = fb.messagingSenderId || ''
   els.fbAppId.value = fb.appId || ''
   els.orderAlertEmail.value = (store.orders || {}).alertEmail || ''
+  const analytics = store.analytics || {}
+  if (els.gaId) els.gaId.value = analytics.gaId || ''
+  if (els.metaPixel) els.metaPixel.value = analytics.metaPixel || ''
   const social = store.social || {}
   if (els.socialInstagram) els.socialInstagram.value = social.instagram || ''
   if (els.socialPinterest) els.socialPinterest.value = social.pinterest || ''
@@ -417,6 +424,10 @@ function fillForm(data) {
   els.homeReviews.value = (store.reviews || [])
     .map((r) => `${r.name || ''} | ${r.location || ''} | ${r.rating || 5} | ${r.text || ''}`)
     .join('\n')
+  if (els.homeFaq) {
+    els.homeFaq.value = (store.faq || []).map((f) => `${f.q || ''} | ${f.a || ''}`).join('\n')
+  }
+  if (els.homePosts) els.homePosts.value = serializePosts(store.posts || [])
   const news = store.newsletter || {}
   els.newsTitle.value = news.title || ''
   els.newsText.value = news.text || ''
@@ -995,6 +1006,10 @@ function collect() {
       orders: {
         alertEmail: els.orderAlertEmail.value.trim()
       },
+      analytics: {
+        gaId: els.gaId ? els.gaId.value.trim() : '',
+        metaPixel: els.metaPixel ? els.metaPixel.value.trim() : ''
+      },
       social: {
         instagram: els.socialInstagram ? els.socialInstagram.value.trim() : '',
         pinterest: els.socialPinterest ? els.socialPinterest.value.trim() : '',
@@ -1021,6 +1036,13 @@ function collect() {
           }
         })
         .filter((r) => r.name),
+      faq: lines(els.homeFaq ? els.homeFaq.value : '')
+        .map((line) => {
+          const [q, ...rest] = line.split('|')
+          return { q: (q || '').trim(), a: rest.join('|').trim() }
+        })
+        .filter((entry) => entry.q && entry.a),
+      posts: parsePosts(els.homePosts ? els.homePosts.value : ''),
       newsletter: {
         title: els.newsTitle.value.trim(),
         text: els.newsText.value.trim(),
@@ -1160,6 +1182,38 @@ function lines(value) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function serializePosts(posts) {
+  return (posts || [])
+    .map((post) =>
+      [
+        [post.title || '', post.date || '', post.slug || '', post.image || '', post.excerpt || ''].join(
+          ' | '
+        ),
+        post.body || ''
+      ].join('\n')
+    )
+    .join('\n---\n')
+}
+
+function parsePosts(value) {
+  return String(value || '')
+    .split(/\n\s*---\s*\n/)
+    .map((block) => {
+      const blockLines = block.split('\n')
+      const header = blockLines.shift() || ''
+      const [title, date, slug, image, excerpt] = header.split('|').map((part) => (part || '').trim())
+      return {
+        title,
+        date,
+        slug: slug || slugify(title),
+        image,
+        excerpt,
+        body: blockLines.join('\n').trim()
+      }
+    })
+    .filter((post) => post.title)
 }
 
 function collectCategories() {

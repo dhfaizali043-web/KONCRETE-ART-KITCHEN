@@ -149,7 +149,6 @@ async function init() {
   } catch {
     return
   }
-
   const images = store.images || {}
 
   if (images.logoWhite) {
@@ -183,6 +182,84 @@ async function init() {
 
   renderSocial(store)
   renderAddresses(store)
+  addFooterLinks()
+  ensureManifest()
+  loadAnalytics(store.analytics || {})
+  registerServiceWorker()
+}
+
+function addFooterLinks() {
+  const row = document.querySelector('.site-footer .footer-row p:last-child')
+  if (!row || row.dataset.linksAdded) return
+  row.dataset.linksAdded = '1'
+  const extras = [
+    { label: 'FAQ', href: './faq.html' },
+    { label: 'Journal', href: './blog.html' },
+    { label: 'Track order', href: './track.html' }
+  ]
+  extras.forEach((link) => {
+    if (row.querySelector(`a[href="${link.href}"]`)) return
+    row.insertAdjacentHTML('beforeend', ` · <a href="${link.href}">${link.label}</a>`)
+  })
+}
+
+function ensureManifest() {
+  if (document.querySelector('link[rel="manifest"]')) return
+  const link = document.createElement('link')
+  link.rel = 'manifest'
+  link.href = './manifest.webmanifest'
+  document.head.appendChild(link)
+}
+
+function loadAnalytics(analytics) {
+  const ga = String(analytics.gaId || '').trim()
+  if (/^G-[A-Z0-9]+$/i.test(ga)) {
+    const script = document.createElement('script')
+    script.async = true
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga)}`
+    document.head.appendChild(script)
+    window.dataLayer = window.dataLayer || []
+    window.gtag =
+      window.gtag ||
+      function () {
+        window.dataLayer.push(arguments)
+      }
+    window.gtag('js', new Date())
+    window.gtag('config', ga)
+  }
+
+  const pixel = String(analytics.metaPixel || '').trim()
+  if (/^\d{6,20}$/.test(pixel)) {
+    /* eslint-disable */
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      }
+      if (!f._fbq) f._fbq = n
+      n.push = n
+      n.loaded = !0
+      n.version = '2.0'
+      n.queue = []
+      t = b.createElement(e)
+      t.async = !0
+      t.src = v
+      s = b.getElementsByTagName(e)[0]
+      s.parentNode.insertBefore(t, s)
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js')
+    /* eslint-enable */
+    window.fbq('init', pixel)
+    window.fbq('track', 'PageView')
+  }
+}
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return
+  const secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  if (!secure) return
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {})
+  })
 }
 
 init()

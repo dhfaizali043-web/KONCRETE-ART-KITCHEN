@@ -21,6 +21,10 @@ export default defineConfig({
         privacy: entry('./privacy.html'),
         terms: entry('./terms.html'),
         admin: entry('./admin.html'),
+        faq: entry('./faq.html'),
+        track: entry('./track.html'),
+        blog: entry('./blog.html'),
+        post: entry('./post.html'),
         notfound: entry('./404.html')
       }
     }

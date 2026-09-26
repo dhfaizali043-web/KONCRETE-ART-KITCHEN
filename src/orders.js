@@ -80,6 +80,11 @@ function orderCard(order) {
       <button type="button" class="btn btn-ghost order-reorder" data-reorder="${payload}">
         Add these items again
       </button>
+      <button type="button" class="btn btn-ghost order-invoice" data-invoice="${esc(
+        JSON.stringify(order)
+      )}">
+        Invoice
+      </button>
     </article>`
 }
 
@@ -114,6 +119,18 @@ function bindReorder() {
   if (!box || box.dataset.bound) return
   box.dataset.bound = '1'
   box.addEventListener('click', (event) => {
+    const invoiceBtn = event.target.closest('[data-invoice]')
+    if (invoiceBtn) {
+      let order = {}
+      try {
+        order = JSON.parse(invoiceBtn.dataset.invoice || '{}')
+      } catch {
+        order = {}
+      }
+      const store = window.KAKFront && window.KAKFront.state.catalog.store
+      if (window.KAKInvoice) window.KAKInvoice.print(order, store)
+      return
+    }
     const btn = event.target.closest('[data-reorder]')
     if (!btn) return
     let items = []
