@@ -1553,9 +1553,9 @@ h2 {
   height: min(560px, 74vh);
   display: flex;
   flex-direction: column;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   opacity: 0;
   transform-origin: bottom right;
   transform: scale(0.4) translate(30px, 30px);
@@ -1572,9 +1572,13 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  padding: 0.9rem 1rem;
-  background: var(--char);
+  padding: 0.85rem 1rem;
+  background: rgba(28, 26, 24, 0.92);
   color: var(--paper);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .chat-avatar {
@@ -1679,8 +1683,12 @@ h2 {
 }
 
 .chat-msg.bot .chat-msg-body {
-  background: #fff;
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(20, 18, 16, 0.08);
+  border-radius: 4px 12px 12px 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .chat-msg-avatar {
@@ -1712,9 +1720,9 @@ h2 {
 }
 
 .chat-welcome img {
-  height: 200px;
+  height: min(320px, 46vh);
   width: auto;
-  filter: drop-shadow(0 12px 20px rgba(60, 120, 200, 0.35));
+  filter: drop-shadow(0 16px 26px rgba(60, 120, 200, 0.35));
   animation: genie-float 3.6s ease-in-out infinite;
 }
 
@@ -1775,9 +1783,11 @@ h2 {
   align-self: flex-end;
   justify-content: flex-end;
   max-width: 86%;
-  background: var(--ink);
+  background: rgba(20, 18, 16, 0.92);
   color: var(--paper);
   padding: 0.55rem 0.75rem;
+  border-radius: 12px 4px 12px 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
 }
 
 .chat-msg.typing {
@@ -1835,11 +1845,15 @@ h2 {
 }
 
 .chat-quick button {
-  background: transparent;
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(20, 18, 16, 0.12);
   color: var(--ink-soft);
   font: inherit;
   font-size: 0.76rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 0.35rem 0.65rem;
   cursor: pointer;
 }
@@ -1851,8 +1865,13 @@ h2 {
 .chat-input {
   display: flex;
   gap: 0.5rem;
-  border-top: 1px solid var(--line);
-  padding: 0.7rem;
+  border-top: 0;
+  padding: 0.55rem;
+  border-radius: 14px;
+  background: rgba(241, 235, 224, 0.92);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .chat-input input {
@@ -1862,6 +1881,7 @@ h2 {
   color: var(--ink);
   font: 400 0.9rem Outfit, sans-serif;
   padding: 0.5rem 0.6rem;
+  border-radius: 9px;
 }
 
 .chat-input button {
@@ -1873,6 +1893,7 @@ h2 {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0 0.9rem;
+  border-radius: 9px;
   cursor: pointer;
 }
 
