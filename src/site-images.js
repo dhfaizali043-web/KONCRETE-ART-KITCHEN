@@ -170,7 +170,16 @@ async function init() {
   document.querySelectorAll('.seal').forEach((el) => applyImage(el, images.seal))
   document
     .querySelectorAll('.hero-plate img, .sf-hero-plate img')
-    .forEach((el) => applyImage(el, images.hero))
+    .forEach((el) => {
+      if (!images.hero) return
+      applyImage(el, images.hero)
+      const reduce =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce && /\.webp$/i.test(images.hero)) {
+        el.src = resolvePath(String(images.hero).replace(/\.webp$/i, '-poster.webp'))
+      }
+    })
 
   document.querySelectorAll('.gallery .tile img').forEach((el, index) => {
     const path = images['gallery' + (index + 1)]
