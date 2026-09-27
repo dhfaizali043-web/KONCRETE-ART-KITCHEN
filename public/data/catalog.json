@@ -60,6 +60,16 @@
         }
       ]
     },
+    "socialPost": {
+      "enabled": false,
+      "instagram": false,
+      "pinterest": false,
+      "apiUrl": "",
+      "boardId": "",
+      "siteUrl": "",
+      "caption": "",
+      "hashtags": ""
+    },
     "auth": {
       "enabled": false,
       "owners": [],
@@ -256,7 +266,7 @@
       "logoWhite": "brand/logo-white.png",
       "logoBlack": "brand/logo-black.png",
       "seal": "brand/kak-logo.jpg",
-      "hero": "brand/candle-hero.webp",
+      "hero": "brand/site/wrli-weding-1790507338554.jpg",
       "gallery1": "brand/site/whatsapp-image-2026-06-05-at-12-38-05-pm-1790353668676.jpeg",
       "gallery2": "brand/nameplates/plate-02.png",
       "gallery3": "brand/site/01-3-1790339018890.jpg",
@@ -285,6 +295,8 @@
       ],
       "image": "brand/products/01-6-1790401384118.jpg",
       "available": false,
+      "share": true,
+      "socialPostedAt": "",
       "custom": {
         "enabled": true,
         "label": "",
