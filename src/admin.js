@@ -138,7 +138,7 @@ const DEFAULT_IMAGES = {
 const SITE_IMAGE_SLOTS = [
   { key: 'logoWhite', label: 'Logo (white)', hint: 'Header and footer logo on every page' },
   { key: 'logoBlack', label: 'Logo (black)', hint: 'Mobile home-screen icon' },
-  { key: 'hero', label: 'Home hero image', hint: 'Large image at the top of the home page' },
+  { key: 'hero', label: 'Home hero image', hint: 'Large image at the top of the home page. Use a GIF or PNG with a transparent background to show the site behind it.' },
   { key: 'seal', label: 'Studio seal / wordmark', hint: 'Image in the About section' },
   { key: 'gallery1', label: 'Home gallery 1', hint: 'First tile in the home gallery' },
   { key: 'gallery2', label: 'Home gallery 2' },
@@ -932,10 +932,14 @@ async function uploadImageTo(file, dir) {
 }
 
 async function prepareImage(file) {
-  const allowed = ['jpg', 'jpeg', 'png', 'webp', 'avif']
+  const allowed = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif']
   const ext = (String(file.name).split('.').pop() || '').toLowerCase()
   if (!file.type.startsWith('image/') && !allowed.includes(ext)) {
-    throw new Error('Please choose a JPG, PNG, WEBP or AVIF image.')
+    throw new Error('Please choose a JPG, PNG, WEBP, AVIF or GIF image.')
+  }
+  // Keep animated GIFs untouched so the animation and transparency survive.
+  if (ext === 'gif' || file.type === 'image/gif') {
+    return { blob: file, ext: 'gif' }
   }
   const limit = 2 * 1024 * 1024
   if (file.size <= limit) {
