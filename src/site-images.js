@@ -173,12 +173,14 @@ async function init() {
     .forEach((el) => {
       if (!images.hero) return
       applyImage(el, images.hero)
+      const heroPath = String(images.hero)
+      const isUpload = /-\d{10,}\.[a-z0-9]+$/i.test(heroPath)
       const reduce =
         typeof window.matchMedia === 'function' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (reduce && /\.webp$/i.test(images.hero)) {
-        const original = resolvePath(String(images.hero))
-        const poster = resolvePath(String(images.hero).replace(/\.webp$/i, '-poster.webp'))
+      if (reduce && !isUpload && /\.webp$/i.test(heroPath)) {
+        const original = resolvePath(heroPath)
+        const poster = resolvePath(heroPath.replace(/\.webp$/i, '-poster.webp'))
         el.onerror = () => {
           el.onerror = null
           el.src = original

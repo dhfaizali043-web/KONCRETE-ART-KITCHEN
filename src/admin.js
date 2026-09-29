@@ -1005,7 +1005,8 @@ async function prepareImage(file) {
 
   // Preserve transparency for PNG/WebP sources by re-encoding as WebP (alpha aware).
   const keepAlpha =
-    ext === 'png' || mimeSub === 'png' || ext === 'webp' || mimeSub === 'webp'
+    ext === 'png' || mimeSub === 'png' || ext === 'webp' || mimeSub === 'webp' ||
+    ext === 'avif' || mimeSub === 'avif'
   let blob = null
   let outExt = 'jpg'
   if (keepAlpha) {
