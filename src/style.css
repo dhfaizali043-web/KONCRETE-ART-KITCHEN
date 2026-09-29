@@ -1987,6 +1987,45 @@ h2 {
   gap: 0.6rem;
 }
 
+.admin-image-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.admin-image-tag {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.admin-image-move {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.admin-move {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-move:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .admin-image-fields > label,
 .admin-upload {
   display: grid;

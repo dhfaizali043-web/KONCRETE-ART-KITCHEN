@@ -186,6 +186,27 @@ function boot() {
       const list = removeImage.closest('[data-image-list]')
       removeImage.closest('.admin-image-row').remove()
       if (!list.querySelector('.admin-image-row')) addImageRow(list, '')
+      else refreshImageRows(list)
+      return
+    }
+    const imageUp = event.target.closest('[data-image-up]')
+    if (imageUp) {
+      const row = imageUp.closest('.admin-image-row')
+      const list = row.closest('[data-image-list]')
+      if (row.previousElementSibling) {
+        list.insertBefore(row, row.previousElementSibling)
+        refreshImageRows(list)
+      }
+      return
+    }
+    const imageDown = event.target.closest('[data-image-down]')
+    if (imageDown) {
+      const row = imageDown.closest('.admin-image-row')
+      const list = row.closest('[data-image-list]')
+      if (row.nextElementSibling) {
+        list.insertBefore(row.nextElementSibling, row)
+        refreshImageRows(list)
+      }
       return
     }
     const addReview = event.target.closest('[data-review-add]')
@@ -629,6 +650,13 @@ function addImageRow(list, src) {
       value ? '' : 'hidden'
     } />
     <div class="admin-image-fields">
+      <div class="admin-image-top">
+        <span class="admin-image-tag" data-image-tag></span>
+        <div class="admin-image-move">
+          <button type="button" class="admin-move" data-image-up title="Move up" aria-label="Move image up">&#8593;</button>
+          <button type="button" class="admin-move" data-image-down title="Move down" aria-label="Move image down">&#8595;</button>
+        </div>
+      </div>
       <label>Image path or URL <input data-field="image" value="${escapeAttr(value)}" /></label>
       <label class="admin-upload">Upload image from device
         <input type="file" accept="image/*" data-upload />
@@ -637,6 +665,20 @@ function addImageRow(list, src) {
       <button type="button" class="admin-remove admin-image-remove" data-image-remove>Remove image</button>
     </div>`
   list.appendChild(row)
+  refreshImageRows(list)
+}
+
+function refreshImageRows(list) {
+  if (!list) return
+  const rows = [...list.querySelectorAll('.admin-image-row')]
+  rows.forEach((row, index) => {
+    const tag = row.querySelector('[data-image-tag]')
+    if (tag) tag.textContent = index === 0 ? 'Main image (thumbnail)' : 'Image ' + (index + 1)
+    const up = row.querySelector('[data-image-up]')
+    const down = row.querySelector('[data-image-down]')
+    if (up) up.disabled = index === 0
+    if (down) down.disabled = index === rows.length - 1
+  })
 }
 
 function renderCategoriesAdmin(categories) {
