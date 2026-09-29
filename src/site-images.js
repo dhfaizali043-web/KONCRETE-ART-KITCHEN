@@ -177,7 +177,13 @@ async function init() {
         typeof window.matchMedia === 'function' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (reduce && /\.webp$/i.test(images.hero)) {
-        el.src = resolvePath(String(images.hero).replace(/\.webp$/i, '-poster.webp'))
+        const original = resolvePath(String(images.hero))
+        const poster = resolvePath(String(images.hero).replace(/\.webp$/i, '-poster.webp'))
+        el.onerror = () => {
+          el.onerror = null
+          el.src = original
+        }
+        el.src = poster
       }
     })
 

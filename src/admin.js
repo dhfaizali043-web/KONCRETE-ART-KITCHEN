@@ -976,12 +976,17 @@ async function uploadImageTo(file, dir) {
 async function prepareImage(file) {
   const allowed = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif']
   const ext = (String(file.name).split('.').pop() || '').toLowerCase()
-  if (!file.type.startsWith('image/') && !allowed.includes(ext)) {
+  const mimeSub = String(file.type || '').split('/')[1] || ''
+  if (!allowed.includes(ext) && !allowed.includes(mimeSub)) {
     throw new Error('Please choose a JPG, PNG, WEBP, AVIF or GIF image.')
   }
-  // Keep animated GIFs untouched so the animation and transparency survive.
-  if (ext === 'gif' || file.type === 'image/gif') {
+  // Keep GIFs untouched so the animation and transparency survive.
+  if (ext === 'gif' || mimeSub === 'gif') {
     return { blob: file, ext: 'gif' }
+  }
+  // Keep reasonably sized WebP untouched so animation/transparency survive.
+  if ((ext === 'webp' || mimeSub === 'webp') && file.size <= 8 * 1024 * 1024) {
+    return { blob: file, ext: 'webp' }
   }
   const limit = 2 * 1024 * 1024
   if (file.size <= limit) {
@@ -997,9 +1002,26 @@ async function prepareImage(file) {
   canvas.width = width
   canvas.height = height
   canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height)
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85))
+
+  // Preserve transparency for PNG/WebP sources by re-encoding as WebP (alpha aware).
+  const keepAlpha =
+    ext === 'png' || mimeSub === 'png' || ext === 'webp' || mimeSub === 'webp'
+  let blob = null
+  let outExt = 'jpg'
+  if (keepAlpha) {
+    blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9))
+    outExt = 'webp'
+    if (!blob) {
+      blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+      outExt = 'png'
+    }
+  }
+  if (!blob) {
+    blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85))
+    outExt = 'jpg'
+  }
   if (!blob) throw new Error('Could not process this image. Try a smaller file.')
-  return { blob, ext: 'jpg' }
+  return { blob, ext: outExt }
 }
 
 function collectReviews(productEl) {
