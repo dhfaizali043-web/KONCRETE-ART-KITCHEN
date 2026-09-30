@@ -939,6 +939,7 @@ async function handleSiteImageUpload(input) {
     setUploadStatus(status, 'Uploaded. Now click "Save & publish".', 'ok')
   } catch (error) {
     setUploadStatus(status, error.message, 'error')
+    setPreviewSrc(card, pathField.value.trim() ? resolveImage(pathField.value.trim()) : '')
   } finally {
     input.value = ''
   }
@@ -974,7 +975,7 @@ async function uploadImageTo(file, dir) {
 }
 
 async function prepareImage(file) {
-  const allowed = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif']
+  const allowed = ['jpg', 'jpeg', 'jfif', 'png', 'webp', 'avif', 'gif']
   const ext = (String(file.name).split('.').pop() || '').toLowerCase()
   const mimeSub = String(file.type || '').split('/')[1] || ''
   if (!allowed.includes(ext) && !allowed.includes(mimeSub)) {
