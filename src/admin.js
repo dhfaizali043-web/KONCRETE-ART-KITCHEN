@@ -1221,10 +1221,20 @@ function collect() {
         terms: els.b2bTerms ? lines(els.b2bTerms.value) : [],
         note: els.b2bNote ? els.b2bNote.value.trim() : ''
       },
-      images: { ...DEFAULT_IMAGES, ...currentImages }
+      images: collectSiteImages()
     },
     products
   }
+}
+
+function collectSiteImages() {
+  const images = { ...DEFAULT_IMAGES, ...currentImages }
+  els.siteImages?.querySelectorAll('[data-img-key]').forEach((card) => {
+    const key = card.dataset.imgKey
+    const input = card.querySelector('[data-img-path]')
+    if (key && input) images[key] = input.value.trim()
+  })
+  return images
 }
 
 /* ---------- social auto-post ---------- */
