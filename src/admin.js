@@ -120,6 +120,14 @@ const els = {
 
 let sha = null
 let currentImages = {}
+let uploadsInFlight = Promise.resolve()
+
+// Keep track of image uploads so "Save & publish" always waits for them to finish
+// before it reads the form; otherwise a fast click can publish stale image paths.
+function trackUpload(task) {
+  uploadsInFlight = uploadsInFlight.then(() => task).catch(() => {})
+  return uploadsInFlight
+}
 
 const DEFAULT_IMAGES = {
   logoWhite: 'brand/logo-white.png',
@@ -823,16 +831,20 @@ async function handleCategoryImageUpload(input) {
   if (!file) return
 
   setUploadStatus(status, 'Uploading...', '')
-  try {
-    const path = await uploadImageTo(file, 'public/brand/categories')
-    imageField.value = path
-    setPreviewSrc(catEl.querySelector('[data-cat-img]'), resolveImage(path))
-    setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
-  } catch (error) {
-    setUploadStatus(status, error.message, 'error')
-  } finally {
-    input.value = ''
-  }
+  await trackUpload(
+    (async () => {
+      try {
+        const path = await uploadImageTo(file, 'public/brand/categories')
+        imageField.value = path
+        setPreviewSrc(catEl.querySelector('[data-cat-img]'), resolveImage(path))
+        setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
+      } catch (error) {
+        setUploadStatus(status, error.message, 'error')
+      } finally {
+        input.value = ''
+      }
+    })()
+  )
 }
 
 async function handleReviewImageUpload(input) {
@@ -843,15 +855,19 @@ async function handleReviewImageUpload(input) {
   if (!file) return
 
   setUploadStatus(status, 'Uploading...', '')
-  try {
-    const path = await uploadImageTo(file, 'public/brand/reviews')
-    photoField.value = path
-    setUploadStatus(status, 'Photo uploaded. Now click "Save & publish".', 'ok')
-  } catch (error) {
-    setUploadStatus(status, error.message, 'error')
-  } finally {
-    input.value = ''
-  }
+  await trackUpload(
+    (async () => {
+      try {
+        const path = await uploadImageTo(file, 'public/brand/reviews')
+        photoField.value = path
+        setUploadStatus(status, 'Photo uploaded. Now click "Save & publish".', 'ok')
+      } catch (error) {
+        setUploadStatus(status, error.message, 'error')
+      } finally {
+        input.value = ''
+      }
+    })()
+  )
 }
 
 function renderSiteImages(images) {
@@ -911,15 +927,19 @@ async function handleUpload(input) {
   setPreviewSrc(row, URL.createObjectURL(file))
   setUploadStatus(status, 'Uploading...', '')
 
-  try {
-    const path = await uploadImageTo(file, 'public/brand/products')
-    imageField.value = path
-    setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
-  } catch (error) {
-    setUploadStatus(status, error.message, 'error')
-  } finally {
-    input.value = ''
-  }
+  await trackUpload(
+    (async () => {
+      try {
+        const path = await uploadImageTo(file, 'public/brand/products')
+        imageField.value = path
+        setUploadStatus(status, 'Image uploaded. Now click "Save & publish".', 'ok')
+      } catch (error) {
+        setUploadStatus(status, error.message, 'error')
+      } finally {
+        input.value = ''
+      }
+    })()
+  )
 }
 
 async function handleSiteImageUpload(input) {
@@ -932,17 +952,21 @@ async function handleSiteImageUpload(input) {
   setPreviewSrc(card, URL.createObjectURL(file))
   setUploadStatus(status, 'Uploading...', '')
 
-  try {
-    const path = await uploadImageTo(file, 'public/brand/site')
-    currentImages[card.dataset.imgKey] = path
-    pathField.value = path
-    setUploadStatus(status, 'Uploaded. Now click "Save & publish".', 'ok')
-  } catch (error) {
-    setUploadStatus(status, error.message, 'error')
-    setPreviewSrc(card, pathField.value.trim() ? resolveImage(pathField.value.trim()) : '')
-  } finally {
-    input.value = ''
-  }
+  await trackUpload(
+    (async () => {
+      try {
+        const path = await uploadImageTo(file, 'public/brand/site')
+        currentImages[card.dataset.imgKey] = path
+        pathField.value = path
+        setUploadStatus(status, 'Uploaded. Now click "Save & publish".', 'ok')
+      } catch (error) {
+        setUploadStatus(status, error.message, 'error')
+        setPreviewSrc(card, pathField.value.trim() ? resolveImage(pathField.value.trim()) : '')
+      } finally {
+        input.value = ''
+      }
+    })()
+  )
 }
 
 async function uploadImageTo(file, dir) {
@@ -1381,6 +1405,12 @@ async function retrySocialPosts() {
 
 async function save() {
   const config = getConfig()
+
+  if (uploadsInFlight) {
+    setStatus('Finishing image upload…')
+    await uploadsInFlight
+  }
+
   const data = collect()
 
   if (!data.products.length) {
