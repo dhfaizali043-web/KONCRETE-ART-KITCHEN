@@ -1469,12 +1469,23 @@ function setStatus(message, kind) {
 }
 
 async function ghError(res) {
+  let message = `HTTP ${res.status}`
   try {
     const json = await res.json()
-    return json.message || `HTTP ${res.status}`
+    message = json.message || message
   } catch {
-    return `HTTP ${res.status}`
+    /* keep default */
   }
+  if (res.status === 401) {
+    return 'Bad credentials — this GitHub token is invalid or has expired. Create a new token (Contents: Read and write) and paste it in "GitHub & publish".'
+  }
+  if (res.status === 403 && /not accessible/i.test(message)) {
+    return 'Your token has no write access. Set its "Contents" permission to "Read and write", then try again.'
+  }
+  if (res.status === 404) {
+    return 'Not found — check the repository name, branch and file path, and that the token can access this repository.'
+  }
+  return message
 }
 
 function lines(value) {
