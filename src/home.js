@@ -340,7 +340,7 @@ function renderAppPromo(store) {
   if (!section) return
   const promo = store.appPromo || {}
   const url = safeAppLink(promo.url)
-  if (promo.enabled === false || !url) {
+  if (promo.enabled === false) {
     section.hidden = true
     return
   }
@@ -356,10 +356,15 @@ function renderAppPromo(store) {
     text.hidden = !body
   }
   if (cta) {
-    cta.textContent = promo.cta || 'Open app'
-    cta.href = url
-    if (promo.newTab === false) cta.removeAttribute('target')
-    else cta.setAttribute('target', '_blank')
+    if (url) {
+      cta.textContent = promo.cta || 'Open app'
+      cta.href = url
+      cta.hidden = false
+      if (promo.newTab === false) cta.removeAttribute('target')
+      else cta.setAttribute('target', '_blank')
+    } else {
+      cta.hidden = true
+    }
   }
   const image = String(promo.image || '').trim()
   if (img && media && image) {
