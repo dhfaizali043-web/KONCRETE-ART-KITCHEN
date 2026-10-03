@@ -262,6 +262,15 @@
       ],
       "note": "Share your requirement and we will get back with pricing, lead time and samples."
     },
+    "appPromo": {
+      "enabled": true,
+      "title": "KAK Moldcraft",
+      "text": "Explore our companion app from the studio.",
+      "cta": "Open KAK Moldcraft",
+      "url": "",
+      "image": "",
+      "newTab": true
+    },
     "images": {
       "logoWhite": "brand/logo-white.png",
       "logoBlack": "brand/logo-black.png",

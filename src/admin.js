@@ -67,6 +67,13 @@ const els = {
   b2bProcess: $('b2bProcess'),
   b2bTerms: $('b2bTerms'),
   b2bNote: $('b2bNote'),
+  appPromoEnabled: $('appPromoEnabled'),
+  appPromoNewTab: $('appPromoNewTab'),
+  appPromoTitle: $('appPromoTitle'),
+  appPromoText: $('appPromoText'),
+  appPromoCta: $('appPromoCta'),
+  appPromoUrl: $('appPromoUrl'),
+  appPromoImage: $('appPromoImage'),
   homeAnnouncements: $('homeAnnouncements'),
   homeFeatures: $('homeFeatures'),
   homeReviews: $('homeReviews'),
@@ -314,6 +321,10 @@ function boot() {
     const input = event.target.closest('[data-img-upload]')
     if (input) handleSiteImageUpload(input)
   })
+  document.addEventListener('change', (event) => {
+    const input = event.target.closest('[data-app-upload]')
+    if (input) handleAppImageUpload(input)
+  })
 
   const navButtons = document.querySelectorAll('[data-go]')
   navButtons.forEach((btn) => {
@@ -449,6 +460,14 @@ function fillForm(data) {
   if (els.b2bProcess) els.b2bProcess.value = (b2b.process || []).join('\n')
   if (els.b2bTerms) els.b2bTerms.value = (b2b.terms || []).join('\n')
   if (els.b2bNote) els.b2bNote.value = b2b.note || ''
+  const appPromo = store.appPromo || {}
+  if (els.appPromoEnabled) els.appPromoEnabled.checked = appPromo.enabled !== false
+  if (els.appPromoNewTab) els.appPromoNewTab.checked = appPromo.newTab !== false
+  if (els.appPromoTitle) els.appPromoTitle.value = appPromo.title || ''
+  if (els.appPromoText) els.appPromoText.value = appPromo.text || ''
+  if (els.appPromoCta) els.appPromoCta.value = appPromo.cta || ''
+  if (els.appPromoUrl) els.appPromoUrl.value = appPromo.url || ''
+  if (els.appPromoImage) els.appPromoImage.value = appPromo.image || ''
   els.chatKnowledge.value = (chat.knowledge || [])
     .map((entry) => `${entry.q || entry.question || ''} | ${entry.a || entry.answer || ''}`)
     .join('\n')
@@ -969,6 +988,27 @@ async function handleSiteImageUpload(input) {
   )
 }
 
+async function handleAppImageUpload(input) {
+  const status = document.querySelector('[data-app-status]')
+  const file = input.files && input.files[0]
+  if (!file) return
+
+  setUploadStatus(status, 'Uploading...', '')
+  await trackUpload(
+    (async () => {
+      try {
+        const path = await uploadImageTo(file, 'public/brand/site')
+        if (els.appPromoImage) els.appPromoImage.value = path
+        setUploadStatus(status, 'Uploaded. Now click "Save & publish".', 'ok')
+      } catch (error) {
+        setUploadStatus(status, error.message, 'error')
+      } finally {
+        input.value = ''
+      }
+    })()
+  )
+}
+
 async function uploadImageTo(file, dir) {
   const config = getConfig()
   if (!config.token) {
@@ -1245,6 +1285,15 @@ function collect() {
         process: els.b2bProcess ? lines(els.b2bProcess.value) : [],
         terms: els.b2bTerms ? lines(els.b2bTerms.value) : [],
         note: els.b2bNote ? els.b2bNote.value.trim() : ''
+      },
+      appPromo: {
+        enabled: els.appPromoEnabled ? els.appPromoEnabled.checked : false,
+        newTab: els.appPromoNewTab ? els.appPromoNewTab.checked : true,
+        title: els.appPromoTitle ? els.appPromoTitle.value.trim() : '',
+        text: els.appPromoText ? els.appPromoText.value.trim() : '',
+        cta: els.appPromoCta ? els.appPromoCta.value.trim() : '',
+        url: els.appPromoUrl ? els.appPromoUrl.value.trim() : '',
+        image: els.appPromoImage ? els.appPromoImage.value.trim() : ''
       },
       images: collectSiteImages()
     },

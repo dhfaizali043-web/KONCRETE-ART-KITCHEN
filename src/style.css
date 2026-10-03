@@ -3206,6 +3206,74 @@ body.no-scroll {
   background: linear-gradient(135deg, #dfe3d8, #c7cdbd);
 }
 
+/* ---------- app promo ---------- */
+.sf-app-inner {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  background: linear-gradient(135deg, #1c1a18, #2b2622);
+  color: #f4ede1;
+  border-radius: 20px;
+  padding: 2.2rem 2.4rem;
+  overflow: hidden;
+}
+
+.sf-app-copy h2 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  color: #f8f2e7;
+}
+
+.sf-app-copy p {
+  margin: 0 0 1.2rem;
+  color: rgba(244, 237, 225, 0.78);
+  max-width: 46ch;
+}
+
+.sf-app-btn {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: #fff;
+}
+
+.sf-app-btn:hover {
+  background: #833a26;
+  border-color: #833a26;
+}
+
+.sf-app-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sf-app-media img {
+  width: 100%;
+  max-width: 280px;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 14px;
+}
+
+@media (max-width: 760px) {
+  .sf-app-inner {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+    padding: 1.7rem 1.4rem;
+    text-align: center;
+  }
+
+  .sf-app-copy p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sf-app-media {
+    order: -1;
+  }
+}
+
 /* ---------- features strip ---------- */
 .sf-features {
   display: grid;

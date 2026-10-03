@@ -328,6 +328,50 @@ function setupAccount() {
   })
 }
 
+function safeAppLink(url) {
+  const value = String(url || '').trim()
+  if (!value) return ''
+  if (/^(https?:|mailto:|\/|\.\/|\.\.\/)/i.test(value)) return value
+  return 'https://' + value.replace(/^\/+/, '')
+}
+
+function renderAppPromo(store) {
+  const section = el('appPromo')
+  if (!section) return
+  const promo = store.appPromo || {}
+  const url = safeAppLink(promo.url)
+  if (promo.enabled === false || !url) {
+    section.hidden = true
+    return
+  }
+  const title = el('appPromoTitle')
+  const text = el('appPromoText')
+  const cta = el('appPromoCta')
+  const img = el('appPromoImage')
+  const media = el('appPromoMedia')
+  if (title) title.textContent = promo.title || 'KAK Moldcraft'
+  if (text) {
+    const body = String(promo.text || '').trim()
+    text.textContent = body
+    text.hidden = !body
+  }
+  if (cta) {
+    cta.textContent = promo.cta || 'Open app'
+    cta.href = url
+    if (promo.newTab === false) cta.removeAttribute('target')
+    else cta.setAttribute('target', '_blank')
+  }
+  const image = String(promo.image || '').trim()
+  if (img && media && image) {
+    img.src = resolveImg(image)
+    img.hidden = false
+    media.hidden = false
+  } else if (media) {
+    media.hidden = true
+  }
+  section.hidden = false
+}
+
 async function init() {
   const catalog = await F.ready()
   const store = (catalog && catalog.store) || {}
@@ -336,6 +380,7 @@ async function init() {
   renderAnnouncements(store)
   renderCatNav(store)
   renderHero(store)
+  renderAppPromo(store)
   renderCategories(store, products)
   renderFeatured(products)
   renderFeatures(store)
