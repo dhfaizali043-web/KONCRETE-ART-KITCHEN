@@ -264,12 +264,12 @@
     },
     "appPromo": {
       "enabled": true,
+      "newTab": true,
       "title": "KAK Moldcraft",
       "text": "Explore our companion app from the studio.",
       "cta": "Open KAK Moldcraft",
       "url": "",
-      "image": "",
-      "newTab": true
+      "image": "brand/site/kak-moldcraft-minimal-logo-1791023542432.png"
     },
     "images": {
       "logoWhite": "brand/logo-white.png",
